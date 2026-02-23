@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import MarketRadar from "./components/market_radar/MarketRadar";
+import MarketRadarView from "./components/market-radar-view/components/MarketRadarView";
 
 
 const queryClient = new QueryClient();
@@ -21,6 +22,7 @@ const App = () => (
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
           <Route path="/market_radar" element={<MarketRadar />} />
+          <Route path="/market_radar_view/:sub_market_name" element={<MarketRadarView />} />
 
         </Routes>
       </BrowserRouter>

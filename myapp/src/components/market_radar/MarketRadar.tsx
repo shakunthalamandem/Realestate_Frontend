@@ -10,13 +10,7 @@ import MarketRadarHighlights from "./MarketRadarHighlights";
 import MarketRadarMap from "./MarketRadarMap";
 import MarketRadarTable from "./MarketRadarTable";
 import AddSubmarketModal from "./AddSubmarketModal";
-// import MarketRadarHeader from "./market-radar/MarketRadarHeader";
-// import MarketRadarHighlights from "./market-radar/MarketRadarHighlights";
-// import MarketRadarMap from "./market-radar/MarketRadarMap";
-// import MarketRadarTable from "./market-radar/MarketRadarTable";
-// import AddSubmarketModal from "./market-radar/AddSubmarketModal";
-// import { normalizeItems, normalizePulseKey } from "./market-radar/utils";
-// import type { MarketRadarItem } from "./market-radar/types";
+
 
 const MarketRadar: React.FC = () => {
   const API_URL = import.meta.env.VITE_API_URL;
