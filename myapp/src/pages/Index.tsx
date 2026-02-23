@@ -1,15 +1,16 @@
-import Navbar from "@/components/Navbar";
-import HeroSection from "@/components/HeroSection";
-import WhyChooseVertex from "@/components/WhyChooseVertex";
-import PlatformFeatures from "@/components/PlatformFeatures";
-import HowItWorks from "@/components/HowItWorks";
-import UseCases from "@/components/UseCases";
-import AILayer from "@/components/AILayer";
-import PlatformExperience from "@/components/PlatformExperience";
-import WhyVertex from "@/components/WhyVertex";
-import SocialProof from "@/components/SocialProof";
-import CTASection from "@/components/CTASection";
-import Footer from "@/components/Footer";
+
+import AILayer from "../components/AILayer";
+import CTASection from "../components/CTASection";
+import Footer from "../components/Footer";
+import HeroSection from "../components/HeroSection";
+import HowItWorks from "../components/HowItWorks";
+import Navbar from "../components/Navbar";
+import PlatformExperience from "../components/PlatformExperience";
+import PlatformFeatures from "../components/PlatformFeatures";
+import SocialProof from "../components/SocialProof";
+import UseCases from "../components/UseCases";
+import WhyChooseVertex from "../components/WhyChooseVertex";
+import WhyVertex from "../components/WhyVertex";
 
 const Index = () => {
   return (
