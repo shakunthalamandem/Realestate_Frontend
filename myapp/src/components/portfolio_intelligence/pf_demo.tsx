@@ -36,7 +36,7 @@ const PfDemo: React.FC = () => {
       }}
     >          <button
             type="button"
-            onClick={() => navigate("/", { state: { scrollTo: "demos" } })}
+            onClick={() => navigate("/", { state: { scrollTo: "#platform" } })}
             className="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm transition hover:bg-slate-50"
           >
             ← Back
@@ -47,7 +47,7 @@ const PfDemo: React.FC = () => {
           <div className="flex items-center gap-4">
           {/* <button
             type="button"
-            onClick={() => navigate("/", { state: { scrollTo: "demos" } })}
+            onClick={() => navigate("/", { state: { scrollTo: "#platform" } })}
             className="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm transition hover:bg-slate-50"
           >
             ← Back
