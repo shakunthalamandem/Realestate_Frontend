@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ScrollReveal } from "./ScrollReveal";
-import portfolioDashboard from "@/assets/portfolio-dashboard.jpg";
+import portfolioDashboard from "@/assets/portfolio-dashboard.png";
 import marketRadar from "@/assets/market-radar.jpg";
 import dealLens from "@/assets/deal-lens.jpg";
 import heroDashboard from "@/assets/hero-dashboard.jpg";
