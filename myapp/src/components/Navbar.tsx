@@ -33,7 +33,7 @@ const Navbar = () => {
           <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
             <span className="text-primary-foreground font-display font-bold text-sm">V</span>
           </div>
-          <span className="font-display font-bold text-lg text-foreground">Vertex</span>
+          <span className="font-display font-bold text-lg text-foreground">Vertex AI</span>
         </a>
 
         {/* Desktop Nav */}
@@ -42,7 +42,7 @@ const Navbar = () => {
             <a
               key={link.label}
               href={link.href}
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors relative after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[2px] after:bg-accent after:transition-all hover:after:w-full"
+              className="text-m font-medium text-[#2b0f66] hover:text-foreground transition-colors relative after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[2px] after:bg-accent after:transition-all hover:after:w-full"
             >
               {link.label}
             </a>
@@ -50,11 +50,11 @@ const Navbar = () => {
         </div>
 
         <div className="hidden lg:flex items-center gap-3">
-          <Button variant="ghost" size="sm" asChild>
+          {/* <Button variant="ghost" size="sm" asChild>
             <a href="#demo">Log In</a>
-          </Button>
+          </Button> */}
           <Button variant="hero" size="default" asChild>
-            <a href="#demo">Request a Demo</a>
+            <a href="#demo">Demo</a>
           </Button>
         </div>
 
