@@ -1,4 +1,4 @@
-import heroDashboard from "../assets/hero-dashboard.jpg";
+import heroDashboard from "../assets/section1_main_image.png";
 import { ArrowRight, Play } from "lucide-react";
 import { Button } from "./ui/button";
 
@@ -57,12 +57,12 @@ const HeroSection = () => {
             />
           </div>
           {/* Floating accent elements */}
-          <div className="absolute -top-4 -right-4 w-20 h-20 rounded-xl bg-accent/10 border border-accent/20 backdrop-blur-sm animate-float hidden lg:flex items-center justify-center">
+          {/* <div className="absolute -top-4 -right-4 w-20 h-20 rounded-xl bg-accent/10 border border-accent/20 backdrop-blur-sm animate-float hidden lg:flex items-center justify-center">
             <span className="text-2xl">📊</span>
           </div>
           <div className="absolute -bottom-4 -left-4 w-16 h-16 rounded-lg bg-primary/10 border border-primary/20 backdrop-blur-sm animate-float-delayed hidden lg:flex items-center justify-center">
             <span className="text-xl">🛡️</span>
-          </div>
+          </div> */}
         </div>
       </div>
     </section>

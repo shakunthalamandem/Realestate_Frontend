@@ -1,17 +1,20 @@
 import { useState } from "react";
 import { ScrollReveal } from "./ScrollReveal";
-import portfolioDashboard from "@/assets/portfolio-dashboard.png";
-import marketRadar from "@/assets/market-radar.jpg";
-import dealLens from "@/assets/deal-lens.jpg";
-import heroDashboard from "@/assets/hero-dashboard.jpg";
+import portfolioDashboard from "../assets/performance_drvers.png";
+import marketRadar from "../assets/market_signal_radar.png";
+import dealLens from "../assets/deal_lens.png";
+import properties from "../assets/properties.png";
+import revenueleases from "../assets/Revenue & Leases.jpg";
+import expenseintel from "../assets/Expenses Intel.jpg";
 
 const screens = [
-  { label: "Portfolio Snapshot", image: heroDashboard },
+    { label: "Expense Intel", image: expenseintel },
+  { label: "Performance Drivers", image: portfolioDashboard },  
+  { label: "Revenue & Leases Analysis", image: revenueleases },
   { label: "Risk & Stability Dashboard", image: portfolioDashboard },
-  { label: "Revenue & Leases Analysis", image: portfolioDashboard },
-  { label: "AI Insights Panel", image: heroDashboard },
-  { label: "Market Radar Signal", image: marketRadar },
+  { label: "Market Signal Radar", image: marketRadar },
   { label: "Deal Underwriting Lens", image: dealLens },
+  { label: "Properties", image: properties },
 ];
 
 const PlatformExperience = () => {

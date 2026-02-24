@@ -1,9 +1,9 @@
 import { ScrollReveal } from "./ScrollReveal";
 import { Brain, Radar, Search } from "lucide-react";
 import { Route, useNavigate } from "react-router-dom";
-import portfolioDashboard from "../assets/portfolio-dashboard.png";
-import marketRadar from "../assets/market-radar.jpg";
-import dealLens from "../assets/deal-lens.jpg";
+import portfolioDashboard from "../assets/portfoli_intelligence.png";
+import marketRadar from "../assets/market_signal_radar.png";
+import dealLens from "../assets/deal_lens.png";
 
 const features = [
   {
@@ -26,7 +26,7 @@ const features = [
   {
     icon: Radar,
     emoji: "📡",
-    title: "Market Radar Signal",
+    title: "Market Signal Radar ",
     subheading: "We don’t guess the future.We surface real-time competitive pressure around your asset using AI-driven market intelligence.",
     subtitle: "Make pricing and asset decisions with market clarity — not assumptions.",
     points: [
@@ -72,7 +72,7 @@ const PlatformFeatures = () => {
             <div className="flex flex-wrap items-center justify-center gap-3 mt-6">
               {[
                 { label: "Portfolio Intelligence", route: "/portfolio_intelligence" },
-                { label: "Market Radar Signals", route: "/market_radar" },
+                { label: "Market Signal Radar ", route: "/market_radar" },
                 { label: "Deal Underwriting Lens", route: "/deal_lens" },
               ].map((tab) => (
                 <button
