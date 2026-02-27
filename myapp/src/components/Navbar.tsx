@@ -2,6 +2,10 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { Menu, X } from "lucide-react";
+import AccessBlockedModal from "./AccessBlockedModal";
+import { useLoginGuard } from "@/hooks/use-login-guard";
+import { clearUserLogin, getAccessToken, isUserLoggedIn } from "@/lib/auth";
+import { logoutRequest } from "@/lib/auth-api";
 
 const navLinks = [
   { label: "Platform", href: "#platform" },
@@ -15,12 +19,41 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(isUserLoggedIn());
+  const { isModalOpen, setIsModalOpen, guardNavigation, goToLogin } = useLoginGuard();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    const syncAuthState = () => setLoggedIn(isUserLoggedIn());
+    window.addEventListener("storage", syncAuthState);
+    window.addEventListener("focus", syncAuthState);
+    document.addEventListener("visibilitychange", syncAuthState);
+    syncAuthState();
+
+    return () => {
+      window.removeEventListener("storage", syncAuthState);
+      window.removeEventListener("focus", syncAuthState);
+      document.removeEventListener("visibilitychange", syncAuthState);
+    };
+  }, []);
+
+  const handleLogout = async () => {
+    const token = getAccessToken();
+    try {
+      if (token) {
+        await logoutRequest(token);
+      }
+    } finally {
+      clearUserLogin();
+      setLoggedIn(false);
+      navigate("/");
+    }
+  };
 
   return (
     <nav
@@ -53,9 +86,16 @@ const Navbar = () => {
 
         <div className="hidden lg:flex items-center gap-3">
           <Button
+            variant="heroOutline"
+            size="default"
+            onClick={() => (loggedIn ? handleLogout() : navigate("/login"))}
+          >
+            {loggedIn ? "Logout" : "Login"}
+          </Button>
+          <Button
             variant="hero"
             size="default"
-            onClick={() => navigate("/portfolio_intelligence")}
+            onClick={() => guardNavigation("/portfolio_intelligence")}
           >
             Demo
           </Button>
@@ -84,18 +124,39 @@ const Navbar = () => {
             </a>
           ))}
           <Button
+            variant="heroOutline"
+            size="lg"
+            className="w-full"
+            onClick={() => {
+              setMobileOpen(false);
+              if (loggedIn) {
+                void handleLogout();
+              } else {
+                navigate("/login");
+              }
+            }}
+          >
+            {loggedIn ? "Logout" : "Login"}
+          </Button>
+          <Button
             variant="hero"
             size="lg"
             className="w-full"
             onClick={() => {
               setMobileOpen(false);
-              navigate("/portfolio_intelligence");
+              guardNavigation("/portfolio_intelligence");
             }}
           >
             Request a Demo
           </Button>
         </div>
       )}
+
+      <AccessBlockedModal
+        open={isModalOpen}
+        onOpenChange={setIsModalOpen}
+        onGoToLogin={goToLogin}
+      />
     </nav>
   );
 };
