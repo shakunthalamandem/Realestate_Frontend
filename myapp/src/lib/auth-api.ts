@@ -6,15 +6,35 @@ const authClient = axios.create({
   baseURL: API_URL,
 });
 
+type RawRecord = Record<string, unknown>;
+
+type RawTokenBag = {
+  access?: string;
+  access_token?: string;
+  token?: string;
+  jwt?: string;
+  refresh?: string;
+  refresh_token?: string;
+  [key: string]: unknown;
+};
+
 type RawAuthResponse = {
   access_token?: string;
   token?: string;
   access?: string;
   jwt?: string;
+  accessToken?: string;
+  auth_token?: string;
+  key?: string;
+  refresh?: string;
+  refresh_token?: string;
   session_id?: string;
   sessionId?: string;
-  user?: Record<string, unknown>;
-  profile?: Record<string, unknown>;
+  user?: RawRecord;
+  profile?: RawRecord;
+  tokens?: RawTokenBag;
+  data?: RawAuthResponse;
+  result?: RawAuthResponse;
   [key: string]: unknown;
 };
 
@@ -24,14 +44,72 @@ export type AuthResult = {
   user?: Record<string, unknown> | null;
 };
 
+const asRecord = (value: unknown): RawRecord | null => {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return null;
+  }
+
+  return value as RawRecord;
+};
+
+const unwrapAuthPayload = (payload: RawAuthResponse): RawAuthResponse => {
+  const nestedData = asRecord(payload.data);
+  if (nestedData) {
+    return nestedData as RawAuthResponse;
+  }
+
+  const nestedResult = asRecord(payload.result);
+  if (nestedResult) {
+    return nestedResult as RawAuthResponse;
+  }
+
+  return payload;
+};
+
+const getString = (value: unknown): string | undefined => {
+  if (typeof value !== "string") return undefined;
+  const trimmed = value.trim();
+  return trimmed ? trimmed : undefined;
+};
+
+const firstString = (...candidates: unknown[]): string | undefined => {
+  for (const candidate of candidates) {
+    const value = getString(candidate);
+    if (value) return value;
+  }
+  return undefined;
+};
+
 const parseAuthResponse = (payload: RawAuthResponse): AuthResult => {
-  const accessToken =
-    payload.access_token ?? payload.token ?? payload.access ?? payload.jwt ?? "";
-  const sessionId = payload.session_id ?? payload.sessionId ?? null;
-  const user = payload.user ?? payload.profile ?? null;
+  const normalizedPayload = unwrapAuthPayload(payload);
+  const tokens = asRecord(normalizedPayload.tokens);
+  const user = asRecord(normalizedPayload.user) ?? asRecord(normalizedPayload.profile);
+
+  const accessToken = firstString(
+    normalizedPayload.access_token,
+    normalizedPayload.token,
+    normalizedPayload.access,
+    normalizedPayload.jwt,
+    normalizedPayload.accessToken,
+    normalizedPayload.auth_token,
+    normalizedPayload.key,
+    tokens?.access,
+    tokens?.access_token,
+    tokens?.token,
+    tokens?.jwt,
+  );
+  const sessionId =
+    firstString(
+      normalizedPayload.session_id,
+      normalizedPayload.sessionId,
+      user?.session_id,
+      user?.sessionId,
+    ) ?? null;
 
   if (!accessToken) {
-    throw new Error("Auth token was not returned by server.");
+    throw new Error(
+      "Auth token was not returned by server. Expected token in response.access_token or response.tokens.access.",
+    );
   }
 
   return { accessToken, sessionId, user };
@@ -98,5 +176,9 @@ export const meRequest = async (params: {
     },
   });
 
-  return response.data;
+  const payload = asRecord(response.data);
+  if (!payload) return {};
+
+  const user = asRecord(payload.user) ?? asRecord(payload.profile);
+  return user ?? payload;
 };
