@@ -126,7 +126,7 @@ const Login = () => {
         setIsSubmitting(false);
       }
     },
-    [fromPath, navigate],
+    [navigate],
   );
 
   useEffect(() => {
