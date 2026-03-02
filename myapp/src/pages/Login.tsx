@@ -329,19 +329,6 @@ const Login = () => {
             >
               Sign up
             </button>
-            <button
-              type="button"
-              className="mt-3 block w-full font-medium text-[#c24150] hover:underline"
-              disabled={isSubmitting}
-              onClick={() => {
-                setForgotOpen(true);
-                setForgotError("");
-                setForgotSuccess("");
-                setForgotEmail(identifier);
-              }}
-            >
-              Forgot Password?
-            </button>
           </div>
 
           <div className="mb-4 mt-4 flex items-center gap-3">
