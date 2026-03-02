@@ -24,6 +24,8 @@ import {
 } from "@/lib/auth-api";
 import PasswordInput from "@/components/auth/PasswordInput";
 
+const REMEMBERED_LOGIN_KEY = "remembered_login_identifier";
+
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -31,6 +33,7 @@ const Login = () => {
   const googleButtonRef = useRef<HTMLDivElement | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
   const [forgotOpen, setForgotOpen] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
@@ -66,6 +69,11 @@ const Login = () => {
     try {
       setIsSubmitting(true);
       setError("");
+      if (rememberMe) {
+        window.localStorage.setItem(REMEMBERED_LOGIN_KEY, email.trim());
+      } else {
+        window.localStorage.removeItem(REMEMBERED_LOGIN_KEY);
+      }
 
       const auth = await loginRequest({ email, password });
       setAuthSession({
@@ -120,6 +128,14 @@ const Login = () => {
     },
     [fromPath, navigate],
   );
+
+  useEffect(() => {
+    const rememberedIdentifier = window.localStorage.getItem(REMEMBERED_LOGIN_KEY);
+    if (rememberedIdentifier) {
+      setEmail(rememberedIdentifier);
+      setRememberMe(true);
+    }
+  }, []);
 
   const handleForgotPassword = async (event: FormEvent) => {
     event.preventDefault();
@@ -243,6 +259,31 @@ const Login = () => {
               onChange={setPassword}
               disabled={isSubmitting}
             />
+            <div className="flex items-center justify-between text-sm">
+              <label className="inline-flex items-center gap-2 text-slate-600">
+                <input
+                  type="checkbox"
+                  className="h-4 w-4 rounded border-slate-300 text-[#1e2f73] focus:ring-[#1e2f73]"
+                  checked={rememberMe}
+                  disabled={isSubmitting}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                />
+                Remember me
+              </label>
+              <button
+                type="button"
+                className="font-medium text-[#c24150] hover:underline"
+                disabled={isSubmitting}
+                onClick={() => {
+                  setForgotOpen(true);
+                  setForgotError("");
+                  setForgotSuccess("");
+                  setForgotEmail(email);
+                }}
+              >
+                Forgot Password?
+              </button>
+            </div>
 
             {error ? <p className="text-sm text-red-600">{error}</p> : null}
 
@@ -283,19 +324,6 @@ const Login = () => {
               }}
             >
               Sign up
-            </button>
-            <button
-              type="button"
-              className="mt-3 block w-full font-medium text-[#c24150] hover:underline"
-              disabled={isSubmitting}
-              onClick={() => {
-                setForgotOpen(true);
-                setForgotError("");
-                setForgotSuccess("");
-                setForgotEmail(email);
-              }}
-            >
-              Forgot Password?
             </button>
           </div>
 
