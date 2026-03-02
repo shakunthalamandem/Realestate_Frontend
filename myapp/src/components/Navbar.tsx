@@ -171,7 +171,7 @@ const Navbar = () => {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={() => setLogoutDialogOpen(true)}
-                  className="cursor-pointer text-red-600 focus:text-red-600"
+                  className="cursor-pointer text-red-600 focus:text-red-600 data-[highlighted]:bg-slate-100 data-[highlighted]:text-red-600"
                 >
                   <LogOut className="mr-2 h-4 w-4" />
                   Logout
@@ -263,7 +263,9 @@ const Navbar = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>CANCEL</AlertDialogCancel>
+            <AlertDialogCancel className="border-[#D1D5DB] bg-[#F3F4F6] text-[#374151] hover:bg-[#E5E7EB] focus:bg-[#E5E7EB]">
+              CANCEL
+            </AlertDialogCancel>
             <AlertDialogAction
               className="bg-red-600 text-white hover:bg-red-700"
               onClick={() => {
