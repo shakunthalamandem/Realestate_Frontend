@@ -31,7 +31,8 @@ const Login = () => {
   const location = useLocation();
   const fromPath = (location.state as { from?: string } | null)?.from ?? "/portfolio_intelligence";
   const googleButtonRef = useRef<HTMLDivElement | null>(null);
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
+
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
@@ -61,21 +62,23 @@ const Login = () => {
 
   const handleSignIn = async (event: FormEvent) => {
     event.preventDefault();
-    if (!email.trim() || !password.trim()) {
-      setError("Please enter email and password.");
-      return;
-    }
+    if (!identifier.trim() || !password.trim()) {
+  setError("Please enter email/username and password.");
+  return;
+}
+
 
     try {
       setIsSubmitting(true);
       setError("");
       if (rememberMe) {
-        window.localStorage.setItem(REMEMBERED_LOGIN_KEY, email.trim());
+        window.localStorage.setItem(REMEMBERED_LOGIN_KEY, identifier.trim());
       } else {
         window.localStorage.removeItem(REMEMBERED_LOGIN_KEY);
       }
 
-      const auth = await loginRequest({ email, password });
+      const auth = await loginRequest({ identifier, password });
+
       setAuthSession({
         accessToken: auth.accessToken,
         sessionId: auth.sessionId,
@@ -132,7 +135,7 @@ const Login = () => {
   useEffect(() => {
     const rememberedIdentifier = window.localStorage.getItem(REMEMBERED_LOGIN_KEY);
     if (rememberedIdentifier) {
-      setEmail(rememberedIdentifier);
+      setIdentifier(rememberedIdentifier);
       setRememberMe(true);
     }
   }, []);
@@ -245,13 +248,14 @@ const Login = () => {
 
           <form onSubmit={handleSignIn} className="space-y-5">
             <Input
-              className={glassInputClass}
-              type="email"
-              placeholder="Email or username"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={isSubmitting}
-            />
+  className={glassInputClass}
+  type="text"
+  placeholder="Email or Username"
+  value={identifier}
+  onChange={(e) => setIdentifier(e.target.value)}
+  disabled={isSubmitting}
+/>
+
             <PasswordInput
               className={glassInputClass}
               placeholder="Password"
@@ -278,7 +282,7 @@ const Login = () => {
                   setForgotOpen(true);
                   setForgotError("");
                   setForgotSuccess("");
-                  setForgotEmail(email);
+                  setForgotEmail(identifier);
                 }}
               >
                 Forgot Password?
@@ -324,6 +328,19 @@ const Login = () => {
               }}
             >
               Sign up
+            </button>
+            <button
+              type="button"
+              className="mt-3 block w-full font-medium text-[#c24150] hover:underline"
+              disabled={isSubmitting}
+              onClick={() => {
+                setForgotOpen(true);
+                setForgotError("");
+                setForgotSuccess("");
+                setForgotEmail(identifier);
+              }}
+            >
+              Forgot Password?
             </button>
           </div>
 
