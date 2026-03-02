@@ -23,7 +23,8 @@ const Login = () => {
   const location = useLocation();
   const fromPath = (location.state as { from?: string } | null)?.from ?? "/portfolio_intelligence";
   const googleButtonRef = useRef<HTMLDivElement | null>(null);
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
+
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [googleReady, setGoogleReady] = useState(false);
@@ -47,16 +48,18 @@ const Login = () => {
 
   const handleSignIn = async (event: FormEvent) => {
     event.preventDefault();
-    if (!email.trim() || !password.trim()) {
-      setError("Please enter email and password.");
-      return;
-    }
+    if (!identifier.trim() || !password.trim()) {
+  setError("Please enter email/username and password.");
+  return;
+}
+
 
     try {
       setIsSubmitting(true);
       setError("");
 
-      const auth = await loginRequest({ email, password });
+      const auth = await loginRequest({ identifier, password });
+
       setAuthSession({
         accessToken: auth.accessToken,
         sessionId: auth.sessionId,
@@ -198,13 +201,14 @@ const Login = () => {
 
           <form onSubmit={handleSignIn} className="space-y-5">
             <Input
-              className={glassInputClass}
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={isSubmitting}
-            />
+  className={glassInputClass}
+  type="text"
+  placeholder="Email or Username"
+  value={identifier}
+  onChange={(e) => setIdentifier(e.target.value)}
+  disabled={isSubmitting}
+/>
+
             <PasswordInput
               className={glassInputClass}
               placeholder="Password"
