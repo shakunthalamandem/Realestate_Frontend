@@ -27,6 +27,7 @@ const HeroSection = () => {
       {/* Subtle background elements */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-20 right-[-10%] w-[500px] h-[500px] rounded-full bg-accent/5 blur-3xl animate-pulse-glow" />
+        
         <div className="absolute bottom-10 left-[-5%] w-[400px] h-[400px] rounded-full bg-primary/5 blur-3xl animate-pulse-glow" style={{ animationDelay: "1.5s" }} />
       </div>
 
