@@ -652,8 +652,19 @@ const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext
         >
           Back
         </button>
-
-        <div className="space-y-6">
+        <section className="portfolio-recommendation-card relative overflow-hidden rounded-[30px] border border-blue-900/20 bg-gradient-to-br from-[#0f172a] via-[#1d2f6f] to-[#143f7a] p-6 text-white shadow-[0_24px_64px_rgba(15,23,42,0.35)] md:p-8">
+          <div className="relative z-10">
+            <h2 className="text-3xl font-semibold leading-tight">{record.property_name}</h2>
+            <p className="mt-5 text-xs font-semibold uppercase tracking-[0.16em] text-white/80">Overview</p>
+            <p className="mt-3 text-sm leading-7 text-white/95 md:text-[15px]">
+              {propertyNarrative.overview.join(" ")}
+            </p>
+          </div>
+          <div className="pointer-events-none absolute -right-10 -top-10 h-36 w-36 rounded-full bg-sky-300/20 blur-2xl" />
+          <div className="pointer-events-none absolute -bottom-14 -left-10 h-36 w-36 rounded-full bg-indigo-300/20 blur-2xl" />
+        </section>
+        <div className="space-y-6 rounded-3xl bg-white p-6 shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
+        
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <h1 className="text-3xl font-semibold text-indigo-900">{record.property_name}</h1>

@@ -1,7 +1,10 @@
 import React, { useMemo, useState } from "react";
+import { ChevronRight } from "lucide-react";
 import { PULSE_COLORS } from "./constants";
 import { normalizePulseKey } from "./utils";
 import type { MarketRadarItem } from "./types";
+
+import "../ui/interactive-data-table.css";
 
 type MarketRadarTableProps = {
   data: MarketRadarItem[];
@@ -51,14 +54,23 @@ const MarketRadarTable: React.FC<MarketRadarTableProps> = ({
           </button>
         </div>
       </div>
-      <div className="max-h-[420px] overflow-hidden rounded-2xl border border-slate-200 shadow-[0_16px_40px_rgba(15,23,42,0.06)]">
+      <div className="interactive-data-table-shell max-h-[420px] overflow-hidden">
         <div className="max-h-[420px] overflow-auto">
-          <table className="w-full text-left text-sm text-black">
-            <thead className="sticky top-0 bg-blue-50 text-m  text-indigo-500">
+          <table className="interactive-data-table min-w-[640px] text-black">
+            <colgroup>
+              <col style={{ width: "42%" }} />
+              <col style={{ width: "24%" }} />
+              <col style={{ width: "24%" }} />
+              <col style={{ width: "10%" }} />
+            </colgroup>
+            <thead className="interactive-data-table__head sticky top-0 z-10">
               <tr>
-                <th className="px-4 py-3">Submarket Name</th>
-                <th className="px-4 py-3">Region</th>
-                <th className="px-4 py-3">Market Pulse</th>
+                <th scope="col">Submarket Name</th>
+                <th scope="col">Region</th>
+                <th scope="col">Market Pulse</th>
+                <th scope="col">
+                  <span className="sr-only">Open</span>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -68,7 +80,7 @@ const MarketRadarTable: React.FC<MarketRadarTableProps> = ({
                 return (
                   <tr
                     key={`${item.sub_market_name}-${idx}`}
-                    className="cursor-pointer border-t border-slate-100 transition hover:bg-slate-50"
+                    className="interactive-data-table__row interactive-data-table__row--clickable"
                     onClick={() => onSelectsub_market_name(item)}
                     onKeyDown={(event) => {
                       if (event.key === "Enter" || event.key === " ") {
@@ -79,9 +91,13 @@ const MarketRadarTable: React.FC<MarketRadarTableProps> = ({
                     role="button"
                     tabIndex={0}
                   >
-                    <td className="px-4 py-3 text-black">{item.sub_market_name}</td>
-                    <td className="px-4 py-3 text-black">{item.region}</td>
-                    <td className="px-4 py-3">
+                    <td className="interactive-data-table__cell interactive-data-table__cell--first">
+                      <span className="interactive-data-table__primary uppercase">{item.sub_market_name || "-"}</span>
+                    </td>
+                    <td className="interactive-data-table__cell">
+                      <span className="interactive-data-table__value">{item.region || "-"}</span>
+                    </td>
+                    <td className="interactive-data-table__cell">
                       <span
                         className="inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-xs font-semibold"
                         style={{
@@ -94,13 +110,16 @@ const MarketRadarTable: React.FC<MarketRadarTableProps> = ({
                         {item.marketPulse}
                       </span>
                     </td>
+                    <td className="interactive-data-table__cell interactive-data-table__cell--last interactive-data-table__arrow-cell">
+                      <ChevronRight className="interactive-data-table__arrow" strokeWidth={2.6} />
+                    </td>
                   </tr>
                 );
               })}
               {!filteredData.length && !loading && (
                 <tr>
-                  <td className="px-4 py-6 text-center text-black" colSpan={3}>
-                    No market radar data available.
+                  <td className="interactive-data-table__state-cell" colSpan={4}>
+                    <div className="interactive-data-table__state">No market radar data available.</div>
                   </td>
                 </tr>
               )}

@@ -1,0 +1,153 @@
+.interactive-data-table-shell {
+  overflow-x: auto;
+  border: 1px solid #d8dfeb;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+}
+
+.interactive-data-table {
+  width: 100%;
+  border-spacing: 0;
+  border-collapse: separate;
+  table-layout: fixed;
+  text-align: left;
+}
+
+.interactive-data-table__head {
+  background: #0d1a66;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.interactive-data-table__head th {
+  padding: 14px 16px;
+  white-space: nowrap;
+}
+
+.interactive-data-table__head th:first-child {
+  padding-left: 18px;
+  border-top-left-radius: 16px;
+}
+
+.interactive-data-table__head th:last-child {
+  padding-right: 18px;
+  border-top-right-radius: 16px;
+}
+
+.interactive-data-table__row {
+  outline: none;
+}
+
+.interactive-data-table__row--clickable {
+  cursor: pointer;
+}
+
+.interactive-data-table__cell {
+  padding: 16px;
+  background: #ffffff;
+  color: #0f172f;
+  font-size: 15px;
+  vertical-align: middle;
+  border-bottom: 1px solid #e4eaf3;
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease,
+    color 0.2s ease;
+}
+
+.interactive-data-table__cell--first {
+  padding-left: 18px;
+}
+
+.interactive-data-table__cell--last {
+  padding-right: 18px;
+}
+
+.interactive-data-table__row:last-child .interactive-data-table__cell {
+  border-bottom: none;
+}
+
+.interactive-data-table__row:hover .interactive-data-table__cell,
+.interactive-data-table__row:focus-visible .interactive-data-table__cell {
+  background: #eef4ff;
+  box-shadow: inset 0 1px 0 #c8d6ff, inset 0 -1px 0 #c8d6ff;
+}
+
+.interactive-data-table__row:hover .interactive-data-table__cell--first,
+.interactive-data-table__row:focus-visible .interactive-data-table__cell--first {
+  box-shadow: inset 1px 0 0 #c8d6ff, inset 0 1px 0 #c8d6ff, inset 0 -1px 0 #c8d6ff;
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+}
+
+.interactive-data-table__row:hover .interactive-data-table__cell--last,
+.interactive-data-table__row:focus-visible .interactive-data-table__cell--last {
+  box-shadow: inset -1px 0 0 #c8d6ff, inset 0 1px 0 #c8d6ff, inset 0 -1px 0 #c8d6ff;
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+.interactive-data-table__primary {
+  display: block;
+  color: #111c4e;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.005em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.interactive-data-table__value {
+  display: block;
+  color: #1e293b;
+  font-size: 15px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.interactive-data-table__arrow-cell {
+  text-align: right;
+}
+
+.interactive-data-table__arrow {
+  width: 22px;
+  height: 22px;
+  color: #64748b;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.interactive-data-table__row:hover .interactive-data-table__arrow,
+.interactive-data-table__row:focus-visible .interactive-data-table__arrow {
+  color: #2f6fff;
+  transform: translateX(2px);
+}
+
+.interactive-data-table__state-cell {
+  padding: 16px;
+}
+
+.interactive-data-table__state {
+  padding: 16px 20px;
+  border: 1px solid #d7ddea;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #475569;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+}
+
+@media (max-width: 640px) {
+  .interactive-data-table__head th,
+  .interactive-data-table__cell {
+    padding-top: 14px;
+    padding-bottom: 14px;
+  }
+}
