@@ -151,9 +151,25 @@ const handleUpload = async () => {
             : "bg-white border-gray-200 text-gray-800"
           }`}
       >
-        <h2 className="text-3xl font-bold mb-6 text-center">
-          Upload Real Estate Files (PDFs)
-        </h2>
+        <div className="mb-8 text-center">
+          <h2 className="text-3xl font-bold leading-tight tracking-tight sm:text-4xl">
+            Upload Property Documents
+          </h2>
+          <p
+            className={`mx-auto mt-3 max-w-xl text-base leading-7 ${
+              theme === "dark" ? "text-gray-300" : "text-gray-600"
+            }`}
+          >
+            Upload the Offering Memorandum, T12 financials, and Rent Roll.
+          </p>
+          <p
+            className={`mx-auto mt-1 max-w-xl text-base leading-7 ${
+              theme === "dark" ? "text-gray-300" : "text-gray-600"
+            }`}
+          >
+            Our AI will analyze the documents and generate underwriting insights.
+          </p>
+        </div>
 
         <div className="grid gap-6">
           {renderFileCard("Memorandum", "memorandum")}

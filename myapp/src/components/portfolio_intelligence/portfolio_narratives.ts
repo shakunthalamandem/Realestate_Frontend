@@ -64,11 +64,11 @@ export const portfolioNarratives: Record<PortfolioAnalyticsTabId, PortfolioNarra
   risk_stability_dashboard: {
     overview: [
       "Portfolio stability score stands at 70/100, indicating moderate risk exposure.",
-      "Revenue at risk totals $120K (60-day) and $89K (90-day), with concentration skewed toward Charlesbank Estates.",
+      "Revenue at risk totals $120K (60-day) and $89K (90-day), with concentration skewed toward Grand Oak Estates.",
       "One asset is flagged as underperforming due to flat NOI growth and elevated risk score.",
     ],
     recommendations: [
-      "Prioritize operational review of Charlesbank Estates to address stagnant NOI and elevated risk exposure.",
+      "Prioritize operational review of Grand Oak Estates to address stagnant NOI and elevated risk exposure.",
       "Diversify revenue concentration to reduce dependency on a single asset.",
       "Implement targeted leasing and expense controls to improve portfolio stability and lift the overall risk score.",
     ],
