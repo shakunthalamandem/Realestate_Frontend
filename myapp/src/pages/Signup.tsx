@@ -21,7 +21,11 @@ import PasswordInput from "@/components/auth/PasswordInput";
 const Signup = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const fromPath = (location.state as { from?: string } | null)?.from ?? "/portfolio_intelligence";
+  const requestedFromPath = (location.state as { from?: string } | null)?.from;
+  const fromPath =
+    requestedFromPath && requestedFromPath !== "/login" && requestedFromPath !== "/signup"
+      ? requestedFromPath
+      : "/";
   const googleButtonRef = useRef<HTMLDivElement | null>(null);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -111,14 +115,14 @@ const Signup = () => {
         });
         setAuthUser(me);
 
-        navigate(fromPath, { replace: true });
+        navigate("/", { replace: true });
       } catch (err) {
         setError(getApiErrorMessage("Google login failed. Please try again.", err));
       } finally {
         setIsSubmitting(false);
       }
     },
-    [fromPath, navigate],
+    [navigate],
   );
 
   useEffect(() => {
