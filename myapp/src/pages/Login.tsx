@@ -263,7 +263,7 @@ const Login = () => {
               onChange={setPassword}
               disabled={isSubmitting}
             />
-            <div className="flex items-center justify-between text-sm">
+            {/* <div className="flex items-center justify-between text-sm">
               <label className="inline-flex items-center gap-2 text-slate-600">
                 <input
                   type="checkbox"
@@ -287,7 +287,7 @@ const Login = () => {
               >
                 Forgot Password?
               </button>
-            </div>
+            </div> */}
 
             {error ? <p className="text-sm text-red-600">{error}</p> : null}
 
