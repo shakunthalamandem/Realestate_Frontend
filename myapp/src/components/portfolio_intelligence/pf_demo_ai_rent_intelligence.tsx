@@ -366,9 +366,9 @@ const PfDemoAiRentIntelligence: React.FC = () => {
                   <td className="interactive-data-table__cell text-right tabular-nums">
                     <span className="interactive-data-table__value">{formatCurrency(row.annualRevenueLift)}</span>
                   </td>
-                  <td className="interactive-data-table__cell interactive-data-table__cell--last interactive-data-table__arrow-cell">
-                    <ChevronRight className="interactive-data-table__arrow" strokeWidth={2.6} aria-hidden="true" />
-                  </td>
+                   <td className="interactive-data-table__cell interactive-data-table__cell--last interactive-data-table__arrow-cell">
+                    {/* <ChevronRight className="interactive-data-table__arrow" strokeWidth={2.6} aria-hidden="true" /> */}
+                  </td> 
                 </tr>
               ))}
             </tbody>
