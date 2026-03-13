@@ -1,6 +1,7 @@
 ﻿import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { Bar, Line } from "react-chartjs-2";
+import { ChevronRight } from "lucide-react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -12,6 +13,8 @@ import {
   Legend,
   Title,
 } from "chart.js";
+
+import "../ui/interactive-data-table.css";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Tooltip, Legend, Title);
 
@@ -298,38 +301,74 @@ const PfDemoAiRentIntelligence: React.FC = () => {
         <div className="flex items-center justify-between">
           <h3 className="text-xl font-semibold  text-[#b1419d]">Unit Type Analytics</h3>
         </div>
-        <div className="mt-4 overflow-x-auto bg-blue-50 rounded-lg shadow ">
-          <table className="w-full table-fixed text-sm">
-            <thead>
-              <tr className="text-center text-m text-blue-600  ">
-                <th className="pb-2 pr-4">Unit Type</th>
-                <th className="pb-2 pr-4">Units</th>
-                <th className="pb-2 pr-4">In-Place</th>
-                <th className="pb-2 pr-4">Market</th>
-                <th className="pb-2 pr-4">Recommended</th>
-                <th className="pb-2 pr-4">% Increase</th>
-                <th className="pb-2">Annual Rev Lift</th>
+        <div className="interactive-data-table-shell mt-4">
+          <table className="interactive-data-table min-w-[980px] text-sm text-black">
+            <colgroup>
+              <col style={{ width: "21%" }} />
+              <col style={{ width: "9%" }} />
+              <col style={{ width: "14%" }} />
+              <col style={{ width: "14%" }} />
+              <col style={{ width: "15%" }} />
+              <col style={{ width: "11%" }} />
+              <col style={{ width: "12%" }} />
+              <col style={{ width: "4%" }} />
+            </colgroup>
+            <thead className="interactive-data-table__head">
+              <tr>
+                <th scope="col">Unit Type</th>
+                <th scope="col" className="text-right">Units</th>
+                <th scope="col" className="text-right">In-Place</th>
+                <th scope="col" className="text-right">Market</th>
+                <th scope="col" className="text-right">Recommended</th>
+                <th scope="col" className="text-right">% Increase</th>
+                <th scope="col" className="text-right">Annual Rev Lift</th>
+                <th scope="col">
+                  <span className="sr-only">Row indicator</span>
+                </th>
               </tr>
             </thead>
             <tbody>
               {unitSummary.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="py-4 text-center text-slate-400">
-                    No unit summary found for this property.
+                  <td colSpan={8} className="interactive-data-table__state-cell">
+                    <div className="interactive-data-table__state">
+                      No unit summary found for this property.
+                    </div>
                   </td>
                 </tr>
               )}
               {unitSummary.map((row) => (
-                <tr key={row.unitType} className="border-t border-slate-100 text-black text-center">
-                  <td className="py-3 pr-4 font-semibold text-black">{row.unitType || "-"}</td>
-                  <td className="pr-4">{row.units ?? "-"}</td>
-                  <td className="pr-4">{formatCurrency(row.inPlace)}</td>
-                  <td className="pr-4">{formatCurrency(row.market)}</td>
-                  <td className="pr-4 text-black">{formatCurrency(row.recommended)}</td>
-                  <td className={`pr-4 font-semibold ${row.percentIncrease && Number(row.percentIncrease) < 0 ? "text-rose-500" : "text-emerald-600"}`}>
-                    {formatSignedPercent(row.percentIncrease)}
+                <tr key={row.unitType} className="interactive-data-table__row">
+                  <td className="interactive-data-table__cell interactive-data-table__cell--first">
+                    <span className="interactive-data-table__primary">{row.unitType || "-"}</span>
                   </td>
-                  <td>{formatCurrency(row.annualRevenueLift)}</td>
+                  <td className="interactive-data-table__cell text-right tabular-nums">
+                    <span className="interactive-data-table__value">{row.units ?? "-"}</span>
+                  </td>
+                  <td className="interactive-data-table__cell text-right tabular-nums">
+                    <span className="interactive-data-table__value">{formatCurrency(row.inPlace)}</span>
+                  </td>
+                  <td className="interactive-data-table__cell text-right tabular-nums">
+                    <span className="interactive-data-table__value">{formatCurrency(row.market)}</span>
+                  </td>
+                  <td className="interactive-data-table__cell text-right tabular-nums">
+                    <span className="interactive-data-table__value">{formatCurrency(row.recommended)}</span>
+                  </td>
+                  <td className="interactive-data-table__cell text-right tabular-nums">
+                    <span
+                      className={`block font-semibold ${
+                        row.percentIncrease && Number(row.percentIncrease) < 0 ? "text-rose-500" : "text-emerald-600"
+                      }`}
+                    >
+                      {formatSignedPercent(row.percentIncrease)}
+                    </span>
+                  </td>
+                  <td className="interactive-data-table__cell text-right tabular-nums">
+                    <span className="interactive-data-table__value">{formatCurrency(row.annualRevenueLift)}</span>
+                  </td>
+                   <td className="interactive-data-table__cell interactive-data-table__cell--last interactive-data-table__arrow-cell">
+                    {/* <ChevronRight className="interactive-data-table__arrow" strokeWidth={2.6} aria-hidden="true" /> */}
+                  </td> 
                 </tr>
               ))}
             </tbody>

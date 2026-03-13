@@ -11,9 +11,9 @@ const defaultNarrative: PortfolioNarrative = {
 };
 
 const propertyNarratives: Record<string, PortfolioNarrative> = {
-  "charlesbank estates": {
+  "grand oak estates": {
     overview: [
-      "Charlesbank Estates is operating at 85.7% occupancy with $3.48M NOI, but NOI is down 35% YoY, driven by revenue softness and expense pressure.",
+      "Grand Oak Estates is operating at 85.7% occupancy with $3.48M NOI, but NOI is down 35% YoY, driven by revenue softness and expense pressure.",
       "Revenue has declined slightly (-1.6% YoY) while renewal rate stands at 75%, with 24 units expiring and $588K revenue at risk.",
       "Market rent upside (~$228K mark-to-market) exists, but review sentiment (3.7 rating) and operational risks may be limiting pricing power.",
     ],
@@ -26,9 +26,9 @@ const propertyNarratives: Record<string, PortfolioNarrative> = {
     ],
     imageUrl: "",
   },
-  "365 western avenue": {
+  "lakeside residential": {
     overview: [
-      "365 Western Avenue is fully stabilized at 100% occupancy with strong NOI growth (+80% YoY) and a high 71.8% NOI margin.",
+      "Lakeside Residential is fully stabilized at 100% occupancy with strong NOI growth (+80% YoY) and a high 71.8% NOI margin.",
       "Revenue has surged (+90% YoY), though expenses are also rising (+28%), requiring monitoring to protect margin strength.",
       "Negative mark-to-market (-$5.6K) and an August lease concentration create moderate rollover risk despite solid 72% renewals.",
     ],
@@ -41,9 +41,9 @@ const propertyNarratives: Record<string, PortfolioNarrative> = {
     ],
     imageUrl: "",
   },
-  "park drive apartments": {
+  "summit ridge apartments": {
     overview: [
-      "Park Drive Apartments is operating strongly at 92.6% occupancy with a healthy 68.2% NOI margin, though NOI is slightly down (-3.5% YoY) due to rising expenses (+7.2%).",
+      "Summit Ridge Apartments is operating strongly at 92.6% occupancy with a healthy 68.2% NOI margin, though NOI is slightly down (-3.5% YoY) due to rising expenses (+7.2%).",
       "Revenue growth (+2.8% YoY) is positive, but renewal rate (68%) and 14 upcoming expirations put $345K revenue at risk.",
       "Heavy May-August lease concentration and mid-tier reviews (3.2 rating) increase seasonal turnover exposure.",
     ],
@@ -58,6 +58,20 @@ const propertyNarratives: Record<string, PortfolioNarrative> = {
   },
 };
 
+const propertyNarrativeAliases: Record<string, string> = {
+  "grand oak": "grand oak estates",
+  "charlesbank estates": "grand oak estates",
+  charlesbank: "grand oak estates",
+  lakeside: "lakeside residential",
+  "365 western avenue": "lakeside residential",
+  "western avenue": "lakeside residential",
+  "summit ridge apartments": "summit ridge apartments",
+  "summit ridge": "summit ridge apartments",
+  "park drive apartments": "summit ridge apartments",
+  "park drive aprtments": "summit ridge apartments",
+  "park drive": "summit ridge apartments",
+};
+
 const normalizePropertyName = (propertyName: string) =>
   propertyName.trim().toLowerCase().replace(/\s+/g, " ");
 
@@ -68,20 +82,10 @@ export const getPropertyNarrative = (propertyName: string): PortfolioNarrative =
     return propertyNarratives[normalizedName];
   }
 
-  if (normalizedName.includes("charlesbank")) {
-    return propertyNarratives["charlesbank estates"];
-  }
-
-  if (normalizedName.includes("western avenue")) {
-    return propertyNarratives["365 western avenue"];
-  }
-
-  if (normalizedName.includes("park drive")) {
-    return propertyNarratives["park drive apartments"];
-  }
-
-  if (normalizedName.includes("park drive aprtments")) {
-    return propertyNarratives["park drive apartments"];
+  for (const [alias, narrativeKey] of Object.entries(propertyNarrativeAliases)) {
+    if (normalizedName.includes(alias)) {
+      return propertyNarratives[narrativeKey];
+    }
   }
 
   return defaultNarrative;

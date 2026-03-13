@@ -178,34 +178,34 @@ const chartOptions = {
 
       {/* -------------------- Table -------------------- */}
 
-      <div className="overflow-x-auto rounded-3xl border border-blue-200 bg-white p-6 shadow-sm">
+      <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
         <table className="min-w-full text-left text-sm">
-          <thead>
-            <tr className="text-sm font-semibold tracking-wide text-blue-900">
-              <th className="px-4 py-3">Category</th>
-              <th className="px-4 py-3">Current</th>
-              <th className="px-4 py-3">Prior Year</th>
-              <th className="px-4 py-3">YoY Growth</th>
-              <th className="px-4 py-3">Per Unit</th>
+          <thead className="bg-[#1c2c6b]">
+            <tr className="text-xs font-semibold uppercase tracking-wider text-white">
+              <th className="px-6 py-4">Category</th>
+              <th className="px-6 py-4">Current</th>
+              <th className="px-6 py-4">Prior Year</th>
+              <th className="px-6 py-4">YoY Growth</th>
+              <th className="px-6 py-4">Per Unit</th>
             </tr>
           </thead>
           <tbody>
             {categories.map((category) => (
               <tr
                 key={category.name}
-                className="border-t border-slate-100 hover:bg-slate-50 transition"
+                className="border-b border-slate-200 hover:bg-slate-50 transition"
               >
-                <td className="px-4 py-3 font-semibold text-black">
+                <td className="px-6 py-4 font-semibold text-gray-900">
                   {category.name}
                 </td>
-                <td className="px-4 py-3 text-black">
+                <td className="px-6 py-4 text-black">
                   {fmtCurrency(category.current)}
                 </td>
-                <td className="px-4 py-3 text-black">
+                <td className="px-6 py-4 text-black">
                   {fmtCurrency(category.priorYear)}
                 </td>
                 <td
-                  className={`px-4 py-3 font-semibold ${
+                  className={`px-6 py-4 font-semibold ${
                     (category.yoyGrowthPercent ?? 0) < 0
                       ? "text-rose-500"
                       : "text-emerald-600"
@@ -213,7 +213,7 @@ const chartOptions = {
                 >
                   {fmtPercent(category.yoyGrowthPercent)}
                 </td>
-                <td className="px-4 py-3 text-black">
+                <td className="px-6 py-4 text-black">
                   {fmtCurrency(category.perUnit)}
                 </td>
               </tr>

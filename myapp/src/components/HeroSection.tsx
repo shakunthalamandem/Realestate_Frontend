@@ -1,13 +1,33 @@
+import { useState } from "react";
 import heroDashboard from "../assets/section1_main_image.png";
 import { ArrowRight, Play } from "lucide-react";
 import { Button } from "./ui/button";
+import { isUserLoggedIn } from "@/lib/auth";
+import AccessBlockedModal from "./AccessBlockedModal";
+import { useNavigate } from "react-router-dom";
 
 const HeroSection = () => {
+  const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const guardSectionAccess = (sectionId: string) => {
+    if (!isUserLoggedIn()) {
+      setIsModalOpen(true);
+      return;
+    }
+
+    const target = document.getElementById(sectionId);
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <section className="relative overflow-hidden pt-28 pb-16 lg:pt-36 lg:pb-24 section-soft">
       {/* Subtle background elements */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-20 right-[-10%] w-[500px] h-[500px] rounded-full bg-accent/5 blur-3xl animate-pulse-glow" />
+        
         <div className="absolute bottom-10 left-[-5%] w-[400px] h-[400px] rounded-full bg-primary/5 blur-3xl animate-pulse-glow" style={{ animationDelay: "1.5s" }} />
       </div>
 
@@ -25,24 +45,20 @@ const HeroSection = () => {
 
           <p className="text-m md:text-lg text-muted-foreground leading-relaxed mb-4 animate-fade-up-delay-2">
             AI-powered property intelligence  turns financial data into forward-looking decisions — protecting NOI, reducing risk, and unlocking portfolio-wide growth.
-               </p>
+                     </p>
 
           <p className="text-sm text-muted-foreground mb-8 animate-fade-up-delay-2">
             📍From acquisition underwriting to active asset management — all in one platform.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-up-delay-3">
-            <Button variant="hero" size="xl" asChild>
-              <a href="#demo">
-                Request a Demo
-                <ArrowRight className="ml-2 w-5 h-5" />
-              </a>
+            <Button variant="hero" size="xl" onClick={() => guardSectionAccess("demo")}>
+              Request a Demo
+              <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
-            <Button variant="heroOutline" size="xl" asChild>
-              <a href="#platform">
-                <Play className="mr-2 w-4 h-4" />
-                See How It Works
-              </a>
+            <Button variant="heroOutline" size="xl" onClick={() => guardSectionAccess("platform")}>
+              <Play className="mr-2 w-4 h-4" />
+              See How It Works
             </Button>
           </div>
         </div>
@@ -65,6 +81,11 @@ const HeroSection = () => {
           </div> */}
         </div>
       </div>
+      <AccessBlockedModal
+        open={isModalOpen}
+        onOpenChange={setIsModalOpen}
+        onGoToLogin={() => navigate("/login")}
+      />
     </section>
   );
 };
