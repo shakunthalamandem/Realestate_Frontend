@@ -13,6 +13,7 @@ import SocialProof from "../components/SocialProof";
 import UseCases from "../components/UseCases";
 import WhyChooseVertex from "../components/WhyChooseVertex";
 import WhyVertex from "../components/WhyVertex";
+import AboutUs from "@/components/AboutUs";
 
 const scrollToSection = (sectionId: string) => {
   if (!sectionId) return;
@@ -45,6 +46,7 @@ const Index = () => {
       <AILayer />
       <PlatformExperience />
       <WhyVertex />
+      <AboutUs/>
       {/* <SocialProof /> */}
       <CTASection />
       <Footer />

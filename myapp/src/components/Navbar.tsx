@@ -34,6 +34,7 @@ const navLinks = [
   { label: "Use Cases", href: "#use-cases" },
   { label: "AI Intelligence", href: "#ai" },
   { label: "Why Vertex", href: "#why" },
+  { label: "About Us", href: "#about" },
 ];
 
 const profileAvatarThemes = [

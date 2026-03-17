@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Toaster } from "./components/ui/toaster";
 import { Toaster as Sonner } from "./components/ui/sonner";
 import { TooltipProvider } from "./components/ui/tooltip";
@@ -14,11 +15,16 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Logout from "./pages/Logout";
 import ProtectedRoute from "./components/ProtectedRoute";
-
+import { autoLogin } from "./lib/auth";
 
 const queryClient = new QueryClient();
 
-const App = () => (
+const App = () => {
+  useEffect(() => {
+    console.log("App loaded - running autoLogin");
+    autoLogin();
+  }, []);
+  return (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
@@ -33,6 +39,14 @@ const App = () => (
           <Route path="*" element={<NotFound />} />
           <Route
             path="/portfolio_intelligence"
+            element={
+              <ProtectedRoute>
+                <PfDemo />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/ai_rent_intelligence"
             element={
               <ProtectedRoute>
                 <PfDemo />
@@ -75,6 +89,7 @@ const App = () => (
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
-);
+  );
+};
 
 export default App;

@@ -2,6 +2,7 @@ import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { login } from "./lib/auth";
 import {
   Dialog,
   DialogContent,
@@ -91,7 +92,7 @@ const Login = () => {
       });
       setAuthUser(me);
 
-      navigate("/", { replace: true });
+      navigate(fromPath, { replace: true });
     } catch (err) {
       setError(getApiErrorMessage("Login failed. Please try again.", err));
     } finally {
@@ -122,14 +123,14 @@ const Login = () => {
         });
         setAuthUser(me);
 
-        navigate("/", { replace: true });
+        navigate(fromPath, { replace: true });
       } catch (err) {
         setError(getApiErrorMessage("Google login failed. Please try again.", err));
       } finally {
         setIsSubmitting(false);
       }
     },
-    [navigate],
+    [fromPath, navigate],
   );
 
   useEffect(() => {
