@@ -12,6 +12,18 @@ const createEmptyBlocks = (): Record<FileType, Block[]> => ({
   rent_roll: [],
 });
 
+const createEmptyFiles = (): Record<FileType, File | null> => ({
+  memorandum: null,
+  t12: null,
+  rent_roll: null,
+});
+
+const createEmptyStatus = (): Record<FileType, string> => ({
+  memorandum: "",
+  t12: "",
+  rent_roll: "",
+});
+
 type FileType = "memorandum" | "t12" | "rent_roll";
 
 type DealEntry = {
@@ -33,17 +45,9 @@ const RealEstateUploader: React.FC<RealEstateUploaderProps> = ({ showBackButton 
   const navigate = useNavigate();
   const { theme } = useTheme();
 
-  const [files, setFiles] = useState<Record<FileType, File | null>>({
-    memorandum: null,
-    t12: null,
-    rent_roll: null,
-  });
+  const [files, setFiles] = useState<Record<FileType, File | null>>(createEmptyFiles());
 
-  const [status, setStatus] = useState<Record<FileType, string>>({
-    memorandum: "",
-    t12: "",
-    rent_roll: "",
-  });
+  const [status, setStatus] = useState<Record<FileType, string>>(createEmptyStatus());
 
   const [loading, setLoading] = useState(false);
   const [progressMessage, setProgressMessage] = useState("");
@@ -168,6 +172,9 @@ const RealEstateUploader: React.FC<RealEstateUploaderProps> = ({ showBackButton 
       };
 
       setResponseBlocks(newResponses);
+      if (res.status === 200) {
+        setShowUploader(false);
+      }
       await fetchDeals();
 
       const newStatus: Record<FileType, string> = { ...status };
