@@ -18,7 +18,7 @@ const ContactPage = () => {
     <div className="min-h-screen bg-[linear-gradient(180deg,_#f8fafc_0%,_#eef4ff_48%,_#f8fafc_100%)]">
       <Navbar />
       <div className="relative overflow-hidden">
-        <div className="absolute inset-x-0 top-0 h-64 bg-[radial-gradient(circle_at_top,_rgba(30,64,175,0.14),_transparent_60%)] pointer-events-none" />
+        <div className="absolute inset-x-0 top-0 h-64  pointer-events-none" />
         <div className="max-w-5xl mx-auto px-6 pt-28 pb-20">
           <div className="text-center mb-14">
             <span className="inline-flex items-center rounded-full border border-[#BFDBFE] bg-white/75 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.24em] text-[#1D4ED8] shadow-sm backdrop-blur">
@@ -65,7 +65,7 @@ const ContactPage = () => {
                   <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#EFF6FF] text-[#1D4ED8] transition-colors group-hover:bg-[#DBEAFE]">
                     <item.icon size={28} strokeWidth={1.6} />
                   </div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#94A3B8]">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#2b0f66]">
                     {item.label}
                   </p>
                   {item.href ? (
@@ -73,7 +73,7 @@ const ContactPage = () => {
                       href={item.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="mt-3 inline-flex items-center justify-center gap-1 text-sm font-semibold text-[#0F172A] transition-colors hover:text-[#1D4ED8] break-all"
+                      className="mt-3 inline-flex items-center justify-center gap-0.35 text-sm font-semibold text-[#0F172A] transition-colors hover:text-[#1D4ED8] break-all"
                     >
                       {item.value}
                       <ArrowUpRight size={15} />
