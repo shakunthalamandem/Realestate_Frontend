@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import RealEstateResponses from "./RealEstateResponses";
 import { useTheme } from "./ThemeContext";
 import { Block } from "./Realestate_components/Utils/RComponentsUtils";
+import { ArrowLeft } from "lucide-react";
 
 const createEmptyBlocks = (): Record<FileType, Block[]> => ({
   memorandum: [],
@@ -74,7 +75,7 @@ const RealEstateUploader: React.FC<RealEstateUploaderProps> = ({ showBackButton 
         : result.data?.data ?? [];
       setDeals(payload);
     } catch (error) {
-      console.error(error);
+      console.error("fetchDeals", error);
       setDealsError("Could not load properties.");
     } finally {
       setDealsLoading(false);
@@ -135,7 +136,10 @@ const RealEstateUploader: React.FC<RealEstateUploaderProps> = ({ showBackButton 
     }
 
     const hasSelectedFile = (Object.keys(files) as FileType[]).some((key) => !!files[key]);
-    if (!hasSelectedFile) return;
+    if (!hasSelectedFile) {
+      setFormError("Select at least one document to upload.");
+      return;
+    }
 
     setFormError("");
     const formData = new FormData();
@@ -171,7 +175,7 @@ const RealEstateUploader: React.FC<RealEstateUploaderProps> = ({ showBackButton 
       });
       setStatus(newStatus);
     } catch (error) {
-      console.error(error);
+      console.error("upload error", error);
       const failedStatus: Record<FileType, string> = { ...status };
       (Object.keys(files) as FileType[]).forEach((key) => {
         if (files[key]) failedStatus[key] = "Upload failed";
@@ -203,7 +207,7 @@ const RealEstateUploader: React.FC<RealEstateUploaderProps> = ({ showBackButton 
         embedded
         showBackButton={false}
       />,
-      selectedDeal.property_name ?? "Property Intelligence Library"
+      { showHeader: false }
     );
   }
 
@@ -215,7 +219,7 @@ const RealEstateUploader: React.FC<RealEstateUploaderProps> = ({ showBackButton 
         embedded
         showBackButton={false}
       />,
-      propertyName || "Property Intelligence Library"
+      { showHeader: false }
     );
   }
 
@@ -319,7 +323,15 @@ const RealEstateUploader: React.FC<RealEstateUploaderProps> = ({ showBackButton 
       >
         {renderGlobalBackButton()}
         <div className="w-full max-w-2xl">
-          <div className="space-y-4 rounded-3xl border border-white/10 bg-gradient-to-b from-[#0e182d] to-[#0d1d29] p-8 shadow-[0_25px_60px_rgba(5,7,18,0.9)] text-white">
+          <div className="relative space-y-4 rounded-3xl border border-white/10 bg-gradient-to-b from-[#0e182d] to-[#0d1d29] p-8 pt-10 shadow-[0_25px_60px_rgba(5,7,18,0.9)] text-white">
+            <button
+              type="button"
+              aria-label="Cancel and return to property list"
+              onClick={handleReturnToLibrary}
+              className="absolute right-4 top-4 rounded-full bg-white/10 p-2 text-lg font-semibold text-white transition hover:bg-white/20"
+            >
+              X
+            </button>
             <div className="flex flex-col gap-3">
               <p className="text-sm uppercase tracking-[0.4em] text-blue-300">Upload</p>
               <h2 className="text-3xl font-bold">Upload Property Documents</h2>
@@ -327,7 +339,7 @@ const RealEstateUploader: React.FC<RealEstateUploaderProps> = ({ showBackButton 
                 Upload the Offering Memorandum, T12 financials, and Rent Roll. Our AI will analyze the documents and generate underwriting insights.
               </p>
               <button
-                onClick={() => setShowUploader(false)}
+                onClick={handleReturnToLibrary}
                 className="text-sm font-medium text-blue-300 hover:text-blue-100"
               >
                 Back to property list
@@ -398,36 +410,59 @@ const RealEstateUploader: React.FC<RealEstateUploaderProps> = ({ showBackButton 
     );
   }
 
-  function renderResponsesShell(content: React.ReactNode, heading?: string) {
+  type ResponseShellOptions = {
+    heading?: string;
+    showHeader?: boolean;
+  };
+
+  function renderResponsesShell(content: React.ReactNode, options: ResponseShellOptions = {}) {
+    const showHeader = options.showHeader ?? true;
+
     return (
       <div className={`min-h-screen w-full ${theme === "dark" ? "bg-gray-950 text-white" : "bg-gray-100 text-gray-900"}`}>
         {renderGlobalBackButton()}
         <div className="mx-auto w-full max-w-6xl px-4 py-12">
-          <div className="flex flex-col gap-4 lg:items-center lg:flex-row lg:justify-between">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-blue-400">Deal Lens</p>
-              <h1 className="mt-1 text-3xl font-bold">{heading ?? "Property Intelligence Library"}</h1>
-              <p className={`mt-2 text-sm ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>
-                Click a property to preview its stored memorandum, T12, and rent roll responses.
-              </p>
+          <div className=" rounded-3xl border border-white/10 bg-gradient-to-b from-[#0e182d] to-[#0d1d29] p-6 shadow-[0_25px_60px_rgba(5,7,18,0.85)] relative">
+
+            {!showHeader && (
+              <div className="absolute left-4 top-4">
+                <button
+                  onClick={handleReturnToLibrary}
+                  className="rounded-full border border-white/30 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white transition hover:bg-white/20"
+                >
+                  <ArrowLeft>back</ArrowLeft>
+                </button>
+              </div>
+            )}
+            {showHeader && (
+              <div className="flex flex-col gap-4 lg:items-center lg:flex-row lg:justify-between">
+                <div>
+                  <p className="text-sm font-semibold uppercase tracking-[0.3em] text-blue-400">Deal Lens</p>
+                  <h1 className="mt-1 text-3xl font-bold">{options.heading ?? "Property Intelligence Library"}</h1>
+                  <p className={`mt-2 text-sm ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>
+                    Click a property to preview its stored memorandum, T12, and rent roll responses.
+                  </p>
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={handleReturnToLibrary}
+                    className="rounded-full border border-white/30 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white transition hover:bg-white/20"
+                  >
+                    Back to list
+                  </button>
+                  <button
+                    onClick={handleStartAddProperty}
+                    className="rounded-full bg-blue-500 px-5 py-2 text-xs font-semibold uppercase tracking-wide text-white shadow-lg transition hover:bg-blue-600"
+                  >
+                    + Add Property
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <div className={showHeader ? "mt-10" : "pt-10"}>
+              {content}
             </div>
-            <div className="flex gap-3">
-              <button
-                onClick={handleReturnToLibrary}
-                className="rounded-full border border-white/30 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white transition hover:bg-white/20"
-              >
-                Back to list
-              </button>
-              <button
-                onClick={handleStartAddProperty}
-                className="rounded-full bg-blue-500 px-5 py-2 text-xs font-semibold uppercase tracking-wide text-white shadow-lg transition hover:bg-blue-600"
-              >
-                + Add Property
-              </button>
-            </div>
-          </div>
-          <div className="mt-8 rounded-3xl border border-white/10 bg-gradient-to-b from-[#0e182d] to-[#0d1d29] p-6 shadow-[0_25px_60px_rgba(5,7,18,0.85)]">
-            {content}
           </div>
         </div>
       </div>
