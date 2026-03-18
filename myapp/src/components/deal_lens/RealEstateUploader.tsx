@@ -386,7 +386,7 @@ const RealEstateUploader: React.FC<RealEstateUploaderProps> = ({ showBackButton 
             </div>
 
             <div>
-              <label className="text-xs font-semibold uppercase tracking-[0.5em] text-blue-200">
+              <label className="text-m font-semibold text-white">
                 Property Name
               </label>
               <input
