@@ -91,15 +91,19 @@ const RealEstateUploader: React.FC<RealEstateUploaderProps> = ({ showBackButton 
     fetchDeals();
   }, [fetchDeals]);
 
-  const resetForm = () => {
-    setFiles({ memorandum: null, t12: null, rent_roll: null });
-    setStatus({ memorandum: "", t12: "", rent_roll: "" });
-    setPropertyName("");
-    setFormError("");
-    setProgressMessage("");
+  const clearUploadInputs = () => {
+    setFiles(createEmptyFiles());
     Object.values(inputRefs).forEach((ref) => {
       if (ref.current) ref.current.value = "";
     });
+  };
+
+  const resetForm = () => {
+    clearUploadInputs();
+    setStatus(createEmptyStatus());
+    setPropertyName("");
+    setFormError("");
+    setProgressMessage("");
   };
 
   const handleReturnToLibrary = () => {
@@ -172,9 +176,6 @@ const RealEstateUploader: React.FC<RealEstateUploaderProps> = ({ showBackButton 
       };
 
       setResponseBlocks(newResponses);
-      if (res.status === 200) {
-        setShowUploader(false);
-      }
       await fetchDeals();
 
       const newStatus: Record<FileType, string> = { ...status };
@@ -182,6 +183,11 @@ const RealEstateUploader: React.FC<RealEstateUploaderProps> = ({ showBackButton 
         if (files[key]) newStatus[key] = "Uploaded";
       });
       setStatus(newStatus);
+
+      if (res.status === 200) {
+        setShowUploader(false);
+        clearUploadInputs();
+      }
     } catch (error) {
       console.error("upload error", error);
       const failedStatus: Record<FileType, string> = { ...status };
@@ -207,26 +213,6 @@ const RealEstateUploader: React.FC<RealEstateUploaderProps> = ({ showBackButton 
     Boolean(
       responseBlocks.memorandum.length || responseBlocks.t12.length || responseBlocks.rent_roll.length
     );
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const warningMessage =
-      "please wait Until the Results are shown or click 'Cancel' to return to the property list.";
-
-    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-      if (loading || (hasPendingFiles && !hasUploadResponses)) {
-        event.preventDefault();
-        event.returnValue = warningMessage;
-        return warningMessage;
-      }
-      return undefined;
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [hasPendingFiles, hasUploadResponses, loading]);
-
 
   if (selectedDeal) {
     const dealResponses: Record<FileType, Block[]> = {
