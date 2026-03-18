@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import RealEstateResponses from "./RealEstateResponses";
@@ -191,8 +191,35 @@ const RealEstateUploader: React.FC<RealEstateUploaderProps> = ({ showBackButton 
     }
   };
 
+  const hasPendingFiles = useMemo(
+    () => Object.values(files).some((file) => Boolean(file)),
+    [files]
+  );
+
   const hasUploadResponses =
-    responseBlocks.memorandum.length || responseBlocks.t12.length || responseBlocks.rent_roll.length;
+    Boolean(
+      responseBlocks.memorandum.length || responseBlocks.t12.length || responseBlocks.rent_roll.length
+    );
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const warningMessage =
+      "please wait Until the Results are shown or click 'Cancel' to return to the property list.";
+
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (loading || (hasPendingFiles && !hasUploadResponses)) {
+        event.preventDefault();
+        event.returnValue = warningMessage;
+        return warningMessage;
+      }
+      return undefined;
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [hasPendingFiles, hasUploadResponses, loading]);
+
 
   if (selectedDeal) {
     const dealResponses: Record<FileType, Block[]> = {
@@ -352,7 +379,7 @@ const RealEstateUploader: React.FC<RealEstateUploaderProps> = ({ showBackButton 
   }
 
   function renderUploadView() {
-    const hasFiles = (Object.keys(files) as FileType[]).some((key) => !!files[key]);
+    const hasFiles = hasPendingFiles;
 
     return (
       <div
