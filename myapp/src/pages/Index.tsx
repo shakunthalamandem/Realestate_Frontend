@@ -28,12 +28,25 @@ const Index = () => {
   const location = useLocation();
 
   useEffect(() => {
+    if (location.hash) {
+      const id = location.hash.replace("#", "");
+      const element = document.getElementById(id);
+
+      if (element) {
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: "smooth" });
+        }, 100);
+        return;
+      }
+    }
+
     const scrollTarget = location.state?.scrollTo;
     if (typeof scrollTarget === "string") {
-      // allow hash-prefixed values
-      scrollToSection(scrollTarget);
+      setTimeout(() => {
+        scrollToSection(scrollTarget);
+      }, 100);
     }
-  }, [location.state]);
+  }, [location]);
 
   return (
     <div className="min-h-screen">

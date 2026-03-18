@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const footerLinks = {
   Product: [
     "Portfolio Intelligence",
@@ -7,6 +9,17 @@ const footerLinks = {
   ],
   Company: ["About Us", "Contact"],
   Legal: ["Privacy Policy", "Terms of Use"],
+};
+
+const footerRoutes: Record<string, { to: string; state?: { scrollTo: string } }> = {
+  "Portfolio Intelligence": { to: "/portfolio_intelligence" },
+  "AI Rent Intelligence": { to: "/ai_rent_intelligence" },
+  "Market Radar Signal": { to: "/market_radar" },
+  "Deal Lens": { to: "/deal_lens" },
+  "About Us": { to: "/", state: { scrollTo: "#about" } },
+  Contact: { to: "/contact" },
+  "Privacy Policy": { to: "/privacy-policy" },
+  "Terms of Use": { to: "/terms-of-use" },
 };
 
 const Footer = () => {
@@ -36,12 +49,17 @@ const Footer = () => {
               <ul className="space-y-2.5">
                 {links.map((link) => (
                   <li key={link}>
-                    <a
-                      href="#"
-                      className="text-sm text-background/50 hover:text-background transition-colors"
-                    >
-                      {link}
-                    </a>
+                    {footerRoutes[link] ? (
+                      <Link
+                        to={footerRoutes[link].to}
+                        state={footerRoutes[link].state}
+                        className="text-sm text-background/50 hover:text-background transition-colors"
+                      >
+                        {link}
+                      </Link>
+                    ) : (
+                      <span className="text-sm text-background/50">{link}</span>
+                    )}
                   </li>
                 ))}
               </ul>

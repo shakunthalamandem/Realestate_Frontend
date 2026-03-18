@@ -14,6 +14,9 @@ import RealEstateUploader from "./components/deal_lens/RealEstateUploader";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Logout from "./pages/Logout";
+import Contact from "./pages/Contact";
+import Privacy from "./pages/Privacy";
+import TermsOfUse from "./pages/TermsOfUse";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { autoLogin } from "./lib/auth";
 
@@ -35,6 +38,9 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/logout" element={<Logout />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/privacy-policy" element={<Privacy />} />
+          <Route path="/terms-of-use" element={<TermsOfUse />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
           <Route

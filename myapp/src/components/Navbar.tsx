@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { LogOut, Menu, X } from "lucide-react";
 import AccessBlockedModal from "./AccessBlockedModal";
@@ -29,12 +29,12 @@ import {
 } from "@/components/ui/alert-dialog";
 
 const navLinks = [
-  { label: "Platform", href: "#platform" },
-  { label: "Solutions", href: "#solutions" },
-  { label: "Use Cases", href: "#use-cases" },
-  { label: "AI Intelligence", href: "#ai" },
-  { label: "Why Vertex", href: "#why" },
-  { label: "About Us", href: "#about" },
+  { label: "Platform", id: "platform" },
+  { label: "Solutions", id: "solutions" },
+  { label: "Use Cases", id: "use-cases" },
+  { label: "AI Intelligence", id: "ai" },
+  { label: "Why Vertex", id: "why" },
+  { label: "About Us", id: "about" },
 ];
 
 const profileAvatarThemes = [
@@ -56,6 +56,7 @@ const getAvatarTheme = (value: string) => {
 };
 
 const Navbar = () => {
+  const location = useLocation();
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -111,6 +112,19 @@ const Navbar = () => {
   const profileInitial = profileName.trim().charAt(0).toUpperCase() || "U";
   const profileTheme = getAvatarTheme(profileName.trim().toLowerCase());
 
+  const handleSectionNavigation = (sectionId: string) => {
+    const target = document.getElementById(sectionId);
+
+    if (location.pathname === "/" && target) {
+      target.scrollIntoView({ behavior: "smooth" });
+      setMobileOpen(false);
+      return;
+    }
+
+    navigate("/", { state: { scrollTo: `#${sectionId}` } });
+    setMobileOpen(false);
+  };
+
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -120,29 +134,35 @@ const Navbar = () => {
       }`}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 h-16 lg:h-18">
-        <a href="#" className="flex items-center gap-2.5">
+        <button
+          type="button"
+          onClick={() => {
+            if (location.pathname === "/") {
+              window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+            } else {
+              navigate("/");
+            }
+            setMobileOpen(false);
+          }}
+          className="flex items-center gap-2.5"
+        >
           <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
             <span className="text-primary-foreground font-display font-bold text-sm">V</span>
           </div>
           <span className="font-display font-bold text-lg text-foreground">Vertex AI</span>
-        </a>
+        </button>
 
         {/* Desktop Nav */}
         <div className="hidden lg:flex items-center gap-8">
           {navLinks.map((link) => (
-            <a
+            <button
+              type="button"
               key={link.label}
-              href={link.href}
+              onClick={() => handleSectionNavigation(link.id)}
               className="text-m font-medium text-[#2b0f66] hover:text-foreground transition-colors relative after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[2px] after:bg-accent after:transition-all hover:after:w-full"
-              onClick={(event) => {
-                if (!loggedIn) {
-                  event.preventDefault();
-                  setIsModalOpen(true);
-                }
-              }}
             >
               {link.label}
-            </a>
+            </button>
           ))}
         </div>
 
@@ -199,20 +219,14 @@ const Navbar = () => {
       {mobileOpen && (
         <div className="lg:hidden bg-card border-b border-border px-6 pb-6 space-y-4">
           {navLinks.map((link) => (
-            <a
+            <button
+              type="button"
               key={link.label}
-              href={link.href}
-              className="block text-sm font-medium text-muted-foreground hover:text-foreground"
-              onClick={(event) => {
-                if (!loggedIn) {
-                  event.preventDefault();
-                  setIsModalOpen(true);
-                }
-                setMobileOpen(false);
-              }}
+              onClick={() => handleSectionNavigation(link.id)}
+              className="block text-left text-sm font-medium text-muted-foreground hover:text-foreground"
             >
               {link.label}
-            </a>
+            </button>
           ))}
           <Button
             variant="hero"
