@@ -3,6 +3,7 @@ import { Brain, Radar, Search } from "lucide-react";
 import portfolioDashboard from "../assets/portfoli_intelligence.png";
 import marketRadar from "../assets/market_signal_radar.png";
 import dealLens from "../assets/deal_lens.png";
+import airent from "../assets/ai_rent_intelligence.png";
 import AccessBlockedModal from "./AccessBlockedModal";
 import { useLoginGuard } from "@/hooks/use-login-guard";
 
@@ -25,10 +26,29 @@ const features = [
     alt: "Portfolio Intelligence Dashboard",
   },
   {
+    icon: Brain,
+    emoji: "💸",
+    title: "AI Rent Intelligence",
+    subheading:
+      "We analyze your rent roll to surface pricing opportunities and revenue exposure across unit types using AI-driven rent intelligence.",
+    subtitle:
+      "Identify rent growth opportunities and protect revenue by understanding where pricing is below market and where leasing activity is shifting.",
+    points: [
+      "Unit-type level rent analysis",
+      "Mark-to-market opportunity detection",
+      "Revenue at risk identification",
+      "In-place vs market rent benchmarking",
+      "Renewal vs new lease activity tracking",
+    ],
+    image: airent,
+    alt: "AI Rent Intelligence Dashboard",
+  },
+  {
     icon: Radar,
     emoji: "📡",
     title: "Market Signal Radar ",
-    subheading: "We don’t guess the future.We surface real-time competitive pressure around your asset using AI-driven market intelligence.",
+    subheading:
+      "We don’t guess the future.We surface real-time competitive pressure around your asset using AI-driven market intelligence.",
     subtitle: "Make pricing and asset decisions with market clarity — not assumptions.",
     points: [
       "Demand and absorption trend tracking",
@@ -43,7 +63,8 @@ const features = [
     icon: Search,
     emoji: "🔎",
     title: "Deal Lens",
-subheading:"AI-powered underwriting that turns financials into insight.Analyze T12s, Rent Rolls, and OMs in minutes — not days.",
+    subheading:
+      "AI-powered underwriting that turns financials into insight.Analyze T12s, Rent Rolls, and OMs in minutes — not days.",
     subtitle: "Underwrite smarter. Price with precision. Deploy capital with confidence.",
     points: [
       "Extracts and structures data from T12, Rent Roll, and OM",
@@ -73,6 +94,7 @@ const PlatformFeatures = () => {
             <div className="flex flex-wrap items-center justify-center gap-3 mt-6">
               {[
                 { label: "Portfolio Intelligence", route: "/portfolio_intelligence" },
+                { label: "AI Rent Intelligence", route: "/ai_rent_intelligence" },
                 { label: "Market Signal Radar ", route: "/market_radar" },
                 { label: "Deal Underwriting Lens", route: "/deal_lens" },
               ].map((tab) => (
@@ -97,14 +119,12 @@ const PlatformFeatures = () => {
                 <div
                   className={`flex flex-col ${i % 2 === 1 ? "lg:flex-row-reverse" : "lg:flex-row"} items-center gap-12 lg:gap-16`}
                 >
-                  {/* Text */}
                   <div className="flex-1 space-y-6">
                     <div className="inline-flex items-center gap-3">
                       <span className="text-3xl">{feature.emoji}</span>
                       <h3 className="font-display font-bold text-2xl md:text-3xl text-blue-700">
                         {feature.title}
                       </h3>
-
                     </div>
                     <p className="text-lg text-foreground leading-relaxed">
                       {feature.subheading}
@@ -122,7 +142,6 @@ const PlatformFeatures = () => {
                     </p>
                   </div>
 
-                  {/* Image */}
                   <div
                     className={`flex-1 w-full rounded-xl overflow-hidden float-shadow border border-border ${isMarketRadar ? "cursor-pointer" : ""}`}
                     onClick={() => {
@@ -136,10 +155,10 @@ const PlatformFeatures = () => {
                     onKeyDown={
                       isMarketRadar
                         ? (event) => {
-                          if (event.key === "Enter" || event.key === " ") {
-                            guardNavigation("/market_radar");
+                            if (event.key === "Enter" || event.key === " ") {
+                              guardNavigation("/market_radar");
+                            }
                           }
-                        }
                         : undefined
                     }
                   >

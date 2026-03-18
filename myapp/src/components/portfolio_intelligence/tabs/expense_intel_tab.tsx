@@ -33,25 +33,31 @@ const ExpenseIntelTab: React.FC<{ data?: ExpenseDashboard }> = ({ data }) => {
   /* -------------------- Doughnut Data -------------------- */
 
   const compositionData = {
-    labels: categories.map((cat) => cat.name ?? "Category"),
-    datasets: [
-      {
-        data: categories.map(
-          (cat) => (cat.compositionPercent ?? 0) * 100
-        ),
-        backgroundColor: [
-          "#3b82f6",
-          "#6366f1",
-          "#0ea5e9",
-          "#14b8a6",
-          "#f97316",
-          "#ef4444",
-        ],
-        borderWidth: 2,
-      },
-    ],
-  };
-
+  labels: categories.map((cat) => cat.name ?? "Category"),
+  datasets: [
+    {
+      data: categories.map(
+        (cat) => (cat.compositionPercent ?? 0) * 100
+      ),
+      backgroundColor: [
+        "#FF6B6B", // red
+        "#FFD93D", // yellow
+        "#6C5CE7", // purple
+        "#00B894", // green (only one green)
+        "#FDCB6E", // light orange
+        "#E84393", // pink
+        "#2D3436", // dark gray
+        "#0984E3", // strong blue (only one blue)
+        "#D35400", // burnt orange
+        "#7F8C8D", // gray
+        "#8E44AD", // deep violet
+      ],
+      // borderColor: "#ffffff",
+      borderWidth: 2,
+    //   hoverOffset: 8,
+     },
+  ],
+};
 const compositionOptions = {
   responsive: true,
   maintainAspectRatio: false,
@@ -98,8 +104,8 @@ const compositionOptions = {
         barThickness: 28,
         backgroundColor: categories.map((cat) =>
           (cat.yoyGrowthPercent ?? 0) >= 0
-            ? "#fbbf24"
-            : "#ef4444"
+            ? "#ef4444"
+            : "#15bd23"
         ),
       },
     ],

@@ -28,6 +28,13 @@ const tabs = [
 ] as const;
 type DemoTab = (typeof tabs)[number];
 
+const routeToTab: Record<string, DemoTab> = {
+  "/portfolio_intelligence": "Portfolio Analytics",
+  "/ai_rent_intelligence": "AI Rent Intelligence",
+  "/market_radar": "Market Signal Radar",
+  "/deal_lens": "Deal Underwriting Lens",
+};
+
 const PfDemo: React.FC = () => {
   const [activeTab, setActiveTab] = useState<DemoTab>("Portfolio Analytics");
   const [selectedProperty, setSelectedProperty] = useState<
@@ -44,8 +51,14 @@ const PfDemo: React.FC = () => {
     const requestedTab = location.state?.activeTab as DemoTab | undefined;
     if (requestedTab && tabs.includes(requestedTab)) {
       setActiveTab(requestedTab);
+      return;
     }
-  }, [location.state]);
+
+    const tabFromRoute = routeToTab[location.pathname];
+    if (tabFromRoute) {
+      setActiveTab(tabFromRoute);
+    }
+  }, [location.pathname, location.state]);
 
   useEffect(() => {
     mainScrollRef.current?.scrollTo({ top: 0, left: 0, behavior: "auto" });
@@ -170,7 +183,7 @@ const PfDemo: React.FC = () => {
                 }`}
             >
               <Building2 className="h-4 w-4" />
-              <span className="flex-1">Properties</span>
+              <span className="flex-1">Property Intelligence</span>
             </button>
 
             <button
@@ -208,6 +221,7 @@ const PfDemo: React.FC = () => {
               <FileText className="h-4 w-4" />
               <span className="flex-1">Deal Underwriting Lens</span>
             </button>
+            
           </nav>
         </aside>
 
