@@ -58,6 +58,7 @@ const RealEstateUploader: React.FC<RealEstateUploaderProps> = ({ showBackButton 
 
   const [selectedDeal, setSelectedDeal] = useState<DealEntry | null>(null);
   const [showUploader, setShowUploader] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const inputRefs: Record<FileType, React.RefObject<HTMLInputElement>> = {
     memorandum: useRef<HTMLInputElement>(null),
@@ -230,82 +231,120 @@ const RealEstateUploader: React.FC<RealEstateUploaderProps> = ({ showBackButton 
   return renderDealList();
 
   function renderDealList() {
-    const hasDeals = deals.length > 0;
+    const filteredDeals = deals.filter((deal) =>
+      (deal.property_name ?? "").toLowerCase().includes(searchTerm.trim().toLowerCase())
+    );
+
+    const statusFor = (hasValue: boolean) => (hasValue ? "ready" : "pending");
+
+    const badgeClasses: Record<string, string> = {
+      ready: "bg-emerald-500/20 text-emerald-300 border border-emerald-400",
+      pending: "bg-amber-500/15 text-amber-200 border border-amber-400",
+      error: "bg-red-500/10 text-red-300 border border-red-400",
+    };
+
+    const statusLabel = (type: string) => {
+      switch (type) {
+        case "ready":
+          return "Ready";
+        case "pending":
+          return "Pending";
+        default:
+          return "Error";
+      }
+    };
+
     return (
-      <div
-        className={`min-h-screen w-full ${
-          theme === "dark" ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
-        }`}
-      >
+      <div className="min-h-screen w-full bg-[#05050d] text-white">
         {renderGlobalBackButton()}
-        <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-12 lg:px-0">
-          <div className="flex flex-col gap-4 lg:items-center lg:flex-row lg:justify-between">
+        <div className="mx-auto w-full max-w-6xl px-4 py-12 lg:px-0 lg:py-16">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-blue-400">Deal Lens</p>
-              <h1 className="mt-1 text-3xl font-bold">Property Intelligence Library</h1>
-              <p className={`mt-2 text-sm ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>
+              <p className="text-xs font-semibold uppercase tracking-[0.4em] text-white/70">Deal Lens</p>
+              <h1 className="mt-2 text-4xl font-semibold text-white">Property Intelligence Library</h1>
+              <p className="mt-2 text-sm text-white/70">
                 Click a property to preview its stored memorandum, T12, and rent roll responses.
               </p>
             </div>
             <button
               onClick={handleStartAddProperty}
-              className="rounded-full border border-blue-500 bg-blue-500/90 px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white shadow-lg transition hover:bg-blue-600"
+              className="rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 px-6 py-3 text-sm font-semibold uppercase tracking-wider text-white shadow-[0_10px_40px_rgba(59,7,145,0.5)] transition hover:opacity-90"
             >
               + Add Property
             </button>
           </div>
 
-          <div
-            className={`min-h-[260px] rounded-3xl border px-6 py-8 shadow-lg transition-colors ${
-              theme === "dark"
-                ? "bg-gray-950 border-gray-800 shadow-black/20"
-                : "bg-white border-gray-200 shadow-gray-300"
-            }`}
-          >
-            {dealsLoading ? (
-              <p className="text-center text-sm text-gray-400">Refreshing deals...</p>
-            ) : dealsError ? (
-              <p className="text-center text-sm text-red-400">{dealsError}</p>
-            ) : !hasDeals ? (
-              <div className="rounded-2xl border-dashed border-2 border-blue-500/40 bg-blue-500/10 p-6 text-center text-sm text-blue-100">
-                No properties available yet. Add a property to start uploading documents.
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {deals.map((deal) => (
-                  <button
-                    key={`${deal.id}-${deal.property_name}`}
-                    onClick={() => setSelectedDeal(deal)}
-                    className={`w-full rounded-2xl border px-5 py-4 text-left transition hover:border-blue-500/70 ${
-                      theme === "dark" ? "border-gray-800 bg-gray-900" : "border-gray-200 bg-white"
-                    }`}
-                  >
-                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                      <div>
-                        <p className="text-lg font-semibold">
-                          {deal.property_name ?? `Property ${deal.id}`}
-                        </p>
-                        <p className="text-xs uppercase tracking-wider text-gray-400">
-                          Created {formatDate(deal.created_at)}
-                        </p>
+          <div className="mt-8 flex flex-col gap-4">
+            <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/60">
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search properties..."
+                className="w-full bg-transparent text-white placeholder:text-white/40 focus:outline-none"
+              />
+            </div>
+
+            <div className="space-y-4 rounded-[30px] border border-white/5 bg-[#05050d] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.7)]">
+              {dealsLoading ? (
+                <p className="text-center text-sm text-white/60">Refreshing deals...</p>
+              ) : dealsError ? (
+                <p className="text-center text-sm text-red-400">{dealsError}</p>
+              ) : !filteredDeals.length ? (
+                <div className="rounded-2xl border border-dashed border-white/20 bg-white/5 p-6 text-center text-sm text-white/70">
+                  No properties match that search term yet.
+                </div>
+              ) : (
+                filteredDeals.map((deal) => {
+                  const memoStatus = statusFor(Boolean(deal.memorandum?.length));
+                  const t12Status = statusFor(Boolean(deal.t12?.length));
+                  const rentRollStatus = statusFor(Boolean(deal.rent_roll?.length));
+                  return (
+                    <button
+                      key={`${deal.id}-${deal.property_name}`}
+                      onClick={() => setSelectedDeal(deal)}
+                      className="group relative w-full rounded-[28px] border border-white/10 bg-[#08090f] pr-6 pl-10 py-5 text-left transition hover:border-white/40"
+                    >
+                      <span className="pointer-events-none absolute inset-y-4 left-5 w-[4px] rounded-full bg-gradient-to-b from-purple-400 via-indigo-500 to-blue-400 opacity-0 transition group-hover:opacity-100" />
+                      <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                          <p className="text-2xl font-semibold text-white">{deal.property_name ?? `Property ${deal.id}`}</p>
+                          <p className="text-sm text-white/60">
+                            Created {formatDate(deal.created_at)}
+                          </p>
+                        </div>
+                        <span className="text-md font-semibold text-indigo-300 opacity-0 transition group-hover:opacity-100">
+                          View insights →
+                        </span>
                       </div>
-                      <span className="text-xs font-semibold text-blue-300">View insights</span>
-                    </div>
-                    <div className="mt-3 flex flex-wrap gap-3 text-xs text-gray-400">
-                      <span>
-                        Memorandum: <strong className="text-white">{deal.memorandum?.length ? "Ready" : "Missing"}</strong>
-                      </span>
-                      <span>
-                        T12: <strong className="text-white">{deal.t12?.length ? "Ready" : "Missing"}</strong>
-                      </span>
-                      <span>
-                        Rent Roll: <strong className="text-white">{deal.rent_roll?.length ? "Ready" : "Missing"}</strong>
-                      </span>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            )}
+                      <div className="mt-4 flex flex-wrap gap-4 text-xs text-white/70">
+                        <div className="flex items-center gap-3">
+                          <span className="text-[11px] font-semibold uppercase  text-white/90">Memorandum</span>
+                          <span className={`rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] ${badgeClasses[memoStatus]}`}>
+                            {statusLabel(memoStatus)}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="text-[11px] font-semibold uppercase  text-white/90">T12</span>
+                          <span className={`rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] ${badgeClasses[t12Status]}`}>
+                            {statusLabel(t12Status)}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="text-[11px] font-semibold uppercase  text-white/90">Rent Roll</span>
+                          <span className={`rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] ${badgeClasses[rentRollStatus]}`}>
+                            {statusLabel(rentRollStatus)}
+                          </span>
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })
+              )}
+            </div>
+            {/* <p className="pt-2 text-xs uppercase tracking-[0.4em] text-white/50">
+              {filteredDeals.length} Properties
+            </p> */}
           </div>
         </div>
       </div>
@@ -487,10 +526,13 @@ const RealEstateUploader: React.FC<RealEstateUploaderProps> = ({ showBackButton 
   }
 
   function formatDate(value?: string) {
-    if (!value) return "Unknown";
+    if (!value) return "UNKNOWN";
     const parsed = new Date(value);
-    if (Number.isNaN(parsed.valueOf())) return "Unknown";
-    return parsed.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+    if (Number.isNaN(parsed.valueOf())) return "UNKNOWN";
+    const day = parsed.getDate().toString().padStart(2, "0");
+    const month = parsed.toLocaleString("en-US", { month: "short" }).toUpperCase();
+    const year = parsed.getFullYear();
+    return `${day} ${month} ${year}`;
   }
 
   function renderFileCard(label: string, type: FileType) {
