@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Toaster } from "./components/ui/toaster";
 import { Toaster as Sonner } from "./components/ui/sonner";
 import { TooltipProvider } from "./components/ui/tooltip";
@@ -13,12 +14,20 @@ import RealEstateUploader from "./components/deal_lens/RealEstateUploader";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Logout from "./pages/Logout";
+import Contact from "./pages/Contact";
+import Privacy from "./pages/Privacy";
+import TermsOfUse from "./pages/TermsOfUse";
 import ProtectedRoute from "./components/ProtectedRoute";
-
+import { autoLogin } from "./lib/auth";
 
 const queryClient = new QueryClient();
 
-const App = () => (
+const App = () => {
+  useEffect(() => {
+    console.log("App loaded - running autoLogin");
+    autoLogin();
+  }, []);
+  return (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
@@ -29,10 +38,21 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/logout" element={<Logout />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/privacy-policy" element={<Privacy />} />
+          <Route path="/terms-of-use" element={<TermsOfUse />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
           <Route
             path="/portfolio_intelligence"
+            element={
+              <ProtectedRoute>
+                <PfDemo />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/ai_rent_intelligence"
             element={
               <ProtectedRoute>
                 <PfDemo />
@@ -75,6 +95,7 @@ const App = () => (
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
-);
+  );
+};
 
 export default App;
