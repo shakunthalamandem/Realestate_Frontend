@@ -1,19 +1,20 @@
 import { ScrollReveal } from "./ScrollReveal";
 
-const WhyChooseVertex = () => {
+const WhyChooseAsset72 = () => {
   return (
     <section className="section-padding bg-card" id="solutions">
       <div className="max-w-7xl mx-auto">
         <ScrollReveal>
           <div className="max-w-3xl mx-auto text-center mb-16">
             <p className="text-lg font-semibold text-indigo-500 uppercase tracking-widest mb-3">
-              Why Choose vertex AI?            </p>
+              Why Choose Asset72?
+            </p>
             <h2 className="font-display font-extrabold text-3xl md:text-4xl lg:text-5xl text-foreground mb-6 leading-tight">
               Stop Explaining Last Month —{" "}
               <span className="gradient-text">Start Controlling Next Quarter</span>
             </h2>
             <p className="text-lg text-muted-foreground leading-relaxed">
-   From lease expirations to revenue lift projections, Vertex turns raw property data into forward-looking decisions.
+              From lease expirations to revenue lift projections, Asset72 turns raw property data into forward-looking decisions.
             </p>
           </div>
         </ScrollReveal>
@@ -38,4 +39,4 @@ const WhyChooseVertex = () => {
   );
 };
 
-export default WhyChooseVertex;
+export default WhyChooseAsset72;

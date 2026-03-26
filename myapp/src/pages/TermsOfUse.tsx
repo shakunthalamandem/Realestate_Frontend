@@ -30,10 +30,10 @@ const TermsOfUsePage = () => {
                   Terms of Use
                 </span>
                 <h1 className="mt-5 text-4xl font-semibold tracking-tight text-[#0F172A] md:text-5xl">
-                  Clear terms for using Vertex AI
+                  Clear terms for using Asset72
                 </h1>
                 <p className="mt-5 text-lg leading-8 text-[#64748B]">
-                  These Terms of Use govern access to and use of Vertex AI, a platform developed by
+                  These Terms of Use govern access to and use of Asset72, a platform developed by
                   Golden Hills. By accessing or using the platform, you agree to these terms.
                 </p>
               </div>
@@ -68,7 +68,7 @@ const TermsOfUsePage = () => {
             <div className="mt-10">
               <Section title="Use of the Platform">
                 <p>
-                  Vertex AI provides analytical tools and insights to support real estate investment
+                  Asset72 provides analytical tools and insights to support real estate investment
                   analysis. The platform is intended for informational and analytical purposes only.
                 </p>
                 <p>

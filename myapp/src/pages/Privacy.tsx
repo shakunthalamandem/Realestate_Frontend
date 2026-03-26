@@ -33,7 +33,7 @@ const PrivacyPolicyPage = () => {
                   Privacy built into the platform experience
                 </h1>
                 <p className="mt-5 text-lg leading-8 text-[#64748B]">
-                  Vertex AI, developed by Golden Hills Capital India Pvt Ltd, respects your privacy
+                  Asset72, developed by Golden Hills Capital India Pvt Ltd, respects your privacy
                   and is committed to protecting the information you share with us.
                 </p>
               </div>

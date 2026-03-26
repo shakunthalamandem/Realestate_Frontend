@@ -24,14 +24,14 @@ const benefits = [
   },
 ];
 
-const WhyVertex = () => {
+const WhyAsset72 = () => {
   return (
     <section className="section-padding bg-card" id="why">
       <div className="max-w-7xl mx-auto px-6">
         <ScrollReveal>
           <div className="text-center mb-14">
             <p className="text-lg font-semibold text-indigo-500 uppercase tracking-widest mb-3">
-              Why Vertex AI?
+              Why Asset72?
             </p>
             <h2 className="font-display font-extrabold text-3xl md:text-4xl lg:text-5xl text-foreground">
               Forward-Looking. Integrated. Institutional.
@@ -69,4 +69,4 @@ const WhyVertex = () => {
   );
 };
 
-export default WhyVertex;
+export default WhyAsset72;
