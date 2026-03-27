@@ -130,8 +130,8 @@ const TermsOfUsePage = () => {
                 <br />
                 <span className="text-[#0F172A] font-medium">Golden Hills Capital India Pvt Ltd</span>
                 <br />
-                <a href="mailto:contact@ghills.ai" className="text-[#C2410C] hover:underline">
-                  contact@ghills.ai
+                <a href="mailto:asset72@ghills.ai" className="text-[#C2410C] hover:underline">
+                  asset72@ghills.ai
                 </a>
               </p>
             </section>
