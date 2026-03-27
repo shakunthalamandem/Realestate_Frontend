@@ -68,7 +68,7 @@ const HeroSection = () => {
           <div className="rounded-xl overflow-hidden hero-image-shadow border border-border">
             <img
               src={heroDashboard}
-              alt="Vertex Intelligence Dashboard"
+              alt="Asset72 Intelligence Dashboard"
               className="w-full h-auto"
             />
           </div>

@@ -3,7 +3,7 @@ import { Star } from "lucide-react";
 
 const testimonials = [
   {
-    quote: "Vertex gave us visibility into lease risk we didn't know existed. We prevented $2.4M in revenue loss in Q1 alone.",
+    quote: "Asset72 gave us visibility into lease risk we didn't know existed. We prevented $2.4M in revenue loss in Q1 alone.",
     author: "Sarah Chen",
     role: "VP of Asset Management",
     firm: "Meridian Capital Partners",

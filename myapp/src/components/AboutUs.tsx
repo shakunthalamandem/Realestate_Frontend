@@ -42,7 +42,7 @@ export default function AboutPlatform() {
             Built by Golden Hills
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto text-lg leading-relaxed mt-9">
-            Vertex AI is developed by Golden Hills, an analytics and research
+            Asset72 is developed by Golden Hills, an analytics and research
             firm focused on building data-driven decision intelligence platforms.
           </p>
         </div>

@@ -11,8 +11,8 @@ import PlatformExperience from "../components/PlatformExperience";
 import PlatformFeatures from "../components/PlatformFeatures";
 import SocialProof from "../components/SocialProof";
 import UseCases from "../components/UseCases";
-import WhyChooseVertex from "../components/WhyChooseVertex";
-import WhyVertex from "../components/WhyVertex";
+import WhyChooseAsset72 from "../components/WhyChooseAsset72";
+import WhyAsset72 from "../components/WhyAsset72";
 import AboutUs from "@/components/AboutUs";
 
 const scrollToSection = (sectionId: string) => {
@@ -52,13 +52,13 @@ const Index = () => {
     <div className="min-h-screen">
       <Navbar />
       <HeroSection />
-      <WhyChooseVertex />
+      <WhyChooseAsset72 />
       <PlatformFeatures />
       <HowItWorks />
       <UseCases />
       <AILayer />
       <PlatformExperience />
-      <WhyVertex />
+      <WhyAsset72 />
       <AboutUs/>
       {/* <SocialProof /> */}
       <CTASection />

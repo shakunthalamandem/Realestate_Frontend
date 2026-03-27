@@ -86,7 +86,7 @@ const PlatformFeatures = () => {
         <ScrollReveal>
           <div className="text-center mb-16">
             <p className="text-lg font-semibold text-indigo-500 uppercase tracking-widest mb-3">
-              What Vertex Does
+              What Asset72 Does
             </p>
             <h2 className="font-display font-extrabold text-3xl md:text-4xl lg:text-5xl text-foreground mb-4">
               One Unified Intelligence Platform

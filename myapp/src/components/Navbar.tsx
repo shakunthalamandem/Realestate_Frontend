@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { LogOut, Menu, X } from "lucide-react";
 import AccessBlockedModal from "./AccessBlockedModal";
+import BrandLogo from "./BrandLogo";
 import { useLoginGuard } from "@/hooks/use-login-guard";
 import {
   clearUserLogin,
@@ -33,7 +34,7 @@ const navLinks = [
   { label: "Solutions", id: "solutions" },
   { label: "Use Cases", id: "use-cases" },
   { label: "AI Intelligence", id: "ai" },
-  { label: "Why Vertex", id: "why" },
+  { label: "Why Asset72", id: "why" },
   { label: "About Us", id: "about" },
 ];
 
@@ -144,12 +145,9 @@ const Navbar = () => {
             }
             setMobileOpen(false);
           }}
-          className="flex items-center gap-2.5"
+          className="flex items-center"
         >
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-            <span className="text-primary-foreground font-display font-bold text-sm">V</span>
-          </div>
-          <span className="font-display font-bold text-lg text-foreground">Vertex AI</span>
+         <BrandLogo className="translate-x-6" />
         </button>
 
         {/* Desktop Nav */}
@@ -266,7 +264,7 @@ const Navbar = () => {
         <AlertDialogContent className="max-w-[520px]">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-2xl font-semibold text-slate-900">
-              Sign out of Vertex Real Estate?
+              Sign out of Asset72 Real Estate?
             </AlertDialogTitle>
             <AlertDialogDescription className="text-base leading-relaxed text-slate-600">
               You are currently signed in as{" "}

@@ -1,4 +1,6 @@
 import { Link } from "react-router-dom";
+import BrandLogo from "./BrandLogo";
+import asset72FooterLogo from "@/assets/asset72-footer-logo.svg";
 
 const footerLinks = {
   Product: [
@@ -27,20 +29,17 @@ const Footer = () => {
     <footer className="bg-foreground text-background">
       <div className="max-w-7xl mx-auto px-6 py-16">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
-          {/* Brand */}
-          <div>
-            <div className="flex items-center gap-2.5 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-display font-bold text-sm">V</span>
-              </div>
-              <span className="font-display font-bold text-lg">Vertex AI</span>
-            </div>
-            <p className="text-sm text-background/60 leading-relaxed">
-              Intelligence that moves real estate decisions forward.
+          <div className="flex flex-col items-start">
+            <img
+              src={asset72FooterLogo}
+              alt="Asset72"
+              className="-mb-7 h-[9rem] w-auto max-w-[29rem] object-contain"
+            />
+            <p className="mt-0 text-sm text-background/60 leading-relaxed">
+              Analyze in Minutes. Act with Conviction
             </p>
           </div>
 
-          {/* Links */}
           {Object.entries(footerLinks).map(([category, links]) => (
             <div key={category}>
               <h4 className="font-display font-semibold text-sm uppercase tracking-widest mb-4 text-background/80">
@@ -69,7 +68,7 @@ const Footer = () => {
 
         <div className="border-t border-background/10 mt-12 pt-8">
           <p className="text-sm text-background/40 text-center">
-            © 2026 Vertex AI. All rights reserved.
+            Copyright 2026 Asset72. All rights reserved.
           </p>
         </div>
       </div>

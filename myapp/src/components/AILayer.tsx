@@ -30,7 +30,7 @@ const AILayer = () => {
             </h2>
 
             <p className="text-lg text-muted-foreground leading-relaxed">
-Vertex analyzes structured financial data to surface patterns in lease exposure, revenue alignment, and operating efficiency - Insights that manual spreadsheets simply miss            </p>
+Asset72 analyzes structured financial data to surface patterns in lease exposure, revenue alignment, and operating efficiency - Insights that manual spreadsheets simply miss            </p>
           </div>
         </ScrollReveal>
 
