@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 const contactItems = [
-  { icon: Mail, label: "Email", value: "contact@ghills.ai", href: "mailto:contact@ghills.ai" },
+  { icon: Mail, label: "Email", value: "asset72@ghills.ai", href: "mailto:asset72@ghills.ai" },
   { icon: Globe, label: "Website", value: "https://ghills.ai/", href: "https://ghills.ai/" },
   { icon: Building2, label: "Company", value: "Golden Hills Capital India Pvt Ltd", href: "https://ghills.ai/" },
 ];
