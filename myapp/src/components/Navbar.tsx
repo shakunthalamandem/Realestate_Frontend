@@ -158,7 +158,13 @@ const Navbar = () => {
             <button
               type="button"
               key={link.label}
-              onClick={() => handleSectionNavigation(link.id)}
+              onClick={() => {
+                if (!loggedIn && link.id !== "about") {
+                  setIsModalOpen(true); // open login popup
+                  return;
+                }
+                handleSectionNavigation(link.id);
+              }}
               className="text-m font-medium text-[#2b0f66] hover:text-foreground transition-colors relative after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[2px] after:bg-accent after:transition-all hover:after:w-full"
             >
               {link.label}
@@ -222,7 +228,13 @@ const Navbar = () => {
             <button
               type="button"
               key={link.label}
-              onClick={() => handleSectionNavigation(link.id)}
+              onClick={() => {
+                if (!loggedIn && link.id !== "about") {
+                  setIsModalOpen(true); // open login popup
+                  return;
+                }
+                handleSectionNavigation(link.id);
+              }}
               className="block text-left text-sm font-medium text-muted-foreground hover:text-foreground"
             >
               {link.label}
