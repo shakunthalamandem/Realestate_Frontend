@@ -11,8 +11,8 @@ import PlatformExperience from "../components/PlatformExperience";
 import PlatformFeatures from "../components/PlatformFeatures";
 import SocialProof from "../components/SocialProof";
 import UseCases from "../components/UseCases";
-import WhyChooseVertex from "../components/WhyChooseVertex";
-import WhyVertex from "../components/WhyVertex";
+import WhyChooseAsset72 from "../components/WhyChooseAsset72";
+import WhyAsset72 from "../components/WhyAsset72";
 import AboutUs from "@/components/AboutUs";
 import { isUserLoggedIn } from "@/lib/auth";
 const scrollToSection = (sectionId: string) => {
@@ -68,24 +68,24 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
-  <Navbar />
+      <Navbar />
 
-  <div className={!isLoggedIn ? "blur-sm pointer-events-none" : ""}>
-    <HeroSection />
-    <WhyChooseVertex />
-    <PlatformFeatures />
-    <HowItWorks />
-    <UseCases />
-    <AILayer />
-    <PlatformExperience />
-    <WhyVertex />
-  </div>
+      <div className={!isLoggedIn ? "blur-sm pointer-events-none" : ""}>
+        <HeroSection />
+        <WhyChooseAsset72 />
+        <PlatformFeatures />
+        <HowItWorks />
+        <UseCases />
+        <AILayer />
+        <PlatformExperience />
+        <WhyAsset72 />
+      </div>
 
-  <AboutUs />
+      <AboutUs />
 
-  <CTASection />
-  <Footer />
-  </div>
+      <CTASection />
+      <Footer />
+    </div>
   );
 };
 

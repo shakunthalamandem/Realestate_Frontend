@@ -32,7 +32,7 @@ const HowItWorks = () => {
         <ScrollReveal>
           <div className="text-center mb-16">
             <p className="text-lg font-semibold text-indigo-500 uppercase tracking-widest mb-3">
-              How Vertex Works
+              How Asset72 Works
             </p>
             <h2 className="font-display font-extrabold text-2xl md:text-3xl text-foreground">
               Raw Property Data to Decision-Grade Intelligence

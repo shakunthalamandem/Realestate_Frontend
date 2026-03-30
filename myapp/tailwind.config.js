@@ -34,15 +34,15 @@ const sidebarColors = {
   'sidebar-ring': cssColor('--sidebar-ring'),
 };
 
-const vertexColors = {
-  'vertex-navy': cssColor('--vertex-navy'),
-  'vertex-navy-light': cssColor('--vertex-navy-light'),
-  'vertex-emerald': cssColor('--vertex-emerald'),
-  'vertex-emerald-light': cssColor('--vertex-emerald-light'),
-  'vertex-emerald-glow': cssColor('--vertex-emerald-glow'),
-  'vertex-soft-bg': cssColor('--vertex-soft-bg'),
-  'vertex-soft-bg-alt': cssColor('--vertex-soft-bg-alt'),
-  'vertex-glass': cssColor('--vertex-glass'),
+const asset72Colors = {
+  'asset72-navy': cssColor('--asset72-navy'),
+  'asset72-navy-light': cssColor('--asset72-navy-light'),
+  'asset72-emerald': cssColor('--asset72-emerald'),
+  'asset72-emerald-light': cssColor('--asset72-emerald-light'),
+  'asset72-emerald-glow': cssColor('--asset72-emerald-glow'),
+  'asset72-soft-bg': cssColor('--asset72-soft-bg'),
+  'asset72-soft-bg-alt': cssColor('--asset72-soft-bg-alt'),
+  'asset72-glass': cssColor('--asset72-glass'),
 };
 
 export default {
@@ -77,14 +77,14 @@ export default {
         'sidebar-accent-foreground': '#ffffff',
         'sidebar-border': '#d7e2fb',
         'sidebar-ring': '#1ebc9a',
-        'vertex-navy': '#0a1b54',
-        'vertex-navy-light': '#1b2d70',
-        'vertex-emerald': '#1ebc9a',
-        'vertex-emerald-light': '#5de0c4',
-        'vertex-emerald-glow': '#ccf7ef',
-        'vertex-soft-bg': '#f8fafe',
-        'vertex-soft-bg-alt': '#f3f6ff',
-        'vertex-glass': '#ffffff',
+        'asset72-navy': '#0a1b54',
+        'asset72-navy-light': '#1b2d70',
+        'asset72-emerald': '#1ebc9a',
+        'asset72-emerald-light': '#5de0c4',
+        'asset72-emerald-glow': '#ccf7ef',
+        'asset72-soft-bg': '#f8fafe',
+        'asset72-soft-bg-alt': '#f3f6ff',
+        'asset72-glass': '#ffffff',
       },
     },
   },

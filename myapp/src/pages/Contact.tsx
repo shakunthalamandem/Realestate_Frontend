@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 const contactItems = [
-  { icon: Mail, label: "Email", value: "contact@ghills.ai", href: "mailto:contact@ghills.ai" },
+  { icon: Mail, label: "Email", value: "asset72@ghills.ai", href: "mailto:asset72@ghills.ai" },
   { icon: Globe, label: "Website", value: "https://ghills.ai/", href: "https://ghills.ai/" },
   { icon: Building2, label: "Company", value: "Golden Hills Capital India Pvt Ltd", href: "https://ghills.ai/" },
 ];
@@ -22,14 +22,14 @@ const ContactPage = () => {
         <div className="max-w-5xl mx-auto px-6 pt-28 pb-20">
           <div className="text-center mb-14">
             <span className="inline-flex items-center rounded-full border border-[#BFDBFE] bg-white/75 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.24em] text-[#1D4ED8] shadow-sm backdrop-blur">
-              Contact Vertex AI
+              Contact Asset72
             </span>
             <h1 className="mt-6 text-4xl font-semibold text-[#0F172A] tracking-tight md:text-5xl">
               Let&apos;s talk about your needs
             </h1>
             <p className="mt-5 text-lg text-[#475569] max-w-2xl mx-auto leading-8">
               Connect with the Golden Hills team for product questions, partnership discussions, or
-              a guided walkthrough of Vertex AI.
+              a guided walkthrough of Asset72.
             </p>
           </div>
 
@@ -40,7 +40,7 @@ const ContactPage = () => {
                   Get in touch with our team
                 </h2>
                 <p className="mt-3 text-[#64748B] leading-7">
-                  We support investors, operators, and analysts using Vertex AI for portfolio
+                  We support investors, operators, and analysts using Asset72 for portfolio
                   monitoring, rent intelligence, market research, and deal underwriting.
                 </p>
               </div>
