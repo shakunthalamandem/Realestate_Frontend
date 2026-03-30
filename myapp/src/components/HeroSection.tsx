@@ -69,6 +69,7 @@ const HeroSection = () => {
             <img
               src={heroDashboard}
               alt="Asset72 Intelligence Dashboard"
+              title="Asset72 Intelligence Dashboard"
               className="w-full h-auto"
             />
           </div>
