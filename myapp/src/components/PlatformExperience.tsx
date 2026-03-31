@@ -8,13 +8,13 @@ import revenueleases from "../assets/Revenue & Leases.jpg";
 import expenseintel from "../assets/Expenses Intel.jpg";
 
 const screens = [
-    { label: "Expense Intel", image: expenseintel },
-  { label: "Performance Drivers", image: portfolioDashboard },  
-  { label: "Revenue & Leases Analysis", image: revenueleases },
-  { label: "Risk & Stability Dashboard", image: portfolioDashboard },
-  { label: "Market Signal Radar", image: marketRadar },
-  { label: "Deal Underwriting Lens", image: dealLens },
-  { label: "Properties", image: properties },
+  { label: "Expense Intel", tooltip: "Deep insights into expense patterns", image: expenseintel },
+  { label: "Performance Drivers", tooltip: "Key factors driving portfolio performance", image: portfolioDashboard },  
+  { label: "Revenue & Leases Analysis", tooltip: "Analyze revenue streams and lease trends", image: revenueleases },
+  { label: "Risk & Stability Dashboard", tooltip: "Monitor risks and asset stability", image: portfolioDashboard },
+  { label: "Market Signal Radar", tooltip: "Track real-time market signals", image: marketRadar },
+  { label: "Deal Underwriting Lens", tooltip: "Evaluate deals with AI-powered insights", image: dealLens },
+  { label: "Properties", tooltip: "View and manage property portfolio", image: properties },
 ];
 
 const PlatformExperience = () => {
@@ -61,6 +61,7 @@ const PlatformExperience = () => {
               <img
                 src={screens[active].image}
                 alt={screens[active].label}
+                title={screens[active].tooltip}
                 className="w-full h-auto"
               />
             </div>

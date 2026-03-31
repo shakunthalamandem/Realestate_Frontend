@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import BrandLogo from "./BrandLogo";
 import asset72FooterLogo from "@/assets/asset72-footer-logo.svg";
-
+import { Linkedin, Mail } from "lucide-react";
 const footerLinks = {
   Product: [
     "Portfolio Intelligence",
@@ -11,9 +11,13 @@ const footerLinks = {
   ],
   Company: ["About Us", "Contact"],
   Legal: ["Privacy Policy", "Terms of Use"],
+  Platforms: ["LinkedIn", "Email"],
 };
 
-const footerRoutes: Record<string, { to: string; state?: { scrollTo: string } }> = {
+const footerRoutes: Record<
+  string,
+  { to?: string; state?: { scrollTo: string }; href?: string }
+> = {
   "Portfolio Intelligence": { to: "/portfolio_intelligence" },
   "AI Rent Intelligence": { to: "/ai_rent_intelligence" },
   "Market Radar Signal": { to: "/market_radar" },
@@ -22,13 +26,18 @@ const footerRoutes: Record<string, { to: string; state?: { scrollTo: string } }>
   Contact: { to: "/contact" },
   "Privacy Policy": { to: "/privacy-policy" },
   "Terms of Use": { to: "/terms-of-use" },
+  LinkedIn: { href: "https://www.linkedin.com/company/asset72/" },
+  Email: { href: "mailto:asset72@ghills.ai" },
 };
-
+const footerIcons: Record<string, any> = {
+  LinkedIn: Linkedin,
+  Email: Mail,
+};
 const Footer = () => {
   return (
     <footer className="bg-foreground text-background">
       <div className="max-w-7xl mx-auto px-6 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-7">
           <div className="flex flex-col items-start">
             <img
               src={asset72FooterLogo}
@@ -42,26 +51,51 @@ const Footer = () => {
 
           {Object.entries(footerLinks).map(([category, links]) => (
             <div key={category}>
-              <h4 className="font-display font-semibold text-sm uppercase tracking-widest mb-4 text-background/80">
+              <h4 className="font-display font-semibold text-sm uppercase tracking-widest mb-4 text-background/80 ">
                 {category}
               </h4>
-              <ul className="space-y-2.5">
-                {links.map((link) => (
-                  <li key={link}>
-                    {footerRoutes[link] ? (
-                      <Link
-                        to={footerRoutes[link].to}
-                        state={footerRoutes[link].state}
-                        className="text-sm text-background/50 hover:text-background transition-colors"
+              {category === "Platforms" ? (
+                
+                <div className="flex items-center gap-4">
+                  {links.map((link) => {
+                    const Icon = footerIcons[link];
+                    const route = footerRoutes[link];
+
+                    return (
+                      <a
+                        key={link}
+                        href={route?.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title={link}
+                        className="p-2 rounded-md bg-background/5 text-background/70 hover:text-white hover:bg-background/10 transition-all duration-200 hover:scale-110 hover:-translate-y-0.5"
                       >
-                        {link}
-                      </Link>
-                    ) : (
-                      <span className="text-sm text-background/50">{link}</span>
-                    )}
-                  </li>
-                ))}
-              </ul>
+                        <Icon size={20} />
+                      </a>
+                    );
+                  })}
+                </div>
+              ) : (
+                <ul className="space-y-2.5">
+                  {links.map((link) => (
+                    <li key={link}>
+                      {footerRoutes[link]?.to ? (
+                        <Link
+                          to={footerRoutes[link].to}
+                          state={footerRoutes[link].state}
+                          className="text-sm text-background/50 hover:text-background transition-colors"
+                        >
+                          {link}
+                        </Link>
+                      ) : (
+                        <span className="text-sm text-background/50">
+                          {link}
+                        </span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           ))}
         </div>

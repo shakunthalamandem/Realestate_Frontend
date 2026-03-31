@@ -24,6 +24,7 @@ const features = [
     ],
     image: portfolioDashboard,
     alt: "Portfolio Intelligence Dashboard",
+    hoverTitle: "Portfolio Intelligence Dashboard"
   },
   {
     icon: Brain,
@@ -42,6 +43,7 @@ const features = [
     ],
     image: airent,
     alt: "AI Rent Intelligence Dashboard",
+    hoverTitle: "AI Rent Intelligence Dashboard"
   },
   {
     icon: Radar,
@@ -58,6 +60,7 @@ const features = [
     ],
     image: marketRadar,
     alt: "Market Radar Dashboard",
+    hoverTitle: "Market Radar Dashboard"
   },
   {
     icon: Search,
@@ -75,6 +78,7 @@ const features = [
     ],
     image: dealLens,
     alt: "Deal Lens Dashboard",
+    hoverTitle: "Deal Lens Dashboard"
   },
 ];
 
@@ -165,6 +169,7 @@ const PlatformFeatures = () => {
                     <img
                       src={feature.image}
                       alt={feature.alt}
+                      title={feature.hoverTitle}
                       className="w-full h-auto"
                       loading="lazy"
                     />

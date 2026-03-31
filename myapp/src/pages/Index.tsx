@@ -14,7 +14,7 @@ import UseCases from "../components/UseCases";
 import WhyChooseAsset72 from "../components/WhyChooseAsset72";
 import WhyAsset72 from "../components/WhyAsset72";
 import AboutUs from "@/components/AboutUs";
-
+import { isUserLoggedIn } from "@/lib/auth";
 const scrollToSection = (sectionId: string) => {
   if (!sectionId) return;
   const normalized = sectionId.startsWith("#") ? sectionId.substring(1) : sectionId;
@@ -26,41 +26,63 @@ const scrollToSection = (sectionId: string) => {
 
 const Index = () => {
   const location = useLocation();
-
+  const isLoggedIn = isUserLoggedIn();
   useEffect(() => {
-    if (location.hash) {
-      const id = location.hash.replace("#", "");
-      const element = document.getElementById(id);
+  const isLoggedIn = isUserLoggedIn();
 
-      if (element) {
-        setTimeout(() => {
-          element.scrollIntoView({ behavior: "smooth" });
-        }, 100);
-        return;
-      }
+  if (location.hash) {
+    const id = location.hash.replace("#", "");
+
+    // Block all sections except "about" for guest users
+    if (!isLoggedIn && id !== "about") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
     }
 
-    const scrollTarget = location.state?.scrollTo;
-    if (typeof scrollTarget === "string") {
+    const element = document.getElementById(id);
+
+    if (element) {
       setTimeout(() => {
-        scrollToSection(scrollTarget);
+        element.scrollIntoView({ behavior: "smooth" });
       }, 100);
+      return;
     }
-  }, [location]);
+  }
+
+  const scrollTarget = location.state?.scrollTo;
+
+  if (typeof scrollTarget === "string") {
+    const id = scrollTarget.replace("#", "");
+
+    // Block here also
+    if (!isLoggedIn && id !== "about") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
+    setTimeout(() => {
+      scrollToSection(scrollTarget);
+    }, 100);
+  }
+}, [location]);
 
   return (
     <div className="min-h-screen">
       <Navbar />
-      <HeroSection />
-      <WhyChooseAsset72 />
-      <PlatformFeatures />
-      <HowItWorks />
-      <UseCases />
-      <AILayer />
-      <PlatformExperience />
-      <WhyAsset72 />
-      <AboutUs/>
-      {/* <SocialProof /> */}
+
+      <div className={!isLoggedIn ? "blur-sm pointer-events-none" : ""}>
+        <HeroSection />
+        <WhyChooseAsset72 />
+        <PlatformFeatures />
+        <HowItWorks />
+        <UseCases />
+        <AILayer />
+        <PlatformExperience />
+        <WhyAsset72 />
+      </div>
+
+      <AboutUs />
+
       <CTASection />
       <Footer />
     </div>

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-
+import { ChevronDown } from "lucide-react";
 import PfDemoPortfolioAnalytics, {
   portfolioAnalyticsTabDefinitions,
   PortfolioAnalyticsTabId,
@@ -138,7 +138,12 @@ const PfDemo: React.FC = () => {
               >
                 <BarChart3 className="h-4 w-4" />
                 <span className="flex-1">Portfolio Analytics</span>
-                <span className="text-sm opacity-80">{isPortfolioMenuOpen ? "v" : ">"}</span>
+                <ChevronDown
+                  size={16}
+                  className={`transition-transform duration-200 ${
+                    isPortfolioMenuOpen ? "rotate-180" : ""
+                  }`}
+                />
               </button>
 
               {isPortfolioMenuOpen && (
