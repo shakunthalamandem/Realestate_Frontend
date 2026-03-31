@@ -6,7 +6,6 @@ import dealLens from "../assets/deal_lens.png";
 import airent from "../assets/ai_rent_intelligence.png";
 import AccessBlockedModal from "./AccessBlockedModal";
 import { useLoginGuard } from "@/hooks/use-login-guard";
-import { hover } from "framer-motion";
 
 const features = [
   {
