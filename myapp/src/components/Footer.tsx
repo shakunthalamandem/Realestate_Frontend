@@ -37,7 +37,7 @@ const Footer = () => {
   return (
     <footer className="bg-foreground text-background">
       <div className="max-w-7xl mx-auto px-6 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-7">
           <div className="flex flex-col items-start">
             <img
               src={asset72FooterLogo}
@@ -50,20 +50,13 @@ const Footer = () => {
           </div>
 
           {Object.entries(footerLinks).map(([category, links]) => (
-            <div
-              key={category}
-              className={
-                category === "Platforms"
-                  ? "md:col-span-4 flex flex-col items-center text-centermt-6"
-                  : ""
-              }
-            >
+            <div key={category}>
               <h4 className="font-display font-semibold text-sm uppercase tracking-widest mb-4 text-background/80 ">
                 {category}
               </h4>
               {category === "Platforms" ? (
                 
-                <div className="flex items-center justify-center gap-4">
+                <div className="flex items-center gap-4">
                   {links.map((link) => {
                     const Icon = footerIcons[link];
                     const route = footerRoutes[link];
