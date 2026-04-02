@@ -1,5 +1,6 @@
 
 import { useEffect } from "react";
+import { Helmet } from "react-helmet";
 import { useLocation } from "react-router-dom";
 import AILayer from "../components/AILayer";
 import CTASection from "../components/CTASection";
@@ -68,6 +69,14 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
+      <Helmet>
+        <title>Real Estate Portfolio Analytics Platform | NOI, Rent Roll & T12 Insights</title>
+        <meta
+          name="description"
+          content="Asset72 is an AI-powered real estate intelligence platform that transforms portfolio data into actionable insights. Analyze NOI, rent rolls, and risk to make smarter investment decisions."
+        />
+      </Helmet>
+
       <Navbar />
 
       <div className={!isLoggedIn ? "blur-sm pointer-events-none" : ""}>
