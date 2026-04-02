@@ -76,6 +76,14 @@ const App = () => {
             }
           />
           <Route
+            path="/ic_memo"
+            element={
+              <ProtectedRoute>
+                <PfDemo />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/market_radar_view/:sub_market_name"
             element={
               <ProtectedRoute>
