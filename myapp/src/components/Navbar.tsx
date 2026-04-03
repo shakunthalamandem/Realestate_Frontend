@@ -28,6 +28,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { productRoutes } from "@/lib/product-routes";
 
 const navLinks = [
   { label: "Platform", id: "platform" },
@@ -174,7 +175,7 @@ const Navbar = () => {
           <Button
             variant="hero"
             size="default"
-            onClick={() => guardNavigation("/portfolio_intelligence")}
+            onClick={() => guardNavigation(productRoutes.portfolioIntelligence)}
           >
             Demo
           </Button>
@@ -244,7 +245,7 @@ const Navbar = () => {
             className="w-full"
             onClick={() => {
               setMobileOpen(false);
-              guardNavigation("/portfolio_intelligence");
+              guardNavigation(productRoutes.portfolioIntelligence);
             }}
           >
             Request a Demo
