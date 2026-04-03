@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import BrandLogo from "./BrandLogo";
 import asset72FooterLogo from "@/assets/asset72-footer-logo.svg";
 import { Linkedin, Mail } from "lucide-react";
+import { productRoutes } from "@/lib/product-routes";
 const footerLinks = {
   Product: [
     "Portfolio Intelligence",
@@ -18,10 +19,10 @@ const footerRoutes: Record<
   string,
   { to?: string; state?: { scrollTo: string }; href?: string }
 > = {
-  "Portfolio Intelligence": { to: "/portfolio_intelligence" },
-  "AI Rent Intelligence": { to: "/ai_rent_intelligence" },
-  "Market Radar Signal": { to: "/market_radar" },
-  "Deal Lens": { to: "/deal_lens" },
+  "Portfolio Intelligence": { to: productRoutes.portfolioIntelligence },
+  "AI Rent Intelligence": { to: productRoutes.aiRentIntelligence },
+  "Market Radar Signal": { to: productRoutes.marketRadar },
+  "Deal Lens": { to: productRoutes.dealLens },
   "About Us": { to: "/", state: { scrollTo: "#about" } },
   Contact: { to: "/contact" },
   "Privacy Policy": { to: "/privacy-policy" },

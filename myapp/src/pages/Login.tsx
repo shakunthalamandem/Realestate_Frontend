@@ -24,13 +24,14 @@ import {
   meRequest,
 } from "@/lib/auth-api";
 import PasswordInput from "@/components/auth/PasswordInput";
+import { productRoutes } from "@/lib/product-routes";
 
 const REMEMBERED_LOGIN_KEY = "remembered_login_identifier";
 
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const fromPath = (location.state as { from?: string } | null)?.from ?? "/portfolio_intelligence";
+  const fromPath = (location.state as { from?: string } | null)?.from ?? productRoutes.portfolioIntelligence;
   const googleButtonRef = useRef<HTMLDivElement | null>(null);
   const [identifier, setIdentifier] = useState("");
 

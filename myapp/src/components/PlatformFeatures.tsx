@@ -6,6 +6,7 @@ import dealLens from "../assets/deal_lens.png";
 import airent from "../assets/ai_rent_intelligence.png";
 import AccessBlockedModal from "./AccessBlockedModal";
 import { useLoginGuard } from "@/hooks/use-login-guard";
+import { productRoutes } from "@/lib/product-routes";
 
 const features = [
   {
@@ -97,10 +98,10 @@ const PlatformFeatures = () => {
             </h2>
             <div className="flex flex-wrap items-center justify-center gap-3 mt-6">
               {[
-                { label: "Portfolio Intelligence", route: "/portfolio_intelligence" },
-                { label: "AI Rent Intelligence", route: "/ai_rent_intelligence" },
-                { label: "Market Signal Radar ", route: "/market_radar" },
-                { label: "Deal Underwriting Lens", route: "/deal_lens" },
+                { label: "Portfolio Intelligence", route: productRoutes.portfolioIntelligence },
+                { label: "AI Rent Intelligence", route: productRoutes.aiRentIntelligence },
+                { label: "Market Signal Radar ", route: productRoutes.marketRadar },
+                { label: "Deal Underwriting Lens", route: productRoutes.dealLens },
               ].map((tab) => (
                 <button
                   key={tab.label}
@@ -117,7 +118,7 @@ const PlatformFeatures = () => {
 
         <div className="space-y-24">
           {features.map((feature, i) => {
-            const isMarketRadar = feature.title === "Market Radar Signal";
+            const isMarketRadar = feature.title.trim() === "Market Signal Radar";
             return (
               <ScrollReveal key={feature.title} delay={i * 50}>
                 <div
@@ -150,7 +151,7 @@ const PlatformFeatures = () => {
                     className={`flex-1 w-full rounded-xl overflow-hidden float-shadow border border-border ${isMarketRadar ? "cursor-pointer" : ""}`}
                     onClick={() => {
                       if (isMarketRadar) {
-                        guardNavigation("/market_radar");
+                        guardNavigation(productRoutes.marketRadar);
                       }
                     }}
                     role={isMarketRadar ? "button" : undefined}
@@ -160,7 +161,7 @@ const PlatformFeatures = () => {
                       isMarketRadar
                         ? (event) => {
                             if (event.key === "Enter" || event.key === " ") {
-                              guardNavigation("/market_radar");
+                              guardNavigation(productRoutes.marketRadar);
                             }
                           }
                         : undefined
