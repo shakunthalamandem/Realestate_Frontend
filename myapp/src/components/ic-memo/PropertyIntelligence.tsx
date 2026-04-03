@@ -24,7 +24,7 @@ const metricDot = {
 
 const actionBadge = {
   HIGH: "bg-[#991B1B] text-white",
-  MEDIUM: "bg-[#B45309] text-white",
+  MEDIUM: "bg-[#EAB308] text-[#1F2937]",
   MONITOR: "bg-[#475569] text-white",
 };
 
@@ -66,9 +66,8 @@ const PropertyCard = ({ property }: { property?: IcPropertyCardData | null }) =>
         <p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-slate-700">
           Performance Snapshot
         </p>
-        <div className="grid grid-cols-3 gap-3 md:grid-cols-6">
-          {Array.from({ length: Math.max(metrics.length, 6) }).map((_, index) => {
-            const metric = metrics[index];
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
+          {metrics.map((metric, index) => {
             const dotClass = metric?.signal ? metricDot[metric.signal] : "bg-slate-300";
             return (
               <div key={index} className="rounded-xl border border-[#E2E8F0] bg-white px-3 py-4 text-center">
@@ -89,10 +88,10 @@ const PropertyCard = ({ property }: { property?: IcPropertyCardData | null }) =>
             Key Insights
           </p>
           <ul className="space-y-3">
-            {Array.from({ length: Math.max(insights.length, 3) }).map((_, index) => (
+            {insights.map((item, index) => (
               <li key={index} className="flex items-start gap-3 text-base leading-8 text-slate-700">
                 <span className={`mt-1 flex-shrink-0 text-xs ${listTone.insights.bullet}`}>▸</span>
-                <span>{insights[index] ?? ""}</span>
+                <span>{item ?? ""}</span>
               </li>
             ))}
           </ul>
@@ -103,10 +102,10 @@ const PropertyCard = ({ property }: { property?: IcPropertyCardData | null }) =>
             Risk Flags
           </p>
           <ul className="space-y-3">
-            {Array.from({ length: Math.max(risks.length, 3) }).map((_, index) => (
+            {risks.map((item, index) => (
               <li key={index} className="flex items-start gap-3 text-base leading-8 text-slate-700">
                 <span className={`mt-1 flex-shrink-0 text-xs ${listTone.risks.bullet}`}>▸</span>
-                <span>{risks[index] ?? ""}</span>
+                <span>{item ?? ""}</span>
               </li>
             ))}
           </ul>
@@ -117,10 +116,10 @@ const PropertyCard = ({ property }: { property?: IcPropertyCardData | null }) =>
             Value Creation
           </p>
           <ul className="space-y-3">
-            {Array.from({ length: Math.max(opportunities.length, 3) }).map((_, index) => (
+            {opportunities.map((item, index) => (
               <li key={index} className="flex items-start gap-3 text-base leading-8 text-slate-700">
                 <span className={`mt-1 flex-shrink-0 text-xs ${listTone.opportunities.bullet}`}>▸</span>
-                <span>{opportunities[index] ?? ""}</span>
+                <span>{item ?? ""}</span>
               </li>
             ))}
           </ul>
@@ -132,12 +131,11 @@ const PropertyCard = ({ property }: { property?: IcPropertyCardData | null }) =>
           Property-Level Actions
         </p>
         <div className="space-y-3">
-          {Array.from({ length: Math.max(actions.length, 3) }).map((_, index) => {
-            const action = actions[index];
+          {actions.map((action, index) => {
             const priority = action?.priority ?? "MONITOR";
             return (
               <div key={index} className="flex items-start gap-4 rounded-xl border border-[#E2E8F0] bg-white px-4 py-4">
-                <span className={`flex-shrink-0 rounded-md px-3 py-1.5 text-[10px] font-bold tracking-[0.12em] ${actionBadge[priority]}`}>
+                <span className={`flex h-9 min-w-[84px] flex-shrink-0 items-center justify-center rounded-lg px-3 text-[10px] font-bold tracking-[0.12em] ${actionBadge[priority]}`}>
                   {action?.priority ?? ""}
                 </span>
                 <div className="min-w-0 flex-1">
@@ -163,8 +161,8 @@ const PropertyIntelligence = ({ data }: { data?: IcPropertyIntelligenceData | nu
     <section>
       <SectionHeader number="07" title="Property-Level Intelligence" />
       <div className="space-y-6">
-        {Array.from({ length: Math.max(properties.length, 3) }).map((_, index) => (
-          <PropertyCard key={index} property={properties[index]} />
+        {properties.map((property, index) => (
+          <PropertyCard key={index} property={property} />
         ))}
       </div>
     </section>

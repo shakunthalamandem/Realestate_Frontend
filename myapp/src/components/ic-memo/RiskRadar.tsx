@@ -5,37 +5,34 @@ const metricLevelStyles = {
   low: {
     wrap: "bg-[#f4fbf7] border border-[#c7e8d7] border-l-2 border-l-[#1f9d68]",
     pill: "text-[#1f9d68]",
-    badge: "Low",
     dot: "bg-[#1f9d68]",
   },
   medium: {
     wrap: "bg-[#fffaf2] border border-[#edd9ab] border-l-2 border-l-[#c78512]",
     pill: "text-[#c78512]",
-    badge: "Watch",
     dot: "bg-[#c78512]",
   },
   high: {
     wrap: "bg-[#fff7f7] border border-[#efcaca] border-l-2 border-l-[#c73636]",
     pill: "text-[#c73636]",
-    badge: "Elevated",
     dot: "bg-[#c73636]",
   },
 };
 
 const RiskMetricCard = ({ label, value, detail, level = "medium" }: IcRiskMetric) => {
   const style = metricLevelStyles[level];
+  const stageLabel = detail ?? (level === "high" ? "ELEVATED" : level === "low" ? "LOW" : "WATCH");
 
   return (
     <div className={`rounded-xl p-4 shadow-[0_1px_3px_rgba(15,23,42,0.05)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(15,23,42,0.10)] ${style.wrap}`}>
       <div className="mb-3 flex items-center gap-2">
         <span className={`h-2 w-2 rounded-full ${style.dot}`} />
         <span className={`text-[11px] font-semibold uppercase tracking-[0.16em] ${style.pill}`}>
-          {style.badge}
+          {stageLabel}
         </span>
       </div>
       <p className="min-h-[32px] text-2xl font-bold text-slate-950">{value ?? ""}</p>
       <p className="min-h-[16px] text-sm font-medium text-slate-700">{label ?? ""}</p>
-      <p className="mt-1 min-h-[16px] text-sm text-slate-600">{detail ?? ""}</p>
     </div>
   );
 };
@@ -62,7 +59,17 @@ const RiskAssetCard = ({ asset, fallbackTone }: { asset?: IcRiskAsset | null; fa
           {asset?.badge ?? ""}
         </span>
       </div>
-      <p className="mb-3 min-h-[42px] text-sm leading-7 text-slate-700">{asset?.description ?? ""}</p>
+      <div className="mb-3 space-y-2 text-sm leading-7 text-slate-700">
+        {(asset?.description ?? "")
+          .split(". ")
+          .filter(Boolean)
+          .map((line, index, arr) => (
+            <p key={index}>
+              {line}
+              {index < arr.length - 1 && !line.endsWith(".") ? "." : ""}
+            </p>
+          ))}
+      </div>
       <div className="flex flex-wrap items-center gap-4 text-xs">
         {Array.from({ length: Math.max(asset?.stats?.length ?? 0, 2) }).map((_, index) => {
           const stat = asset?.stats?.[index];
@@ -95,9 +102,9 @@ const RiskRadar = ({ data }: { data?: IcRiskRadarData | null }) => {
         <p className="mb-4 text-xs font-semibold uppercase tracking-[0.16em] text-rose-600">
           Underperforming Assets
         </p>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4">
           <RiskAssetCard asset={assets[0]} fallbackTone="red" />
-          <RiskAssetCard asset={assets[1]} fallbackTone="yellow" />
+          {/* <RiskAssetCard asset={assets[1]} fallbackTone="yellow" /> */}
         </div>
       </div>
     </section>

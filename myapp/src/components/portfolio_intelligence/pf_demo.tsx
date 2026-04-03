@@ -141,6 +141,18 @@ const PfDemo: React.FC = () => {
             <h1 className="text-2xl font-semibold">Portfolio Intelligence</h1>
           </div>
           <nav className="space-y-2">
+            <button
+              type="button"
+              onClick={() => setActiveTab("IC Memo")}
+              className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-[15px] font-semibold transition ${activeTab === "IC Memo"
+                  ? "bg-[#0fa77d] text-white shadow-[0_6px_18px_rgba(15,167,125,0.35)]"
+                  : "bg-white/5 text-blue-100 hover:bg-white/10"
+                }`}
+            >
+              <Landmark className="h-4 w-4" />
+              <span className="flex-1">IC Memo</span>
+            </button>
+
             <div>
               <button
                 type="button"
@@ -230,18 +242,6 @@ const PfDemo: React.FC = () => {
             >
               <TrendingUp className="h-4 w-4" />
               <span className="flex-1">Market Signal Radar</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab("IC Memo")}
-              className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-[15px] font-semibold transition ${activeTab === "IC Memo"
-                  ? "bg-[#0fa77d] text-white shadow-[0_6px_18px_rgba(15,167,125,0.35)]"
-                  : "bg-white/5 text-blue-100 hover:bg-white/10"
-                }`}
-            >
-              <Landmark className="h-4 w-4" />
-              <span className="flex-1">IC Memo</span>
             </button>
 
             <button

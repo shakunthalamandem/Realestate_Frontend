@@ -25,23 +25,27 @@ const MiniBar = ({ label, values = [], color = "bg-slate-300" }: IcTrendCard) =>
   );
 };
 
-const InsightCard = ({ signal = "yellow", title, text }: IcInsightItem) => {
+const InsightCard = ({ signal = "neutral", title, text }: IcInsightItem) => {
   const styles = {
     green: "border-l-[3px] border-l-[#10b981] bg-[#ecfdf5]",
     red: "border-l-[3px] border-l-[#f43f5e] bg-[#fff1f2]",
-    yellow: "border-l-[3px] border-l-[#475569] bg-[#f8fafc]",
+    neutral: "border-l-[3px] border-l-[#64748b] bg-[#f8fafc]", // updated
   };
 
   const textStyles = {
     green: "text-[#047857]",
     red: "text-[#be123c]",
-    yellow: "text-[#475569]",
+    neutral: "text-[#475569]",
   };
 
   return (
     <div className={`rounded-r-xl p-4 ${styles[signal]}`}>
-      <p className={`mb-1 min-h-[20px] text-sm font-semibold ${textStyles[signal]}`}>{title ?? ""}</p>
-      <p className={`min-h-[42px] text-sm leading-relaxed ${textStyles[signal]}`}>{text ?? ""}</p>
+      <p className={`mb-1 min-h-[20px] text-sm font-semibold ${textStyles[signal]}`}>
+        {title ?? ""}
+      </p>
+      <p className={`min-h-[42px] text-sm leading-relaxed ${textStyles[signal]}`}>
+        {text ?? ""}
+      </p>
     </div>
   );
 };

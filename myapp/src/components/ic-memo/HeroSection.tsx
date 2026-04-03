@@ -20,8 +20,8 @@ const HeroSection = ({ data }: { data?: IcHeroData | null }) => {
   const highlights = data?.highlights ?? [];
 
   return (
-    <section className="relative overflow-hidden rounded-[28px] bg-[#0d1b4f] p-8 text-white md:p-10">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(125,146,255,0.35),transparent_32%),linear-gradient(135deg,#0d1b4f_0%,#162a6d_60%,#243c84_100%)]" />
+    <section className="relative overflow-hidden rounded-[28px] bg-[#0A1B54] p-8 text-white md:p-10">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(75,102,191,0.14),transparent_34%),linear-gradient(135deg,#081544_0%,#0A1B54_58%,#12286A_100%)]" />
       <div className="relative z-10">
         <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>

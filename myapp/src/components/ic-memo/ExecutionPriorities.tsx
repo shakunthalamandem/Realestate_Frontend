@@ -3,7 +3,7 @@ import { IcExecutionPrioritiesData } from "./types";
 
 const priorityStyles = {
   HIGH: { bg: "bg-[#B91C1C]", text: "text-white" },
-  MEDIUM: { bg: "bg-[#B45309]", text: "text-white" },
+  MEDIUM: { bg: "bg-[#EAB308]", text: "text-[#1F2937]" },
   MONITOR: { bg: "bg-[#475569]", text: "text-white" },
 };
 

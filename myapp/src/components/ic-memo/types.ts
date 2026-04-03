@@ -71,6 +71,8 @@ export interface IcExpenseEfficiencyData {
   statusSubtitle?: string | null;
   structuralSavings?: number | null;
   timingDriven?: number | null;
+  structuralNote?: string | null;
+  timingNote?: string | null;
   note?: string | null;
 }
 
