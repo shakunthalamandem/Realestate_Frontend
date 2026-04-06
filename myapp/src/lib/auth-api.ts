@@ -1,4 +1,4 @@
-import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
+import axios, { AxiosError, AxiosHeaders, InternalAxiosRequestConfig } from "axios";
 import {
   clearUserLogin,
   getAccessToken,
@@ -160,12 +160,12 @@ const refreshAccessToken = async (): Promise<string> => {
 };
 
 authClient.interceptors.request.use((config) => {
-  const headers = (config.headers ?? {}) as Record<string, string>;
+  const headers = AxiosHeaders.from(config.headers);
   const token = getAccessToken();
   const sessionId = getSessionId();
 
-  if (token) headers.Authorization = `Bearer ${token}`;
-  if (sessionId) headers["X-Session-Id"] = sessionId;
+  if (token) headers.set("Authorization", `Bearer ${token}`);
+  if (sessionId) headers.set("X-Session-Id", sessionId);
 
   config.headers = headers;
   return config;
@@ -188,8 +188,8 @@ authClient.interceptors.response.use(
       return new Promise((resolve, reject) => {
         refreshQueue.push((token) => {
           if (!token) return reject(error);
-          const headers = (original.headers ?? {}) as Record<string, string>;
-          headers.Authorization = `Bearer ${token}`;
+          const headers = AxiosHeaders.from(original.headers);
+          headers.set("Authorization", `Bearer ${token}`);
           original.headers = headers;
           resolve(authClient(original));
         });
@@ -201,8 +201,8 @@ authClient.interceptors.response.use(
       const newToken = await refreshAccessToken();
       resolveQueue(newToken);
 
-      const headers = (original.headers ?? {}) as Record<string, string>;
-      headers.Authorization = `Bearer ${newToken}`;
+      const headers = AxiosHeaders.from(original.headers);
+      headers.set("Authorization", `Bearer ${newToken}`);
       original.headers = headers;
 
       return authClient(original);
