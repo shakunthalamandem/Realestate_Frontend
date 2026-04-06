@@ -6,6 +6,7 @@ import dealLens from "../assets/deal_lens.png";
 import airent from "../assets/ai_rent_intelligence.png";
 import AccessBlockedModal from "./AccessBlockedModal";
 import { useLoginGuard } from "@/hooks/use-login-guard";
+import { productRoutes } from "@/lib/product-routes";
 
 const features = [
   {
@@ -24,6 +25,7 @@ const features = [
     ],
     image: portfolioDashboard,
     alt: "Portfolio Intelligence Dashboard",
+    hoverTitle: "Portfolio Intelligence Dashboard"
   },
   {
     icon: Brain,
@@ -42,6 +44,7 @@ const features = [
     ],
     image: airent,
     alt: "AI Rent Intelligence Dashboard",
+    hoverTitle: "AI Rent Intelligence Dashboard"
   },
   {
     icon: Radar,
@@ -58,6 +61,7 @@ const features = [
     ],
     image: marketRadar,
     alt: "Market Radar Dashboard",
+    hoverTitle: "Market Radar Dashboard"
   },
   {
     icon: Search,
@@ -75,6 +79,7 @@ const features = [
     ],
     image: dealLens,
     alt: "Deal Lens Dashboard",
+    hoverTitle: "Deal Lens Dashboard"
   },
 ];
 
@@ -93,10 +98,10 @@ const PlatformFeatures = () => {
             </h2>
             <div className="flex flex-wrap items-center justify-center gap-3 mt-6">
               {[
-                { label: "Portfolio Intelligence", route: "/portfolio_intelligence" },
-                { label: "AI Rent Intelligence", route: "/ai_rent_intelligence" },
-                { label: "Market Signal Radar ", route: "/market_radar" },
-                { label: "Deal Underwriting Lens", route: "/deal_lens" },
+                { label: "Portfolio Intelligence", route: productRoutes.portfolioIntelligence },
+                { label: "AI Rent Intelligence", route: productRoutes.aiRentIntelligence },
+                { label: "Market Signal Radar ", route: productRoutes.marketRadar },
+                { label: "Deal Underwriting Lens", route: productRoutes.dealLens },
               ].map((tab) => (
                 <button
                   key={tab.label}
@@ -113,7 +118,7 @@ const PlatformFeatures = () => {
 
         <div className="space-y-24">
           {features.map((feature, i) => {
-            const isMarketRadar = feature.title === "Market Radar Signal";
+            const isMarketRadar = feature.title.trim() === "Market Signal Radar";
             return (
               <ScrollReveal key={feature.title} delay={i * 50}>
                 <div
@@ -146,7 +151,7 @@ const PlatformFeatures = () => {
                     className={`flex-1 w-full rounded-xl overflow-hidden float-shadow border border-border ${isMarketRadar ? "cursor-pointer" : ""}`}
                     onClick={() => {
                       if (isMarketRadar) {
-                        guardNavigation("/market_radar");
+                        guardNavigation(productRoutes.marketRadar);
                       }
                     }}
                     role={isMarketRadar ? "button" : undefined}
@@ -156,7 +161,7 @@ const PlatformFeatures = () => {
                       isMarketRadar
                         ? (event) => {
                             if (event.key === "Enter" || event.key === " ") {
-                              guardNavigation("/market_radar");
+                              guardNavigation(productRoutes.marketRadar);
                             }
                           }
                         : undefined
@@ -165,6 +170,7 @@ const PlatformFeatures = () => {
                     <img
                       src={feature.image}
                       alt={feature.alt}
+                      title={feature.hoverTitle}
                       className="w-full h-auto"
                       loading="lazy"
                     />

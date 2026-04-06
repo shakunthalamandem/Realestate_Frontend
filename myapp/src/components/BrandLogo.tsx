@@ -22,6 +22,7 @@ const BrandLogo = ({
       <img
         src={asset72Logo}
         alt="Asset72"
+        title="Analyze in Minutes. Act with Conviction"
         className={`${sizeClass} block shrink-0 object-contain align-middle ${iconClassName}`.trim()}
       />
     </div>

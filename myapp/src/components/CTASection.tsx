@@ -2,6 +2,7 @@ import { ScrollReveal } from "./ScrollReveal";
 import { Button } from "../components/ui/button";
 import AccessBlockedModal from "./AccessBlockedModal";
 import { useLoginGuard } from "@/hooks/use-login-guard";
+import { productRoutes } from "@/lib/product-routes";
 
 const CTASection = () => {
   const { isModalOpen, setIsModalOpen, guardNavigation, goToLogin } = useLoginGuard();
@@ -22,7 +23,7 @@ const CTASection = () => {
                 variant="secondary"
                 size="xl"
                 className="bg-[#1ebc9a] text-white shadow-xl px-8 py-3"
-                onClick={() => guardNavigation("/portfolio_intelligence")}
+                onClick={() => guardNavigation(productRoutes.portfolioIntelligence)}
               >
                Demo
               </Button>
