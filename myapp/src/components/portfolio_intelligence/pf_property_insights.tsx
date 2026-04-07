@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Bar, Line } from "react-chartjs-2";
+import { authClient } from "@/lib/auth-api";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -300,7 +300,6 @@ type InsightDetail = {
 };
 
 const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext, onBack }) => {
-  const API_URL = import.meta.env.VITE_API_URL;
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const propertyName = propertyContext?.property_name ?? searchParams.get("property_name") ?? "";
@@ -313,35 +312,35 @@ const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext
     let isActive = true;
 
     const fetchData = async () => {
-      if (!propertyName || !submarket || !region) {
+      if (!propertyName) {
         if (isActive) setStatus("error");
         return;
       }
 
       setStatus("loading");
       try {
-        const token = localStorage.getItem("access_token");
+        let response;
 
         // ✅ attach token ONLY if valid
-        const config =
-          token && token !== "null" && token !== "undefined"
-            ? {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
+        try {
+          response = await authClient.post<{ data: PropertyRecord }>(
+            "/api/get_property_model_data/",
+            {
+              fetch: "specific",
+              property_name: propertyName,
+              ...(submarket ? { submarket } : {}),
+              ...(region ? { region } : {}),
             }
-            : {};
-
-        const response = await axios.post<{ data: PropertyRecord }>(
-          `${API_URL}/api/get_property_model_data/`,
-          {
-            fetch: "specific",
-            property_name: propertyName,
-            submarket,
-            region,
-          },
-          config
-        );
+          );
+        } catch {
+          response = await authClient.post<{ data: PropertyRecord }>(
+            "/api/get_property_model_data/",
+            {
+              fetch: "specific",
+              property_name: propertyName,
+            }
+          );
+        }
 
         if (isActive) {
           setRecord(response.data?.data ?? null);
@@ -356,7 +355,7 @@ const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext
     return () => {
       isActive = false;
     };
-  }, [API_URL, propertyName, region, submarket]);
+  }, [propertyName, region, submarket]);
 
   const reviewDetails = record?.property_response?.intelligence?.reviewIntelligence;
   const riskAlert = record?.property_response?.intelligence?.riskAlert;
