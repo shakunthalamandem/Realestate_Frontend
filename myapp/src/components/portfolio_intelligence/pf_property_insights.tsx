@@ -253,8 +253,8 @@ const InsightCard: React.FC<InsightCardProps> = ({
     type="button"
     onClick={onClick}
     className={`w-full rounded-3xl border bg-white p-4 text-left shadow-sm transition ${selected
-        ? "border-sky-400 shadow-[0_0_0_2px_rgba(14,165,233,0.3)]"
-        : "border-slate-100 hover:-translate-y-0.5 hover:border-slate-200"
+      ? "border-sky-400 shadow-[0_0_0_2px_rgba(14,165,233,0.3)]"
+      : "border-slate-100 hover:-translate-y-0.5 hover:border-slate-200"
       }`}
   >
     <div className="flex items-center justify-between">
@@ -322,6 +322,16 @@ const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext
       try {
         const token = localStorage.getItem("access_token");
 
+        // ✅ attach token ONLY if valid
+        const config =
+          token && token !== "null" && token !== "undefined"
+            ? {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+            : {};
+
         const response = await axios.post<{ data: PropertyRecord }>(
           `${API_URL}/api/get_property_model_data/`,
           {
@@ -330,11 +340,7 @@ const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext
             submarket,
             region,
           },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+          config
         );
 
         if (isActive) {

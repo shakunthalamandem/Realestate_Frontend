@@ -103,8 +103,8 @@ function UploadZone({
           onDrop={handleDrop}
           onClick={() => inputRef.current?.click()}
           className={`flex cursor-pointer items-center justify-center rounded-2xl border-2 border-dashed px-6 py-5 transition ${dragging
-              ? "border-[#90aee8] bg-[#f3f8ff]"
-              : "border-[#d7dfeb] bg-white hover:border-[#b9c8e6] hover:bg-[#fbfdff]"
+            ? "border-[#90aee8] bg-[#f3f8ff]"
+            : "border-[#d7dfeb] bg-white hover:border-[#b9c8e6] hover:bg-[#fbfdff]"
             }`}
         >
           <div className="flex items-center gap-4 text-center sm:text-left">
@@ -420,8 +420,8 @@ function AddPropertyForm({ onBack }: { onBack: () => void }) {
             onClick={handleSubmit}
             disabled={!canSubmit}
             className={`flex h-12 w-full sm:w-auto px-6 items-center justify-center gap-2 rounded-2xl text-[15px] font-semibold transition ${canSubmit
-                ? "bg-[#162a4c] text-white shadow-[0_12px_30px_rgba(22,42,76,0.24)] hover:-translate-y-0.5 hover:bg-[#1b335c]"
-                : "cursor-not-allowed bg-[#d8deea] text-[#78879d]"
+              ? "bg-[#162a4c] text-white shadow-[0_12px_30px_rgba(22,42,76,0.24)] hover:-translate-y-0.5 hover:bg-[#1b335c]"
+              : "cursor-not-allowed bg-[#d8deea] text-[#78879d]"
               }`}
           >
             {submitted ? (
@@ -464,14 +464,20 @@ const PfDemoProperties: React.FC<PfDemoPropertiesProps> = ({ onSelectProperty })
       try {
         const token = localStorage.getItem("access_token");
 
-        const response = await axios.post<{ data: PropertyRecord[] }>(
+        // ✅ ONLY attach token if it is valid
+        const config =
+          token && token !== "null" && token !== "undefined"
+            ? {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+            : {};
+
+        const response = await axios.post(
           `${API_URL}/api/get_property_model_data/`,
           { fetch: "all" },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+          config
         );
 
         if (isActive) {

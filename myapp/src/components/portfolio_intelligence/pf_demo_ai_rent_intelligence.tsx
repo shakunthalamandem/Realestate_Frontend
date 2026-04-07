@@ -154,14 +154,20 @@ const PfDemoAiRentIntelligence: React.FC = () => {
     try {
       const token = localStorage.getItem("access_token");
 
+      // ✅ attach token ONLY if valid
+      const config =
+        token && token !== "null" && token !== "undefined"
+          ? {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+          : {};
+
       const response = await axios.post(
         `${API_URL}/api/get_ai_rent_intelligence_data/`,
         payload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        config
       );
       const fetched = response.data?.data ?? [];
       setProperties(fetched);
