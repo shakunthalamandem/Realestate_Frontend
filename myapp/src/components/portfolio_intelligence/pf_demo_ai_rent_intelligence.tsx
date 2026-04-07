@@ -122,7 +122,7 @@ const baseChartOptions: any = {
     tooltip: {
       callbacks: {
         label: (context: any) => `${context.dataset.label}: ${context.raw}`,
-                // label: (context: any) => `${context.raw}`,
+        // label: (context: any) => `${context.raw}`,
 
       },
     },
@@ -152,7 +152,17 @@ const PfDemoAiRentIntelligence: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.post(`${API_URL}/api/get_ai_rent_intelligence_data/`, payload);
+      const token = localStorage.getItem("access_token");
+
+      const response = await axios.post(
+        `${API_URL}/api/get_ai_rent_intelligence_data/`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       const fetched = response.data?.data ?? [];
       setProperties(fetched);
       if (payload.property_name && fetched.length) {
@@ -356,9 +366,8 @@ const PfDemoAiRentIntelligence: React.FC = () => {
                   </td>
                   <td className="interactive-data-table__cell text-right tabular-nums">
                     <span
-                      className={`block font-semibold ${
-                        row.percentIncrease && Number(row.percentIncrease) < 0 ? "text-rose-500" : "text-emerald-600"
-                      }`}
+                      className={`block font-semibold ${row.percentIncrease && Number(row.percentIncrease) < 0 ? "text-rose-500" : "text-emerald-600"
+                        }`}
                     >
                       {formatSignedPercent(row.percentIncrease)}
                     </span>
@@ -366,9 +375,9 @@ const PfDemoAiRentIntelligence: React.FC = () => {
                   <td className="interactive-data-table__cell text-right tabular-nums">
                     <span className="interactive-data-table__value">{formatCurrency(row.annualRevenueLift)}</span>
                   </td>
-                   <td className="interactive-data-table__cell interactive-data-table__cell--last interactive-data-table__arrow-cell">
+                  <td className="interactive-data-table__cell interactive-data-table__cell--last interactive-data-table__arrow-cell">
                     {/* <ChevronRight className="interactive-data-table__arrow" strokeWidth={2.6} aria-hidden="true" /> */}
-                  </td> 
+                  </td>
                 </tr>
               ))}
             </tbody>

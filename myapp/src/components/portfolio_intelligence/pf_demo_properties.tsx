@@ -102,11 +102,10 @@ function UploadZone({
           onDragOver={(e) => e.preventDefault()}
           onDrop={handleDrop}
           onClick={() => inputRef.current?.click()}
-          className={`flex cursor-pointer items-center justify-center rounded-2xl border-2 border-dashed px-6 py-5 transition ${
-            dragging
+          className={`flex cursor-pointer items-center justify-center rounded-2xl border-2 border-dashed px-6 py-5 transition ${dragging
               ? "border-[#90aee8] bg-[#f3f8ff]"
               : "border-[#d7dfeb] bg-white hover:border-[#b9c8e6] hover:bg-[#fbfdff]"
-          }`}
+            }`}
         >
           <div className="flex items-center gap-4 text-center sm:text-left">
             <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-[#edf1f6]">
@@ -252,38 +251,38 @@ function AddPropertyForm({ onBack }: { onBack: () => void }) {
   return (
     <section className="mx-auto w-full max-w-[1080px] px-1 pb-10 pt-2">
       <div className="mb-5 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">      
-            <button
-              type="button"
-              onClick={onBack}
-              className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl border border-[#d7dfeb] bg-white text-[#162a4c] transition hover:bg-[#f4f7fb]"
-              aria-label="Back to properties"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </button>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={onBack}
+            className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl border border-[#d7dfeb] bg-white text-[#162a4c] transition hover:bg-[#f4f7fb]"
+            aria-label="Back to properties"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
 
-            <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-[#162a4c] text-white">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                  <polyline points="14 2 14 8 20 8" />
-                  <line x1="16" y1="13" x2="8" y2="13" />
-                  <line x1="16" y1="17" x2="8" y2="17" />
-                </svg>
-              </div>
-
-              <div>
-                <h1 className="text-[32px] font-bold tracking-[-0.03em] text-[#111c4e]">
-                  Property Submission
-                </h1>
-                <p className="text-[14px] text-[#49648d]">
-                  Complete all fields and upload documents to submit
-                </p>
-              </div>
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-[#162a4c] text-white">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="16" y1="13" x2="8" y2="13" />
+                <line x1="16" y1="17" x2="8" y2="17" />
+              </svg>
             </div>
 
+            <div>
+              <h1 className="text-[32px] font-bold tracking-[-0.03em] text-[#111c4e]">
+                Property Submission
+              </h1>
+              <p className="text-[14px] text-[#49648d]">
+                Complete all fields and upload documents to submit
+              </p>
+            </div>
           </div>
+
         </div>
+      </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <Section step="1" title="Property Details" subtitle="Basic information about the asset">
@@ -384,14 +383,14 @@ function AddPropertyForm({ onBack }: { onBack: () => void }) {
               onRemove={() => setRentRoll(null)}
             />
 
-          <UploadZone
-            label="T12 Statement"
-            description="Trailing 12-month income & expenses"
-            templateHref="/assets/Asset72_T12_Template.xlsx"
-            templateName="Asset72_T12_Template.xlsx"
-            uploaded={t12}
-            onUpload={(file) => setT12({ name: file.name, size: file.size, file })}
-            onRemove={() => setT12(null)}
+            <UploadZone
+              label="T12 Statement"
+              description="Trailing 12-month income & expenses"
+              templateHref="/assets/Asset72_T12_Template.xlsx"
+              templateName="Asset72_T12_Template.xlsx"
+              uploaded={t12}
+              onUpload={(file) => setT12({ name: file.name, size: file.size, file })}
+              onRemove={() => setT12(null)}
             />
           </div>
         </Section>
@@ -409,8 +408,8 @@ function AddPropertyForm({ onBack }: { onBack: () => void }) {
               {!rentRoll && !t12
                 ? "Upload both the Rent Roll and T12 to enable submission"
                 : !rentRoll
-                ? "Upload the Rent Roll to complete the required documents"
-                : "Upload the T12 statement to complete the required documents"}
+                  ? "Upload the Rent Roll to complete the required documents"
+                  : "Upload the T12 statement to complete the required documents"}
             </span>
           </div>
         ) : null}
@@ -420,29 +419,28 @@ function AddPropertyForm({ onBack }: { onBack: () => void }) {
             type="button"
             onClick={handleSubmit}
             disabled={!canSubmit}
-            className={`flex h-12 w-full sm:w-auto px-6 items-center justify-center gap-2 rounded-2xl text-[15px] font-semibold transition ${
-              canSubmit
+            className={`flex h-12 w-full sm:w-auto px-6 items-center justify-center gap-2 rounded-2xl text-[15px] font-semibold transition ${canSubmit
                 ? "bg-[#162a4c] text-white shadow-[0_12px_30px_rgba(22,42,76,0.24)] hover:-translate-y-0.5 hover:bg-[#1b335c]"
                 : "cursor-not-allowed bg-[#d8deea] text-[#78879d]"
-            }`}
+              }`}
           >
-          {submitted ? (
-            <>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-              Submitted!
-            </>
-          ) : (
-            <>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="22" y1="2" x2="11" y2="13" />
-                <polygon points="22 2 15 22 11 13 2 9 22 2" />
-              </svg>
-              Submit Property
-            </>
-          )}
-        </button>
+            {submitted ? (
+              <>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Submitted!
+              </>
+            ) : (
+              <>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="22" y1="2" x2="11" y2="13" />
+                  <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                </svg>
+                Submit Property
+              </>
+            )}
+          </button>
         </div>
         {canSubmit ? (
           <p className="mt-3 text-center text-[12px] text-[#49648d]">Ready to submit — all required documents uploaded</p>
@@ -464,9 +462,16 @@ const PfDemoProperties: React.FC<PfDemoPropertiesProps> = ({ onSelectProperty })
     const load = async () => {
       setStatus("loading");
       try {
+        const token = localStorage.getItem("access_token");
+
         const response = await axios.post<{ data: PropertyRecord[] }>(
           `${API_URL}/api/get_property_model_data/`,
-          { fetch: "all" }
+          { fetch: "all" },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
 
         if (isActive) {
@@ -576,41 +581,41 @@ const PfDemoProperties: React.FC<PfDemoPropertiesProps> = ({ onSelectProperty })
 
               {status === "idle"
                 ? rows.map((row) => {
-                    const rowKey = getRowKey(row);
+                  const rowKey = getRowKey(row);
 
-                    return (
-                      <tr
-                        key={rowKey}
-                        tabIndex={0}
-                        role="button"
-                        className="pf-properties__body-row"
-                        onClick={() => handleRowClick(row)}
-                        onKeyDown={(event) => handleRowKeyDown(event, row)}
-                      >
-                        <td className="pf-properties__cell pf-properties__cell--first">
-                          <span className="pf-properties__property">{row.property_name || "-"}</span>
-                        </td>
-                        <td className="pf-properties__cell">
-                          <span className="pf-properties__value">{row.location || "-"}</span>
-                        </td>
-                        <td className="pf-properties__cell">
-                          <span className="pf-properties__value">{row.class_type || "-"}</span>
-                        </td>
-                        <td className="pf-properties__cell">
-                          <span className="pf-properties__value">{row.units || "-"}</span>
-                        </td>
-                        <td className="pf-properties__cell">
-                          <span className="pf-properties__value">{row.occupancy || "-"}</span>
-                        </td>
-                        {/* <td className="pf-properties__cell">
+                  return (
+                    <tr
+                      key={rowKey}
+                      tabIndex={0}
+                      role="button"
+                      className="pf-properties__body-row"
+                      onClick={() => handleRowClick(row)}
+                      onKeyDown={(event) => handleRowKeyDown(event, row)}
+                    >
+                      <td className="pf-properties__cell pf-properties__cell--first">
+                        <span className="pf-properties__property">{row.property_name || "-"}</span>
+                      </td>
+                      <td className="pf-properties__cell">
+                        <span className="pf-properties__value">{row.location || "-"}</span>
+                      </td>
+                      <td className="pf-properties__cell">
+                        <span className="pf-properties__value">{row.class_type || "-"}</span>
+                      </td>
+                      <td className="pf-properties__cell">
+                        <span className="pf-properties__value">{row.units || "-"}</span>
+                      </td>
+                      <td className="pf-properties__cell">
+                        <span className="pf-properties__value">{row.occupancy || "-"}</span>
+                      </td>
+                      {/* <td className="pf-properties__cell">
                           <span className="pf-properties__value">{row.rent_per_sqft || "-"}</span>
                         </td> */}
-                        <td className="pf-properties__cell pf-properties__cell--last pf-properties__arrow-cell">
-                          <ChevronRight className="pf-properties__arrow" strokeWidth={2.6} />
-                        </td>
-                      </tr>
-                    );
-                  })
+                      <td className="pf-properties__cell pf-properties__cell--last pf-properties__arrow-cell">
+                        <ChevronRight className="pf-properties__arrow" strokeWidth={2.6} />
+                      </td>
+                    </tr>
+                  );
+                })
                 : null}
             </tbody>
           </table>

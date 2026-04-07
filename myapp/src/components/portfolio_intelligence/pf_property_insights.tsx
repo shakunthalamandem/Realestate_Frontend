@@ -252,20 +252,18 @@ const InsightCard: React.FC<InsightCardProps> = ({
   <button
     type="button"
     onClick={onClick}
-    className={`w-full rounded-3xl border bg-white p-4 text-left shadow-sm transition ${
-      selected
+    className={`w-full rounded-3xl border bg-white p-4 text-left shadow-sm transition ${selected
         ? "border-sky-400 shadow-[0_0_0_2px_rgba(14,165,233,0.3)]"
         : "border-slate-100 hover:-translate-y-0.5 hover:border-slate-200"
-    }`}
+      }`}
   >
     <div className="flex items-center justify-between">
       <p className="text-sm font-semibold text-slate-900">{title}</p>
 
       {badge ? (
         <span
-          className={`rounded-full px-3 py-1 text-[11px] font-semibold ${
-            badgeClass ?? "bg-slate-100 text-slate-800"
-          }`}
+          className={`rounded-full px-3 py-1 text-[11px] font-semibold ${badgeClass ?? "bg-slate-100 text-slate-800"
+            }`}
         >
           {badge}
         </span>
@@ -322,6 +320,8 @@ const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext
 
       setStatus("loading");
       try {
+        const token = localStorage.getItem("access_token");
+
         const response = await axios.post<{ data: PropertyRecord }>(
           `${API_URL}/api/get_property_model_data/`,
           {
@@ -329,6 +329,11 @@ const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext
             property_name: propertyName,
             submarket,
             region,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           }
         );
 
@@ -664,7 +669,7 @@ const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext
           <div className="pointer-events-none absolute -bottom-14 -left-10 h-36 w-36 rounded-full bg-indigo-300/20 blur-2xl" />
         </section>
         <div className="space-y-6 rounded-3xl bg-white p-6 shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
-        
+
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <h1 className="text-3xl font-semibold text-indigo-900">{record.property_name}</h1>
