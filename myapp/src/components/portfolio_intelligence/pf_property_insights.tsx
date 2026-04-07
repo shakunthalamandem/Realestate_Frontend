@@ -319,27 +319,30 @@ const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext
 
       setStatus("loading");
       try {
-        let response;
-
-        // ✅ attach token ONLY if valid
-        try {
-          response = await authClient.post<{ data: PropertyRecord }>(
-            "/api/get_property_model_data/",
-            {
+        const fetchSpecific = async (url: string) => {
+          try {
+            return await authClient.post<{ data: PropertyRecord }>(url, {
               fetch: "specific",
               property_name: propertyName,
               ...(submarket ? { submarket } : {}),
               ...(region ? { region } : {}),
-            }
-          );
-        } catch {
-          response = await authClient.post<{ data: PropertyRecord }>(
-            "/api/get_property_model_data/",
-            {
+            });
+          } catch {
+            return await authClient.post<{ data: PropertyRecord }>(url, {
               fetch: "specific",
               property_name: propertyName,
-            }
-          );
+            });
+          }
+        };
+
+        let response;
+        try {
+          response = await fetchSpecific("/api/get_property_model_data_user_view/");
+          if (!response.data?.data) {
+            throw new Error("No user data");
+          }
+        } catch {
+          response = await fetchSpecific("/api/get_property_model_data/");
         }
 
         if (isActive) {

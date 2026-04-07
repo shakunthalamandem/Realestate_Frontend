@@ -461,12 +461,18 @@ const PfDemoProperties: React.FC<PfDemoPropertiesProps> = ({ onSelectProperty })
     const load = async () => {
       setStatus("loading");
       try {
-        const response = await authClient.post<{ data: PropertyRecord[] }>(
-          "/api/get_property_model_data/",
-          { fetch: "all" }
-        );
+        const fetchAll = (url: string) =>
+          authClient.post<{ data: PropertyRecord[] }>(url, { fetch: "all" });
 
-        // ✅ ONLY attach token if it is valid
+        let response;
+        try {
+          response = await fetchAll("/api/get_property_model_data_user_view/");
+          if (!response.data?.data?.length) {
+            throw new Error("No user data");
+          }
+        } catch {
+          response = await fetchAll("/api/get_property_model_data/");
+        }
 
         if (isActive) {
           setData(response.data?.data ?? []);

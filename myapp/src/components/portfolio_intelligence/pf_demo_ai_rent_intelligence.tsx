@@ -150,9 +150,22 @@ const PfDemoAiRentIntelligence: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await authClient.post("/api/get_ai_rent_intelligence_data/", payload);
-      const responseData = response.data?.data;
-      const fetched = Array.isArray(responseData) ? responseData : responseData ? [responseData] : [];
+      const fetchFrom = async (url: string) => {
+        const response = await authClient.post(url, payload);
+        const responseData = response.data?.data;
+        return Array.isArray(responseData) ? responseData : responseData ? [responseData] : [];
+      };
+
+      let fetched: PropertyRecord[] = [];
+      try {
+        fetched = await fetchFrom("/api/get_ai_rent_intelligence_data_user_view/");
+        if (!fetched.length) {
+          throw new Error("No user data");
+        }
+      } catch {
+        fetched = await fetchFrom("/api/get_ai_rent_intelligence_data/");
+      }
+
       setProperties(fetched);
       if (payload.property_name && fetched.length) {
         setSelectedPropertyName(fetched[0].property_name ?? "");
