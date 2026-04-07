@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import axios from "axios";
 import { ChevronLeft, ChevronRight, MapPin } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { authClient } from "@/lib/auth-api";
 import {
   Select,
   SelectContent,
@@ -454,7 +454,6 @@ const PfDemoProperties: React.FC<PfDemoPropertiesProps> = ({ onSelectProperty })
   const [data, setData] = useState<PropertyRecord[]>([]);
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [showAddPropertyForm, setShowAddPropertyForm] = useState(false);
-  const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     let isActive = true;
@@ -462,23 +461,12 @@ const PfDemoProperties: React.FC<PfDemoPropertiesProps> = ({ onSelectProperty })
     const load = async () => {
       setStatus("loading");
       try {
-        const token = localStorage.getItem("access_token");
+        const response = await authClient.post<{ data: PropertyRecord[] }>(
+          "/api/get_property_model_data/",
+          { fetch: "all" }
+        );
 
         // ✅ ONLY attach token if it is valid
-        const config =
-          token && token !== "null" && token !== "undefined"
-            ? {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-            : {};
-
-        const response = await axios.post(
-          `${API_URL}/api/get_property_model_data/`,
-          { fetch: "all" },
-          config
-        );
 
         if (isActive) {
           setData(response.data?.data ?? []);
@@ -495,7 +483,7 @@ const PfDemoProperties: React.FC<PfDemoPropertiesProps> = ({ onSelectProperty })
     return () => {
       isActive = false;
     };
-  }, [API_URL]);
+  }, []);
 
   const rows = data;
 

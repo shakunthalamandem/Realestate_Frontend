@@ -1,7 +1,7 @@
 ﻿import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import { Bar, Line } from "react-chartjs-2";
 import { ChevronRight } from "lucide-react";
+import { authClient } from "@/lib/auth-api";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -146,30 +146,13 @@ const PfDemoAiRentIntelligence: React.FC = () => {
     }
     return properties[0];
   }, [properties, selectedPropertyName]);
-  const API_URL = import.meta.env.VITE_API_URL;
-
   const fetchRentData = async (payload: { fetch: "all" | "specific"; property_name?: string }) => {
     setLoading(true);
     setError(null);
     try {
-      const token = localStorage.getItem("access_token");
-
-      // ✅ attach token ONLY if valid
-      const config =
-        token && token !== "null" && token !== "undefined"
-          ? {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-          : {};
-
-      const response = await axios.post(
-        `${API_URL}/api/get_ai_rent_intelligence_data/`,
-        payload,
-        config
-      );
-      const fetched = response.data?.data ?? [];
+      const response = await authClient.post("/api/get_ai_rent_intelligence_data/", payload);
+      const responseData = response.data?.data;
+      const fetched = Array.isArray(responseData) ? responseData : responseData ? [responseData] : [];
       setProperties(fetched);
       if (payload.property_name && fetched.length) {
         setSelectedPropertyName(fetched[0].property_name ?? "");
