@@ -50,6 +50,7 @@ type RiskAlert = IntelligenceTips & {
   monthlyImpact?: number;
   revenueAtRisk?: number;
   annualNoiImpact?: number;
+  avgTenure?: number;
   avgTenureMonths?: number;
 };
 
@@ -129,6 +130,7 @@ type PropertyResponseDetails = {
     yearBuilt?: number | null;
   };
   intelligence?: PropertyIntelligence;
+  riskAlert?: RiskAlert;
 
   // ✅ union type
   rentComparison?: RentComparisonEntry[] | RentComparisonSummary;
@@ -360,7 +362,9 @@ const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext
   }, [propertyName, region, submarket]);
 
   const reviewDetails = record?.property_response?.intelligence?.reviewIntelligence;
-  const riskAlert = record?.property_response?.intelligence?.riskAlert;
+  const riskAlert =
+    record?.property_response?.riskAlert ??
+    record?.property_response?.intelligence?.riskAlert;
   const marketMomentum = record?.property_response?.intelligence?.marketMomentum;
   const intelligence = record?.property_response?.intelligence;
 
@@ -377,6 +381,11 @@ const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext
       riskAlert?.expiringUnitsNext90Days;
     return isValidNumber(v) ? v : undefined;
   }, [riskAlert?.expiringUnits, riskAlert?.expiringUnitsNext90Days]);
+
+  const avgTenure = useMemo(() => {
+    const v = riskAlert?.avgTenure ?? riskAlert?.avgTenureMonths;
+    return isValidNumber(v) ? v : undefined;
+  }, [riskAlert?.avgTenure, riskAlert?.avgTenureMonths]);
 
   type InsightKey = "review" | "market";
   const [selectedInsight, setSelectedInsight] = useState<InsightKey>("review");
@@ -707,7 +716,7 @@ const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext
             </div>
             <div className="rounded-2xl border border-white bg-white px-4 py-3">
               <p className="text-xs font-semibold uppercase tracking-wide text-rose-600">Avg Tenure</p>
-              <p className="mt-1 text-xl font-semibold text-slate-900">{riskAlert?.avgTenureMonths ? `${riskAlert.avgTenureMonths} months` : "-"}</p>
+              <p className="mt-1 text-xl font-semibold text-slate-900">{avgTenure !== undefined ? `${avgTenure} months` : "-"}</p>
             </div>
             <div className="rounded-2xl border border-white bg-white px-4 py-3">
               <p className="text-xs font-semibold uppercase tracking-wide text-rose-600">Renewal Rate</p>
