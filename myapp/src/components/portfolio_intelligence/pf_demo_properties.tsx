@@ -233,19 +233,51 @@ function AddPropertyForm({ onBack }: { onBack: () => void }) {
   const [rentRoll, setRentRoll] = useState<UploadedFile | null>(null);
   const [t12, setT12] = useState<UploadedFile | null>(null);
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  const canSubmit = !!rentRoll && !!t12;
+  const hasRequiredFields =
+    !!propertyName.trim() &&
+    !!location.trim() &&
+    !!assetClass &&
+    !!units &&
+    !!occupancy;
+  const canSubmit = hasRequiredFields && !!rentRoll && !!t12 && !submitting;
   const inputClass =
     "h-11 w-full rounded-2xl border border-[#cfd8e6] bg-[#f7f9fc] px-4 text-[15px] text-[#111c4e] placeholder:text-[#7c8ba5] outline-none transition focus:border-[#89a5db] focus:bg-white focus:ring-2 focus:ring-[#d8e5fb]";
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!canSubmit) return;
-    setSubmitted(true);
-    toast({
-      title: "Property Submitted Successfully",
-      description: `${propertyName || "Your property"} has been submitted for review.`,
-    });
-    window.setTimeout(() => setSubmitted(false), 3000);
+
+    const formData = new FormData();
+    formData.append("property_name", propertyName.trim());
+    formData.append("location", location.trim());
+    formData.append("asset_class", assetClass);
+    formData.append("no_of_units", units);
+    formData.append("occupancy_rate", occupancy);
+    formData.append("t12_document", t12.file);
+    formData.append("rent_roll_document", rentRoll.file);
+
+    try {
+      setSubmitting(true);
+      await authClient.post("/api/user_properties/add/", formData);
+
+      setSubmitted(true);
+      toast({
+        title: "Property Submitted Successfully",
+        description: `${propertyName.trim() || "Your property"} has been submitted for review.`,
+      });
+
+      window.setTimeout(() => setSubmitted(false), 3000);
+      onBack();
+    } catch (error) {
+      toast({
+        title: "Property submission failed",
+        description: "Could not submit the property. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -437,7 +469,7 @@ function AddPropertyForm({ onBack }: { onBack: () => void }) {
                   <line x1="22" y1="2" x2="11" y2="13" />
                   <polygon points="22 2 15 22 11 13 2 9 22 2" />
                 </svg>
-                Submit Property
+                {submitting ? "Submitting..." : "Submit Property"}
               </>
             )}
           </button>
@@ -455,41 +487,41 @@ const PfDemoProperties: React.FC<PfDemoPropertiesProps> = ({ onSelectProperty })
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [showAddPropertyForm, setShowAddPropertyForm] = useState(false);
 
+  const loadProperties = useCallback(async (isActive = true) => {
+    setStatus("loading");
+    try {
+      const fetchAll = (url: string) =>
+        authClient.post<{ data: PropertyRecord[] }>(url, { fetch: "all" });
+
+      let response;
+      try {
+        response = await fetchAll("/api/get_property_model_data_user_view/");
+        if (!response.data?.data?.length) {
+          throw new Error("No user data");
+        }
+      } catch {
+        response = await fetchAll("/api/get_property_model_data/");
+      }
+
+      if (isActive) {
+        setData(response.data?.data ?? []);
+        setStatus("idle");
+      }
+    } catch (error) {
+      if (isActive) {
+        setStatus("error");
+      }
+    }
+  }, []);
+
   useEffect(() => {
     let isActive = true;
 
-    const load = async () => {
-      setStatus("loading");
-      try {
-        const fetchAll = (url: string) =>
-          authClient.post<{ data: PropertyRecord[] }>(url, { fetch: "all" });
-
-        let response;
-        try {
-          response = await fetchAll("/api/get_property_model_data_user_view/");
-          if (!response.data?.data?.length) {
-            throw new Error("No user data");
-          }
-        } catch {
-          response = await fetchAll("/api/get_property_model_data/");
-        }
-
-        if (isActive) {
-          setData(response.data?.data ?? []);
-          setStatus("idle");
-        }
-      } catch (error) {
-        if (isActive) {
-          setStatus("error");
-        }
-      }
-    };
-
-    load();
+    loadProperties(isActive);
     return () => {
       isActive = false;
     };
-  }, []);
+  }, [loadProperties]);
 
   const rows = data;
 
@@ -517,7 +549,14 @@ const PfDemoProperties: React.FC<PfDemoPropertiesProps> = ({ onSelectProperty })
   );
 
   if (showAddPropertyForm) {
-    return <AddPropertyForm onBack={() => setShowAddPropertyForm(false)} />;
+    return (
+      <AddPropertyForm
+        onBack={() => {
+          setShowAddPropertyForm(false);
+          void loadProperties(true);
+        }}
+      />
+    );
   }
 
   return (
