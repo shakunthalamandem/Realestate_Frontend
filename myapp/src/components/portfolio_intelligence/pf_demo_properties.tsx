@@ -227,6 +227,7 @@ function AddPropertyForm({ onBack }: { onBack: () => void }) {
   const { toast } = useToast();
   const [propertyName, setPropertyName] = useState("");
   const [location, setLocation] = useState("");
+  const [submarket, setSubmarket] = useState("");
   const [assetClass, setAssetClass] = useState("");
   const [units, setUnits] = useState("");
   const [occupancy, setOccupancy] = useState("");
@@ -251,6 +252,7 @@ function AddPropertyForm({ onBack }: { onBack: () => void }) {
     const formData = new FormData();
     formData.append("property_name", propertyName.trim());
     formData.append("location", location.trim());
+    formData.append("submarket", submarket.trim());
     formData.append("asset_class", assetClass);
     formData.append("no_of_units", units);
     formData.append("occupancy_rate", occupancy);
@@ -340,6 +342,16 @@ function AddPropertyForm({ onBack }: { onBack: () => void }) {
                   onChange={(e) => setLocation(e.target.value)}
                 />
               </div>
+            </Field>
+
+            <Field label="Submarket" required>
+              <input
+                type="text"
+                className={inputClass}
+                placeholder="e.g. Downtown Austin"
+                value={submarket}
+                onChange={(e) => setSubmarket(e.target.value)}
+              />
             </Field>
 
             <Field label="Asset Class" required>
