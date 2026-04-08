@@ -14,7 +14,6 @@ import {
   Legend,
   ChartOptions,
 } from "chart.js";
-import { PortfolioGuidedRecommendationCard } from "./tabs/portfolio_narrative_cards";
 import { getPropertyNarrative } from "./property_narratives";
 ChartJS.register(
   CategoryScale,
@@ -55,13 +54,16 @@ type RiskAlert = IntelligenceTips & {
 };
 
 type MarketMomentum = IntelligenceTips & {
-  absorption?: number;
+  absorption?: number | string;
   vacancyTrend?: string;
   monthlyImpact?: number;
   annualNoiImpact?: number;
   rentGrowthTrend?: string;
   concessionsTrend?: string;
   employmentGrowthYoY?: number;
+  vacancy?: string;
+  rentGrowth?: string;
+  momentumView?: string;
 };
 
 type ReviewIntelligence = IntelligenceTips & {
@@ -72,12 +74,20 @@ type ReviewIntelligence = IntelligenceTips & {
   sentimentPositive?: number;
   monthlyImpact?: number;
   annualNoiImpact?: number;
+  ratingScore?: number | null;
+  sentimentPercent?: number | null;
+  keyStrengths?: string[];
+  keyRisks?: string[];
 };
 
 type PropertyIntelligence = {
   riskAlert?: RiskAlert;
   marketMomentum?: MarketMomentum;
   reviewIntelligence?: ReviewIntelligence;
+  overview?: string;
+  whyThisMatters?: string;
+  nextBestActions?: string[];
+  aiGuidedRecommendations?: string[];
 };
 
 // ✅ rentComparison can be ARRAY (unit breakdown) or OBJECT (summary)
@@ -288,17 +298,6 @@ type PfPropertyInsightsProps = {
   onBack?: () => void;
 };
 
-type InsightDetail = {
-  title: string;
-  confidence: string;
-  description: string;
-  keyStats: { label: string; value: string }[];
-  whyThisMatters: string[];
-  monthlyImpact?: number;
-  annualImpact?: number;
-  nextActions: string[];
-};
-
 const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext, onBack }) => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -363,6 +362,7 @@ const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext
   const reviewDetails = record?.property_response?.intelligence?.reviewIntelligence;
   const riskAlert = record?.property_response?.intelligence?.riskAlert;
   const marketMomentum = record?.property_response?.intelligence?.marketMomentum;
+  const intelligence = record?.property_response?.intelligence;
 
   // ✅ FIX #1: rentComparison may be OBJECT or ARRAY
   const rentComparisonList: RentComparisonEntry[] = useMemo(() => {
@@ -378,7 +378,7 @@ const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext
     return isValidNumber(v) ? v : undefined;
   }, [riskAlert?.expiringUnits, riskAlert?.expiringUnitsNext90Days]);
 
-  type InsightKey = "review" | "market" | "risk";
+  type InsightKey = "review" | "market";
   const [selectedInsight, setSelectedInsight] = useState<InsightKey>("review");
 
   // reset selection if property changes
@@ -406,21 +406,28 @@ const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext
   }, [record, riskAlert?.renewalRate]);
 
   const insightCards = useMemo(() => {
-    const reviewValue = reviewDetails?.rating ? reviewDetails.rating.toFixed(1) : "-";
+    const reviewValue = isValidNumber(reviewDetails?.ratingScore)
+      ? reviewDetails?.ratingScore?.toFixed(1) ?? "-"
+      : isValidNumber(reviewDetails?.avgRating)
+        ? reviewDetails?.avgRating?.toFixed(1) ?? "-"
+        : isValidNumber(reviewDetails?.rating)
+          ? reviewDetails?.rating?.toFixed(1) ?? "-"
+          : "-";
     const marketValue = marketMomentum?.absorption
-      ? `${marketMomentum.absorption.toLocaleString()} units`
+      ? typeof marketMomentum.absorption === "number"
+        ? `${marketMomentum.absorption.toLocaleString()} units`
+        : marketMomentum.absorption
       : "-";
-    const riskValue = expiringUnits !== undefined ? `${expiringUnits} units` : "-";
 
     return [
       {
         key: "review" as InsightKey,
         title: "Review Intelligence",
         value: reviewValue,
-        caption: "Avg rating",
+        caption: "Rating score",
         badge: reviewDetails?.confidence ?? "Medium",
         badgeClass: "bg-amber-100 text-amber-700",
-        description: `Sentiment ${reviewDetails?.sentimentPositive ?? 0}% positive.`,
+        description: `Sentiment ${reviewDetails?.sentimentPercent ?? reviewDetails?.sentimentPositive ?? 0}% positive.`,
       },
       {
         key: "market" as InsightKey,
@@ -429,21 +436,14 @@ const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext
         caption: "Metro absorption",
         badge: marketMomentum?.confidence ?? "Medium",
         badgeClass: "bg-sky-100 text-sky-700",
-        description: marketMomentum?.vacancyTrend
-          ? `Vacancy ${marketMomentum.vacancyTrend.toLowerCase()}`
+        description: marketMomentum?.vacancy
+          ? `Vacancy ${marketMomentum.vacancy.toLowerCase()}`
+          : marketMomentum?.vacancyTrend
+            ? `Vacancy ${marketMomentum.vacancyTrend.toLowerCase()}`
           : "Momentum data loading.",
       },
-      {
-        key: "risk" as InsightKey,
-        title: "Risk Alert",
-        value: riskValue,
-        caption: "Units expiring",
-        badge: riskAlert?.confidence ?? "High",
-        badgeClass: "bg-rose-100 text-rose-700",
-        description: "Actionable next steps to protect NOI.",
-      },
     ];
-  }, [marketMomentum, reviewDetails, riskAlert, expiringUnits]);
+  }, [marketMomentum, reviewDetails]);
 
   const propertyMeta = record?.property_response?.property;
   const yearBuilt = propertyMeta?.yearBuilt;
@@ -451,6 +451,13 @@ const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext
     () => getPropertyNarrative(record?.property_name ?? propertyName),
     [record?.property_name, propertyName]
   );
+  const fallbackExecutionPriorities = [
+    "Launch a 60-day early renewal push before peak expirations.",
+    "Align pricing to market where loss-to-lease is still meaningful.",
+    "Stagger turnover planning to protect occupancy and cash flow.",
+    "Address resident experience drivers that affect retention.",
+    "Tighten expense control actions to defend NOI.",
+  ];
   const trends = record?.property_response?.trends;
   const noiTrend = trends?.noiTrend12Month ?? [];
   const revenueExpense = trends?.revenueVsExpense ?? [];
@@ -558,86 +565,7 @@ const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext
     };
   }, [rentComparisonEntries]);
 
-  const detailPanel = useMemo<InsightDetail>(() => {
-    const monthlyImpact =
-      reviewDetails?.monthlyImpact ?? marketMomentum?.monthlyImpact ?? riskAlert?.monthlyImpact;
-    const annualImpact =
-      reviewDetails?.annualNoiImpact ?? marketMomentum?.annualNoiImpact ?? riskAlert?.annualNoiImpact;
-
-    switch (selectedInsight) {
-      case "market":
-        return {
-          title: "Market Momentum",
-          confidence: marketMomentum?.confidence ?? "Medium confidence",
-          description: "Monitor metro and submarket signals to capture demand shifts safely.",
-          keyStats: [
-            { label: "Absorption", value: marketMomentum?.absorption ? `${marketMomentum.absorption} units` : "-" },
-            { label: "Vacancy", value: marketMomentum?.vacancyTrend ?? "-" },
-            { label: "Rent Growth", value: marketMomentum?.rentGrowthTrend ?? "-" },
-            {
-              label: "Employment",
-              value:
-                marketMomentum?.employmentGrowthYoY !== undefined
-                  ? `${(marketMomentum.employmentGrowthYoY * 100).toFixed(1)}% YoY`
-                  : "-",
-            },
-          ],
-          whyThisMatters: [
-            "Absorption momentum helps dial lease pricing and concessions.",
-            "Vacancy trends signal when to push appliance or renovation programs.",
-            "Employment growth keeps demand steady even with seasonal dips.",
-          ],
-          monthlyImpact,
-          annualImpact,
-          nextActions:
-            marketMomentum?.nextActions ??
-            ["Update comps with new absorption data", "Benchmark against metro rent ladder", "Monitor employment & development news"],
-        };
-      case "risk":
-        return {
-          title: "Risk Alert",
-          confidence: riskAlert?.confidence ?? "High confidence",
-          description: "Prioritize expiring units and expense drivers before they erode NOI.",
-          keyStats: [
-            { label: "Expiring Units", value: expiringUnits !== undefined ? `${expiringUnits} units` : "-" },
-            { label: "Revenue At Risk", value: formatCurrency(riskAlert?.revenueAtRisk) },
-            { label: "Avg Tenure", value: riskAlert?.avgTenureMonths ? `${riskAlert.avgTenureMonths} months` : "-" },
-            { label: "Renewal Rate", value: formatPercent(riskAlert?.renewalRate) },
-          ],
-          whyThisMatters:
-            riskAlert?.riskDrivers?.length ? riskAlert.riskDrivers : [
-              "Expiring leases can pressure occupancy and push concessions.",
-              "Expense volatility hits NOI when not pre-empted.",
-              "Focused renewals and maintenance reduce surprise churn.",
-            ],
-          monthlyImpact,
-          annualImpact,
-          nextActions:
-            riskAlert?.nextActions ?? ["Launch 60-day renewal campaign", "Segment expiring units weekly", "Budget for preventive maintenance spend"],
-        };
-      default:
-        return {
-          title: "Review Intelligence",
-          confidence: reviewDetails?.confidence ?? "Medium confidence",
-          description: "Resident sentiment pinpoints maintenance, amenity, and communication levers for renewals.",
-          keyStats: [
-            { label: "Rating", value: reviewDetails?.rating ? `${reviewDetails.rating.toFixed(1)}/5` : "-" },
-            { label: "Reviews (90d)", value: `${reviewDetails?.reviews90d ?? 0}` },
-            { label: "Sentiment", value: `${reviewDetails?.sentimentPositive ?? 0}% Positive` },
-            { label: "Response Rate", value: `${reviewDetails?.responseRate ?? 0}%` },
-          ],
-          whyThisMatters: [
-            "Properties rated 4.5+ retain residents longer.",
-            "Resolving maintenance complaints improves digital sentiment.",
-            "Positive reviews lift discovery and lead flow organically.",
-          ],
-          monthlyImpact,
-          annualImpact,
-          nextActions:
-            reviewDetails?.nextActions ?? ["Respond to all reviews within 24 hours", "Address recurring maintenance themes", "Highlight wins in marketing and leasing"],
-        };
-    }
-  }, [marketMomentum, riskAlert, reviewDetails, selectedInsight, expiringUnits]);
+  const selectedInsightTitle = selectedInsight === "market" ? "Market Momentum" : "Review Intelligence";
 
   if (status === "loading") {
     return (
@@ -670,7 +598,7 @@ const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext
             <h2 className="text-3xl font-semibold leading-tight">{record.property_name}</h2>
             <p className="mt-5 text-xs font-semibold uppercase tracking-[0.16em] text-white/80">Overview</p>
             <p className="mt-3 text-sm leading-7 text-white/95 md:text-[15px]">
-              {propertyNarrative.overview.join(" ")}
+              {intelligence?.overview ?? propertyNarrative.overview.join(" ")}
             </p>
           </div>
           <div className="pointer-events-none absolute -right-10 -top-10 h-36 w-36 rounded-full bg-sky-300/20 blur-2xl" />
@@ -758,6 +686,36 @@ const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext
           </div>
         </div>
 
+        <div className="rounded-3xl border border-rose-100 bg-rose-50/60 p-5 shadow-sm">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h3 className="text-xl font-semibold text-rose-700">Risk Alert</h3>
+              <p className="mt-1 text-sm text-slate-700">Actionable next steps to protect NOI.</p>
+            </div>
+            <span className="rounded-full bg-rose-100 px-3 py-1 text-[11px] font-semibold text-rose-700">
+              {riskAlert?.confidence ?? "High"}
+            </span>
+          </div>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="rounded-2xl border border-white bg-white px-4 py-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-rose-600">Expiring Units</p>
+              <p className="mt-1 text-xl font-semibold text-slate-900">{expiringUnits !== undefined ? `${expiringUnits}` : "-"}</p>
+            </div>
+            <div className="rounded-2xl border border-white bg-white px-4 py-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-rose-600">Revenue At Risk</p>
+              <p className="mt-1 text-xl font-semibold text-slate-900">{formatCurrency(riskAlert?.revenueAtRisk)}</p>
+            </div>
+            <div className="rounded-2xl border border-white bg-white px-4 py-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-rose-600">Avg Tenure</p>
+              <p className="mt-1 text-xl font-semibold text-slate-900">{riskAlert?.avgTenureMonths ? `${riskAlert.avgTenureMonths} months` : "-"}</p>
+            </div>
+            <div className="rounded-2xl border border-white bg-white px-4 py-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-rose-600">Renewal Rate</p>
+              <p className="mt-1 text-xl font-semibold text-slate-900">{formatPercent(riskAlert?.renewalRate)}</p>
+            </div>
+          </div>
+        </div>
+
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-semibold text-slate-900">AI Insights</h2>
@@ -783,31 +741,94 @@ const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext
             <div className="rounded-3xl border border-slate-100 bg-slate-50/50 p-6 shadow-sm">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <h3 className="text-2xl font-semibold text-indigo-900">{detailPanel.title}</h3>
+                  <h3 className="text-2xl font-semibold text-indigo-900">{selectedInsightTitle}</h3>
                 </div>
                 <span className="rounded-full bg-blue-50 px-1 py-1 text-[13px] font-semibold text-black shadow-sm">
-                  {detailPanel.confidence}
+                  {selectedInsight === "market"
+                    ? `${marketMomentum?.confidence ?? "Medium"} confidence`
+                    : `${reviewDetails?.confidence ?? "Medium"} confidence`}
                 </span>
               </div>
 
-              <p className="mt-2 text-sm text-slate-900">{detailPanel.description}</p>
-
-              <div className="mt-4 flex flex-wrap gap-2">
-                {detailPanel.keyStats.map((stat) => (
-                  <div
-                    key={stat.label}
-                    className="rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800"
-                  >
-                    <span className="block text-[15px] font-normal text-indigo-700">{stat.label}</span>
-                    <span className="text-lg text-slate-900">{stat.value}</span>
+              {selectedInsight === "market" ? (
+                <>
+                  <p className="mt-2 text-sm text-slate-900">Monitor metro and submarket signals to capture demand shifts safely.</p>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <div className="rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800">
+                      <span className="block text-[15px] font-normal text-indigo-700">Absorption</span>
+                      <span className="text-lg text-slate-900">{marketMomentum?.absorption ? String(marketMomentum.absorption) : "-"}</span>
+                    </div>
+                    <div className="rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800">
+                      <span className="block text-[15px] font-normal text-indigo-700">Vacancy</span>
+                      <span className="text-lg text-slate-900">{marketMomentum?.vacancy ?? marketMomentum?.vacancyTrend ?? "-"}</span>
+                    </div>
+                    <div className="rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800">
+                      <span className="block text-[15px] font-normal text-indigo-700">Rent Growth</span>
+                      <span className="text-lg text-slate-900">{marketMomentum?.rentGrowth ?? marketMomentum?.rentGrowthTrend ?? "-"}</span>
+                    </div>
+                    <div className="rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800">
+                      <span className="block text-[15px] font-normal text-indigo-700">Momentum View</span>
+                      <span className="text-lg text-slate-900">{marketMomentum?.momentumView ?? "-"}</span>
+                    </div>
                   </div>
-                ))}
-              </div>
+                </>
+              ) : (
+                <>
+                  <p className="mt-2 text-sm text-slate-900">Resident sentiment pinpoints maintenance, amenity, and communication levers for renewals.</p>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <div className="rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800">
+                      <span className="block text-[15px] font-normal text-indigo-700">Rating</span>
+                      <span className="text-lg text-slate-900">
+                        {isValidNumber(reviewDetails?.ratingScore)
+                          ? `${reviewDetails?.ratingScore?.toFixed(1)}`
+                          : isValidNumber(reviewDetails?.avgRating)
+                            ? `${reviewDetails?.avgRating?.toFixed(1)}`
+                            : "-"}
+                      </span>
+                    </div>
+                    <div className="rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800">
+                      <span className="block text-[15px] font-normal text-indigo-700">Sentiment</span>
+                      <span className="text-lg text-slate-900">{`${reviewDetails?.sentimentPercent ?? reviewDetails?.sentimentPositive ?? 0}% Positive`}</span>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 grid gap-4 md:grid-cols-2">
+                    <div>
+                      <p className="text-m font-semibold uppercase tracking-wide text-black">Key strengths</p>
+                      <ul className="mt-2 space-y-2 text-sm text-slate-800">
+                      {(reviewDetails?.keyStrengths?.length ? reviewDetails.keyStrengths : ["No strengths available"]).map((item: string) => (
+                          <li key={item} className="flex items-start gap-2">
+                            <span className="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-emerald-500" />
+                            <span className="text-black">{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <p className="text-m font-semibold uppercase tracking-wide text-black">Key risks</p>
+                      <ul className="mt-2 space-y-2 text-sm text-slate-800">
+                      {(reviewDetails?.keyRisks?.length ? reviewDetails.keyRisks : ["No risks available"]).map((item: string) => (
+                          <li key={item} className="flex items-start gap-2">
+                            <span className="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-rose-500" />
+                            <span className="text-black">{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </>
+              )}
 
               <div className="mt-4 space-y-2">
                 <p className="text-m font-semibold uppercase tracking-wide text-black">Why this matters</p>
                 <ul className="space-y-2 text-sm text-slate-800">
-                  {detailPanel.whyThisMatters.map((item) => (
+                  {(intelligence?.whyThisMatters
+                    ? [intelligence.whyThisMatters]
+                    : [
+                      "Properties rated 4.5+ retain residents longer.",
+                      "Resolving maintenance complaints improves digital sentiment.",
+                      "Positive reviews lift discovery and lead flow organically.",
+                    ]).map((item: string) => (
                     <li key={item} className="flex items-start gap-2">
                       <span className="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-black" />
                       <span className="text-black">{item}</span>
@@ -819,7 +840,13 @@ const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext
               <div className="mt-4 space-y-2">
                 <p className="text-m font-semibold uppercase tracking-wide text-black">Next best actions</p>
                 <ol className="space-y-2 text-sm text-slate-800">
-                  {detailPanel.nextActions.map((action, index) => (
+                  {(intelligence?.nextBestActions?.length
+                    ? intelligence.nextBestActions
+                    : [
+                      "Respond to all reviews within 24 hours",
+                      "Address recurring maintenance themes",
+                      "Highlight wins in marketing and leasing",
+                    ]).map((action: string, index: number) => (
                     <li
                       key={`${action}-${index}`}
                       className="flex items-center gap-3 rounded-2xl border border-slate-100 bg-indigo-50 px-3 py-2"
@@ -833,10 +860,28 @@ const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext
             </div>
           </div>
         </div>
-        <PortfolioGuidedRecommendationCard
-          tabLabel={record.property_name}
-          narrative={propertyNarrative}
-        />
+
+        <section className="relative overflow-hidden rounded-[30px] border border-blue-900/20 bg-gradient-to-br from-[#172554] via-[#203a7a] to-[#2f4d99] p-6 text-white shadow-[0_24px_64px_rgba(15,23,42,0.28)] md:p-8">
+          <div className="relative z-10">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/80">Execution Priorities</p>
+            <h2 className="mt-4 text-3xl font-semibold leading-tight">AI Guided Recommendations</h2>
+            <div className="mt-6 space-y-4">
+              {(intelligence?.aiGuidedRecommendations?.length
+                ? intelligence.aiGuidedRecommendations
+                : fallbackExecutionPriorities).map((item: string, index: number) => (
+                <div
+                  key={`${item}-${index}`}
+                  className="rounded-2xl border border-white/15 bg-white/10 px-5 py-4 text-[15px] leading-8 text-white/95"
+                >
+                  <span className="mr-3 inline-block h-2.5 w-2.5 rounded-full bg-cyan-300 align-middle" />
+                  {item}
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="pointer-events-none absolute -right-10 -top-10 h-36 w-36 rounded-full bg-sky-300/20 blur-2xl" />
+          <div className="pointer-events-none absolute -bottom-14 -left-10 h-36 w-36 rounded-full bg-indigo-300/20 blur-2xl" />
+        </section>
       </div>
     </div>
   );
