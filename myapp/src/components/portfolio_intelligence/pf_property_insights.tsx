@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Bar, Line } from "react-chartjs-2";
 import { authClient } from "@/lib/auth-api";
+import PfDemoAiRentIntelligence from "./pf_demo_ai_rent_intelligence";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -395,11 +396,14 @@ const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext
   }, [riskAlert?.avgTenure, riskAlert?.avgTenureMonths]);
 
   type InsightKey = "review" | "market";
+  type ViewMode = "property_analytics" | "ai_rent_intelligence";
+  const [viewMode, setViewMode] = useState<ViewMode>("property_analytics");
   const [selectedInsight, setSelectedInsight] = useState<InsightKey>("review");
 
   // reset selection if property changes
   useEffect(() => {
     setSelectedInsight("review");
+    setViewMode("property_analytics");
   }, [propertyName, submarket, region]);
 
   const kpiCards = useMemo(() => {
@@ -643,6 +647,46 @@ const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext
         >
           Back
         </button>
+
+        <div className="grid gap-4 md:grid-cols-2">
+          <button
+            type="button"
+            onClick={() => setViewMode("property_analytics")}
+            className={`rounded-[22px] border p-5 text-center transition ${
+              viewMode === "property_analytics"
+                ? "border-[#0fa77d] bg-[#0fa77d] text-white shadow-[0_12px_28px_rgba(15,167,125,0.28)]"
+                : "border-[#d8e4f5] bg-white text-[#162a4c] hover:border-[#a9bddf]"
+            }`}
+          >
+            {/* <p className="text-[13px] font-semibold uppercase tracking-[0.14em]">Property Analytics</p> */}
+            <p className="mt-2 text-2xl font-semibold">Property Analytics</p>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setViewMode("ai_rent_intelligence")}
+            className={`rounded-[22px] border p-5 text-center transition ${
+              viewMode === "ai_rent_intelligence"
+                ? "border-[#0fa77d] bg-[#0fa77d] text-white shadow-[0_12px_28px_rgba(15,167,125,0.28)]"
+                : "border-[#d8e4f5] bg-white text-[#162a4c] hover:border-[#a9bddf]"
+            }`}
+          >
+            {/* <p className="text-[13px] font-semibold uppercase tracking-[0.14em]">Rent Strategy</p> */}
+            <p className="mt-2 text-2xl font-semibold">AI Rent Intelligence</p>
+          </button>
+        </div>
+
+        {viewMode === "ai_rent_intelligence" ? (
+          <div className="rounded-3xl bg-white p-6 shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
+            <PfDemoAiRentIntelligence
+              propertyName={record.property_name}
+              embedded
+            />
+          </div>
+        ) : null}
+
+        {viewMode === "property_analytics" ? (
+        <>
         <section className="portfolio-recommendation-card relative overflow-hidden rounded-[30px] border border-blue-900/20 bg-gradient-to-br from-[#0f172a] via-[#1d2f6f] to-[#143f7a] p-6 text-white shadow-[0_24px_64px_rgba(15,23,42,0.35)] md:p-8">
           <div className="relative z-10">
             <h2 className="text-3xl font-semibold leading-tight">{record.property_name}</h2>
@@ -926,6 +970,8 @@ const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext
           <div className="pointer-events-none absolute -right-10 -top-10 h-36 w-36 rounded-full bg-sky-300/20 blur-2xl" />
           <div className="pointer-events-none absolute -bottom-14 -left-10 h-36 w-36 rounded-full bg-indigo-300/20 blur-2xl" />
         </section>
+        </>
+        ) : null}
       </div>
     </div>
   );

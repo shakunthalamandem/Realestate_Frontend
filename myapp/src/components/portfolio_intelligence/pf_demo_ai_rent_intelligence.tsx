@@ -136,7 +136,15 @@ const baseChartOptions: any = {
   },
 };
 
-const PfDemoAiRentIntelligence: React.FC = () => {
+type PfDemoAiRentIntelligenceProps = {
+  propertyName?: string;
+  embedded?: boolean;
+};
+
+const PfDemoAiRentIntelligence: React.FC<PfDemoAiRentIntelligenceProps> = ({
+  propertyName,
+  embedded = false,
+}) => {
   const [properties, setProperties] = useState<PropertyRecord[]>([]);
   const [selectedPropertyName, setSelectedPropertyName] = useState("");
   const [loading, setLoading] = useState(false);
@@ -187,8 +195,12 @@ const PfDemoAiRentIntelligence: React.FC = () => {
   };
 
   useEffect(() => {
+    if (propertyName) {
+      fetchRentData({ fetch: "specific", property_name: propertyName });
+      return;
+    }
     fetchRentData({ fetch: "all" });
-  }, []);
+  }, [propertyName]);
 
   const dashboard = selectedProperty?.ai_rent_intelligence_response?.dashboard;
   const inPlaceChart = dashboard?.charts?.inPlaceVsRecommended ?? [];
@@ -296,6 +308,7 @@ const PfDemoAiRentIntelligence: React.FC = () => {
 
         </div>
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:gap-4">
+          {!embedded ? (
           <div className="w-full md:w-auto">
             <select
               className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3 text-sm text-slate-900 shadow-inner focus:border-sky-500 focus:outline-none"
@@ -312,6 +325,7 @@ const PfDemoAiRentIntelligence: React.FC = () => {
               })}
             </select>
           </div>
+          ) : null}
 
         </div>
       </div>

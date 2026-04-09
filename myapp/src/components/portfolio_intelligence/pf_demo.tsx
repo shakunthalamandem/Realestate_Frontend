@@ -12,7 +12,6 @@ import {
   ArrowLeft,
   BarChart3,
   Building2,
-  Lightbulb,
   TrendingUp,
   FileText,
 } from "lucide-react";
@@ -189,18 +188,6 @@ const PfDemo: React.FC = () => {
             >
               <Building2 className="h-4 w-4" />
               <span className="flex-1">Property Intelligence</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab("AI Rent Intelligence")}
-              className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-[15px] font-semibold transition ${activeTab === "AI Rent Intelligence"
-                  ? "bg-[#0fa77d] text-white shadow-[0_6px_18px_rgba(15,167,125,0.35)]"
-                  : "bg-white/5 text-blue-100 hover:bg-white/10"
-                }`}
-            >
-              <Lightbulb className="h-4 w-4" />
-              <span className="flex-1">AI Rent Intelligence</span>
             </button>
 
             <button
