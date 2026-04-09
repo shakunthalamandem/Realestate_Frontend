@@ -377,10 +377,10 @@ const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext
   // ✅ FIX #2: expiring units field differs across properties
   const expiringUnits = useMemo(() => {
     const v =
-      riskAlert?.expiringUnits ??
-      riskAlert?.expiringUnitsNext90Days;
+      riskAlert?.expiringUnitsNext90Days ??
+      riskAlert?.expiringUnits;
     return isValidNumber(v) ? v : undefined;
-  }, [riskAlert?.expiringUnits, riskAlert?.expiringUnitsNext90Days]);
+  }, [riskAlert?.expiringUnitsNext90Days, riskAlert?.expiringUnits]);
 
   const avgTenure = useMemo(() => {
     const v = riskAlert?.avgTenure ?? riskAlert?.avgTenureMonths;
