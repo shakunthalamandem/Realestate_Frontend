@@ -60,6 +60,13 @@ type PropertyRecord = {
   ai_rent_intelligence_response?: AiRentResponse;
 };
 
+const hasDisplayValue = (value: unknown) => {
+  if (value === null || value === undefined) return false;
+  if (typeof value === "number") return !Number.isNaN(value);
+  if (typeof value === "string") return value.trim() !== "" && value.trim() !== "-";
+  return true;
+};
+
 const formatCurrency = (value?: number | string) => {
   if (value === undefined || value === null) return "-";
   const num = typeof value === "string" ? Number(value) : value;
@@ -191,6 +198,39 @@ const PfDemoAiRentIntelligence: React.FC = () => {
   const unitSummary = dashboard?.unitSummary ?? [];
 
   const totalProjectedLift = basicInfo?.totalprojectedrevenuelift;
+  const summaryCards = [
+    {
+      title: "Total Projected Revenue Lift",
+      value: formatCompactCurrency(totalProjectedLift),
+      caption: "per year",
+    },
+    {
+      title: "12-Mo Projected Revenue",
+      value: formatCompactCurrency(basicInfo?.projected12MonthRevenue),
+    },
+    {
+      title: "Revenue at Risk",
+      value: formatCompactCurrency(basicInfo?.revenueAtRisk),
+    },
+    {
+      title: "Avg Renewal Rate",
+      value: formatPercent(basicInfo?.avgrenewalrate),
+    },
+    {
+      title: "MTM Capture",
+      value: formatCompactCurrency(basicInfo?.mtmcapturepotential),
+    },
+  ].filter((card) => hasDisplayValue(card.value));
+
+  const hasInPlaceChart = inPlaceChart.some(
+    (item) => hasDisplayValue(item.inPlace) || hasDisplayValue(item.recommended) || hasDisplayValue(item.market)
+  );
+  const hasRenewalSplitChart = renewalSplit.some(
+    (item) => hasDisplayValue(item.renewals) || hasDisplayValue(item.newLeases)
+  );
+  const hasRevenueProjectionChart = revenueProjection.some(
+    (item) => hasDisplayValue(item.projectedRevenue)
+  );
 
   const inPlaceChartData = {
     labels: inPlaceChart.map((item) => item.unitType ?? ""),
@@ -275,38 +315,17 @@ const PfDemoAiRentIntelligence: React.FC = () => {
 
         </div>
       </div>
-      <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
-          <p className="text-lg font-semibold text-center  text-blue-700">Total Projected Revenue Lift</p>
-          <p className="mt-1 text-2xl text-center font-semibold text-slate-900">{formatCompactCurrency(totalProjectedLift)}</p>
-          <p className="text-[0.7rem] text-center  text-slate-500">per year</p>
+      {summaryCards.length > 0 ? (
+        <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {summaryCards.map((card) => (
+            <div key={card.title} className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
+              <p className="text-lg font-semibold text-center text-blue-700">{card.title}</p>
+              <p className="mt-1 text-2xl text-center font-semibold text-slate-900">{card.value}</p>
+              {card.caption ? <p className="text-[0.7rem] text-center text-slate-500">{card.caption}</p> : null}
+            </div>
+          ))}
         </div>
-        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
-          <p className="text-lg font-semibold text-center  text-blue-700">12-Mo Projected Revenue</p>
-          <p className="mt-1 text-2xl text-center font-semibold text-slate-900">
-            {formatCompactCurrency(basicInfo?.projected12MonthRevenue)}
-          </p>
-        </div>
-        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
-          <p className="text-lg font-semibold text-center  text-blue-700">Revenue at Risk</p>
-          <p className="mt-1 text-2xl text-center font-semibold text-slate-900">
-            {formatCompactCurrency(basicInfo?.revenueAtRisk)}
-          </p>
-        </div>
-        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
-          <p className="text-lg font-semibold text-center  text-blue-700">Avg Renewal Rate</p>
-          <p className="mt-1 text-2xl text-center font-semibold text-slate-900">
-            {formatPercent(basicInfo?.avgrenewalrate)}
-          </p>
-        </div>
-        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
-          <p className="text-lg font-semibold text-center  text-blue-700">MTM Capture</p>
-          <p className="mt-1 text-2xl text-center font-semibold text-slate-900">
-            {formatCompactCurrency(basicInfo?.mtmcapturepotential)}
-          </p>
-          {/* <p className="text-[0.7rem] text-slate-500">MTM Capture: {formatCompactCurrency(basicInfo?.mtmcapturepotential)}</p> */}
-        </div>
-      </div>
+      ) : null}
       {/* </div> */}
 
       <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -387,6 +406,7 @@ const PfDemoAiRentIntelligence: React.FC = () => {
         </div>
       </div>
 
+      {hasInPlaceChart ? (
       <div >
         <div className={chartContainerClass}>
           <div className="flex items-center justify-between">
@@ -400,6 +420,8 @@ const PfDemoAiRentIntelligence: React.FC = () => {
         </div>
 
       </div>
+      ) : null}
+      {hasRenewalSplitChart ? (
       <div >
         <div className={chartContainerClass}>
           <div className="flex items-center justify-between">
@@ -424,6 +446,8 @@ const PfDemoAiRentIntelligence: React.FC = () => {
           </div>
         </div>
       </div>
+      ) : null}
+      {hasRevenueProjectionChart ? (
       <div className={chartContainerClass}>
         <div className="flex items-center justify-between">
           <h3 className="text-xl font-semibold   text-[#b1419d]">
@@ -434,6 +458,7 @@ const PfDemoAiRentIntelligence: React.FC = () => {
           <Line data={revenueLineData} options={baseChartOptions} />
         </div>
       </div>
+      ) : null}
 
       {loading && <p className="text-sm font-semibold text-slate-500">Loading fresh AI recommendations-</p>}
       {!loading && properties.length === 0 && (

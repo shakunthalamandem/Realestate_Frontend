@@ -151,6 +151,13 @@ type PropertyRecord = {
 const isValidNumber = (value: number | undefined | null): value is number =>
   typeof value === "number" && !Number.isNaN(value);
 
+const hasDisplayValue = (value: unknown) => {
+  if (value === null || value === undefined) return false;
+  if (typeof value === "number") return !Number.isNaN(value);
+  if (typeof value === "string") return value.trim() !== "" && value.trim() !== "-";
+  return true;
+};
+
 const formatCurrency = (value?: number | null): string => {
   if (!isValidNumber(value)) return "-";
 
@@ -411,8 +418,14 @@ const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext
       { label: "Expense YoY", value: formatYoY(kpis.expenseYoY) ?? "-" },
       { label: "Loss to Lease", value: formatPercent(kpis.lossToLease) },
       { label: "Mark-to-Market", value: formatCurrency(kpis.markToMarket) },
-    ];
+    ].filter((card) => hasDisplayValue(card.value));
   }, [record, riskAlert?.renewalRate]);
+
+  const hasRiskAlertValues =
+    expiringUnits !== undefined ||
+    avgTenure !== undefined ||
+    isValidNumber(riskAlert?.revenueAtRisk) ||
+    isValidNumber(riskAlert?.renewalRate);
 
   const insightCards = useMemo(() => {
     const reviewValue = isValidNumber(reviewDetails?.ratingScore)
@@ -723,6 +736,7 @@ const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext
           </div>
         </div>
 
+        {hasRiskAlertValues ? (
         <div className="rounded-3xl border border-rose-100 bg-rose-50/60 p-5 shadow-sm">
           <div className="flex items-start justify-between gap-4">
             <div>
@@ -752,6 +766,7 @@ const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext
             </div>
           </div>
         </div>
+        ) : null}
 
         <div className="space-y-4">
           <div className="flex items-center justify-between">
