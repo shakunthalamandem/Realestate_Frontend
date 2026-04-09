@@ -40,6 +40,8 @@ type RevenueExpensePoint = {
 type IntelligenceTips = {
   confidence?: string;
   nextActions?: string[];
+  whyThisMatters?: string;
+  nextBestActions?: string[];
 };
 
 type RiskAlert = IntelligenceTips & {
@@ -86,8 +88,6 @@ type PropertyIntelligence = {
   marketMomentum?: MarketMomentum;
   reviewIntelligence?: ReviewIntelligence;
   overview?: string;
-  whyThisMatters?: string;
-  nextBestActions?: string[];
   aiGuidedRecommendations?: string[];
 };
 
@@ -575,6 +575,34 @@ const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext
   }, [rentComparisonEntries]);
 
   const selectedInsightTitle = selectedInsight === "market" ? "Market Momentum" : "Review Intelligence";
+  const selectedWhyThisMatters = selectedInsight === "market"
+    ? marketMomentum?.whyThisMatters
+    : reviewDetails?.whyThisMatters;
+  const selectedNextBestActions = selectedInsight === "market"
+    ? marketMomentum?.nextBestActions
+    : reviewDetails?.nextBestActions;
+  const fallbackWhyThisMatters = selectedInsight === "market"
+    ? [
+      "Absorption momentum helps dial lease pricing and concessions.",
+      "Vacancy trends signal when to push appliance or renovation programs.",
+      "Employment growth keeps demand steady even with seasonal dips.",
+    ]
+    : [
+      "Properties rated 4.5+ retain residents longer.",
+      "Resolving maintenance complaints improves digital sentiment.",
+      "Positive reviews lift discovery and lead flow organically.",
+    ];
+  const fallbackNextBestActions = selectedInsight === "market"
+    ? [
+      "Push 3-4% renewals aligned with submarket growth",
+      "Monitor vacancy weekly during rollover periods",
+      "Benchmark pricing monthly against nearby comps",
+    ]
+    : [
+      "Respond to all reviews within 24 hours",
+      "Address recurring maintenance themes",
+      "Highlight wins in marketing and leasing",
+    ];
 
   if (status === "loading") {
     return (
@@ -831,13 +859,9 @@ const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext
               <div className="mt-4 space-y-2">
                 <p className="text-m font-semibold uppercase tracking-wide text-black">Why this matters</p>
                 <ul className="space-y-2 text-sm text-slate-800">
-                  {(intelligence?.whyThisMatters
-                    ? [intelligence.whyThisMatters]
-                    : [
-                      "Properties rated 4.5+ retain residents longer.",
-                      "Resolving maintenance complaints improves digital sentiment.",
-                      "Positive reviews lift discovery and lead flow organically.",
-                    ]).map((item: string) => (
+                  {(selectedWhyThisMatters
+                    ? [selectedWhyThisMatters]
+                    : fallbackWhyThisMatters).map((item: string) => (
                     <li key={item} className="flex items-start gap-2">
                       <span className="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-black" />
                       <span className="text-black">{item}</span>
@@ -849,13 +873,9 @@ const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext
               <div className="mt-4 space-y-2">
                 <p className="text-m font-semibold uppercase tracking-wide text-black">Next best actions</p>
                 <ol className="space-y-2 text-sm text-slate-800">
-                  {(intelligence?.nextBestActions?.length
-                    ? intelligence.nextBestActions
-                    : [
-                      "Respond to all reviews within 24 hours",
-                      "Address recurring maintenance themes",
-                      "Highlight wins in marketing and leasing",
-                    ]).map((action: string, index: number) => (
+                  {(selectedNextBestActions?.length
+                    ? selectedNextBestActions
+                    : fallbackNextBestActions).map((action: string, index: number) => (
                     <li
                       key={`${action}-${index}`}
                       className="flex items-center gap-3 rounded-2xl border border-slate-100 bg-indigo-50 px-3 py-2"
