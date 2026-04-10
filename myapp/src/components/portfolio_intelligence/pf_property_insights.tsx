@@ -46,6 +46,7 @@ type IntelligenceTips = {
 };
 
 type RiskAlert = IntelligenceTips & {
+  riskScore?: number;
   renewalRate?: number;
   riskDrivers?: string[];
   expiringUnits?: number;
@@ -375,6 +376,16 @@ const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext
     record?.property_response?.intelligence?.riskAlert;
   const marketMomentum = record?.property_response?.intelligence?.marketMomentum;
   const intelligence = record?.property_response?.intelligence;
+  const riskScore = isValidNumber(riskAlert?.riskScore) ? riskAlert.riskScore : undefined;
+  const riskLevel = (() => {
+    if (!isValidNumber(riskScore)) return "N/A";
+    if (riskScore < 35) return "Low";
+    if (riskScore < 65) return "Medium";
+    return "High";
+  })();
+  const riskMarkerLeft = isValidNumber(riskScore)
+    ? `${Math.min(100, Math.max(0, riskScore))}%`
+    : "0%";
 
   // ✅ FIX #1: rentComparison may be OBJECT or ARRAY
   const rentComparisonList: RentComparisonEntry[] = useMemo(() => {
@@ -426,6 +437,7 @@ const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext
   }, [record, riskAlert?.renewalRate]);
 
   const hasRiskAlertValues =
+    riskScore !== undefined ||
     expiringUnits !== undefined ||
     avgTenure !== undefined ||
     isValidNumber(riskAlert?.revenueAtRisk) ||
@@ -787,10 +799,43 @@ const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext
               <h3 className="text-xl font-semibold text-rose-700">Risk Alert</h3>
               <p className="mt-1 text-sm text-slate-700">Actionable next steps to protect NOI.</p>
             </div>
-            <span className="rounded-full bg-rose-100 px-3 py-1 text-[11px] font-semibold text-rose-700">
+            {/* <span className="rounded-full bg-rose-100 px-3 py-1 text-[11px] font-semibold text-rose-700">
               {riskAlert?.confidence ?? "High"}
-            </span>
+            </span> */}
           </div>
+          {isValidNumber(riskScore) ? (
+            <div className="mt-5 rounded-2xl border border-white bg-white px-4 py-4">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-semibold uppercase tracking-wide text-rose-600">
+                  Property Risk Score
+                </p>
+                <div className="text-right">
+                  <p className="text-2xl font-semibold text-slate-900">{riskScore}</p>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    {riskLevel} Risk
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-4">
+                <div className="relative h-3 overflow-hidden rounded-full bg-slate-100">
+                  <div className="absolute inset-y-0 left-0 w-1/3 bg-emerald-500" />
+                  <div className="absolute inset-y-0 left-1/3 w-1/3 bg-amber-400" />
+                  <div className="absolute inset-y-0 right-0 w-1/3 bg-rose-500" />
+                  <div
+                    className="absolute top-1/2 h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-slate-900 shadow"
+                    style={{ left: riskMarkerLeft }}
+                  />
+                </div>
+
+                <div className="mt-2 flex justify-between text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                  <span>Low</span>
+                  <span>Medium</span>
+                  <span>High</span>
+                </div>
+              </div>
+            </div>
+          ) : null}
           <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <div className="rounded-2xl border border-white bg-white px-4 py-3">
               <p className="text-xs font-semibold uppercase tracking-wide text-rose-600">Expiring Units</p>
