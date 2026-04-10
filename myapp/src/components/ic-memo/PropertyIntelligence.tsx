@@ -36,7 +36,9 @@ const listTone = {
 
 const PropertyCard = ({ property }: { property?: IcPropertyCardData | null }) => {
   const performance = property?.performance ?? "Stable";
-  const metrics = property?.metrics ?? [];
+  const metrics = (property?.metrics ?? []).filter(
+    (metric) => metric?.label?.trim().toLowerCase() !== "rev growth",
+  );
   const insights = property?.insights ?? [];
   const risks = property?.risks ?? [];
   const opportunities = property?.opportunities ?? [];
