@@ -13,11 +13,11 @@ import { ExpenseDashboard } from "../portfolio_analytics_types";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Tooltip, Legend);
 
-const fmtCurrency = (value?: number) =>
-  value === undefined ? "-" : `$${value.toLocaleString()}`;
+const fmtCurrency = (value?: number | null) =>
+  value === undefined || value === null ? "-" : `$${value.toLocaleString()}`;
 
-const fmtPercent = (value?: number) =>
-  value === undefined ? "-" : `${(value * 100).toFixed(1)}%`;
+const fmtPercent = (value?: number | null) =>
+  value === undefined || value === null ? "-" : `${(value * 100).toFixed(1)}%`;
 
 const ExpenseIntelTab: React.FC<{ data?: ExpenseDashboard }> = ({ data }) => {
   if (!data) {
