@@ -29,6 +29,7 @@ const ExpenseIntelTab: React.FC<{ data?: ExpenseDashboard }> = ({ data }) => {
   }
 
   const categories = data.categories ?? [];
+  const hasCategories = categories.length > 0;
 
   /* -------------------- Doughnut Data -------------------- */
 
@@ -184,6 +185,8 @@ const chartOptions = {
 
       {/* -------------------- Table -------------------- */}
 
+      {hasCategories ? (
+      <>
       <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
         <table className="min-w-full text-left text-sm">
           <thead className="bg-[#1c2c6b]">
@@ -227,6 +230,9 @@ const chartOptions = {
           </tbody>
         </table>
       </div>
+      </> ) : (
+        <p className="text-sm text-slate-500">No category data available.</p>
+      )}
 
       {/* -------------------- Charts -------------------- */}
 
