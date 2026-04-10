@@ -96,7 +96,7 @@ const PerformanceDriversTab: React.FC<{ data?: PerformanceDriversPayload }> = ({
     <div className="space-y-6 text-slate-900">
       <div className="grid gap-4 sm:grid-cols-2">
         {/* Revenue Growth */}
-        <div className="rounded-2xl border border-blue-200 bg-blue-50 p-5">
+        {/* <div className="rounded-2xl border border-blue-200 bg-blue-50 p-5">
           <p className="text-m uppercase tracking-wide text-center text-indigo-700">
             Revenue Growth
           </p>
@@ -108,10 +108,10 @@ const PerformanceDriversTab: React.FC<{ data?: PerformanceDriversPayload }> = ({
           <p className="text-sm text-center text-slate-500">
             Period-over-period growth
           </p>
-        </div>
+        </div> */}
 
         {/* Expense Growth */}
-        <div className="rounded-2xl border border-blue-200 bg-blue-50 p-5">
+        {/* <div className="rounded-2xl border border-blue-200 bg-blue-50 p-5">
           <p className="text-m uppercase tracking-wide text-center text-indigo-700">
             Expense Growth
           </p>
@@ -123,7 +123,7 @@ const PerformanceDriversTab: React.FC<{ data?: PerformanceDriversPayload }> = ({
           <p className="text-sm text-center text-slate-500">
             Period-over-period growth
           </p>
-        </div>
+        </div> */}
       </div>
 
 

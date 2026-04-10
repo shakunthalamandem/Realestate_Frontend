@@ -43,14 +43,7 @@ const PfDemoPortfolioAnalytics: React.FC<PfDemoPortfolioAnalyticsProps> = ({
     else setInternalActiveTab(tab);
   };
 
-  const pickFirstObject = (...values: unknown[]) => {
-    for (const value of values) {
-      if (value && typeof value === "object" && !Array.isArray(value)) {
-        return value;
-      }
-    }
-    return undefined;
-  };
+
 
   useEffect(() => {
     let isMounted = true;
@@ -92,7 +85,9 @@ const PfDemoPortfolioAnalytics: React.FC<PfDemoPortfolioAnalyticsProps> = ({
       selectedRecord?.revenue_leases_response?.revenue_quality_lease_intelligence ?? null;
 
     const expenseIntelData =
-      selectedRecord?.expense_intel_response?.expensesDashboard ?? null;
+  selectedRecord?.expense_intel_response?.expensesDashboard ??
+  selectedRecord?.expense_intel_response ??
+  null;
     const riskStabilityData =
       selectedRecord?.risk_stability_response?.riskStabilityDashboard ?? null;
 
