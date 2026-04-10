@@ -19,7 +19,6 @@ import {
 import MarketRadar from "../market_radar/MarketRadar";
 import RealEstateUploader from "../deal_lens/RealEstateUploader";
 import PfDemoIcMemo from "./pf_demo_ic_memo";
-import { icMemoMockData } from "../ic-memo/mockData";
 
 const tabs = [
   "Portfolio Analytics",
@@ -40,7 +39,6 @@ const routeToTab: Record<string, DemoTab> = {
 };
 
 const PfDemo: React.FC = () => {
-  const icMemoData = icMemoMockData;
   const [activeTab, setActiveTab] = useState<DemoTab>("Portfolio Analytics");
   const [selectedProperty, setSelectedProperty] = useState<
     Pick<PropertyRecord, "property_name" | "submarket" | "region"> | null
@@ -107,7 +105,7 @@ const PfDemo: React.FC = () => {
           hasStarted={isIcMemoStarted}
           onGenerate={() => setIsIcMemoStarted(true)}
           onBack={() => setIsIcMemoStarted(false)}
-          data={icMemoData}
+          data={null}
         />
       );
     }

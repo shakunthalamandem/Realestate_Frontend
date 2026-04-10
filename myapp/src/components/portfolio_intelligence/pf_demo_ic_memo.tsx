@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ArrowRight, FileText } from "lucide-react";
 import IcMemoIndex from "../ic-memo/Index";
 import { IcMemoTemplateData } from "../ic-memo/types";
+import { authClient } from "@/lib/auth-api";
 
 type PfDemoIcMemoProps = {
   hasStarted: boolean;
@@ -11,8 +12,46 @@ type PfDemoIcMemoProps = {
 };
 
 const PfDemoIcMemo: React.FC<PfDemoIcMemoProps> = ({ hasStarted, onGenerate, onBack, data }) => {
+  const [memoData, setMemoData] = useState<IcMemoTemplateData | null>(data ?? null);
+  const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
+
+  useEffect(() => {
+    if (!hasStarted) return;
+    let isMounted = true;
+
+    const load = async () => {
+      setStatus("loading");
+      try {
+        const response = await authClient.post<{ data: IcMemoTemplateData }>(
+          "/api/get_icmemo_data_user_view/",
+          {}
+        );
+        if (!isMounted) return;
+        setMemoData(response.data?.data ?? null);
+        setStatus("idle");
+      } catch {
+        if (!isMounted) return;
+        setStatus("error");
+        setMemoData(data ?? null);
+      }
+    };
+
+    load();
+    return () => {
+      isMounted = false;
+    };
+  }, [data, hasStarted]);
+
   if (hasStarted) {
-    return <IcMemoIndex data={data ?? null} onBack={onBack} />;
+    if (status === "loading" && !memoData) {
+      return <div className="px-6 py-10 text-sm text-slate-500">Loading IC memo...</div>;
+    }
+
+    if (status === "error" && !memoData) {
+      return <div className="px-6 py-10 text-sm text-rose-600">Unable to load IC memo right now.</div>;
+    }
+
+    return <IcMemoIndex data={memoData ?? null} onBack={onBack} />;
   }
 
   return (
