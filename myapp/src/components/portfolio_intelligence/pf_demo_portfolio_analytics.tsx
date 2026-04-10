@@ -6,7 +6,10 @@ import RevenueQualityLeaseIntelligenceTab from "./tabs/revenue_quality_lease_int
 import ExpenseIntelTab from "./tabs/expense_intel_tab";
 import RiskStabilityTab from "./tabs/risk_stability_tab";
 import { PortfolioGuidedRecommendationCard } from "./tabs/portfolio_narrative_cards";
-import { PortfolioAnalyticsRecord } from "./portfolio_analytics_types";
+import {
+  PortfolioAnalyticsRecord,
+  PortfolioNarrativeFields,
+} from "./portfolio_analytics_types";
 import { portfolioNarratives } from "./portfolio_narratives";
 
 export const portfolioAnalyticsTabDefinitions = [
@@ -79,17 +82,16 @@ const PfDemoPortfolioAnalytics: React.FC<PfDemoPortfolioAnalyticsProps> = ({
 
     const portfolioResponse = selectedRecord.portfolio_analytics_response;
     const performanceDriversData =
-      selectedRecord?.performance_drivers_response?.performance_drivers ?? null;
+      selectedRecord?.performance_drivers_response?.performance_drivers;
 
     const revenueLeaseData =
-      selectedRecord?.revenue_leases_response?.revenue_quality_lease_intelligence ?? null;
+      selectedRecord?.revenue_leases_response?.revenue_quality_lease_intelligence;
 
     const expenseIntelData =
-  selectedRecord?.expense_intel_response?.expensesDashboard ??
-  selectedRecord?.expense_intel_response ??
-  null;
+      selectedRecord?.expense_intel_response?.expensesDashboard;
+
     const riskStabilityData =
-      selectedRecord?.risk_stability_response?.riskStabilityDashboard ?? null;
+      selectedRecord?.risk_stability_response?.riskStabilityDashboard;
 
 
     switch (activeTab) {
@@ -118,6 +120,31 @@ const PfDemoPortfolioAnalytics: React.FC<PfDemoPortfolioAnalyticsProps> = ({
   );
 
   const activeNarrative = portfolioNarratives[activeTab];
+  const activeApiNarrative = useMemo<PortfolioNarrativeFields | null>(() => {
+    if (!selectedRecord) return null;
+
+    switch (activeTab) {
+      case "snapshot":
+        return selectedRecord.portfolio_analytics_response ?? null;
+      case "performance_drivers":
+        return selectedRecord.performance_drivers_response ?? null;
+      case "revenue_quality_lease_intelligence":
+        return selectedRecord.revenue_leases_response ?? null;
+      case "expenses_dashboard":
+        return selectedRecord.expense_intel_response ?? null;
+      case "risk_stability_dashboard":
+        return selectedRecord.risk_stability_response ?? null;
+      default:
+        return null;
+    }
+  }, [activeTab, selectedRecord]);
+
+  const overviewText =
+    activeApiNarrative?.overview?.trim() || activeNarrative.overview.join(" ");
+  const recommendations =
+    activeApiNarrative?.aiGuidedRecommendations?.length
+      ? activeApiNarrative.aiGuidedRecommendations
+      : activeNarrative.recommendations;
 
   return (
     <>
@@ -165,7 +192,7 @@ const PfDemoPortfolioAnalytics: React.FC<PfDemoPortfolioAnalyticsProps> = ({
                   Overview
                 </p>
                 <p className="mt-3 text-sm leading-7 text-white/95 md:text-[15px]">
-                  {activeNarrative.overview.join(" ")}
+                  {overviewText}
                 </p>
               </div>
               <div className="pointer-events-none absolute -right-10 -top-10 h-36 w-36 rounded-full bg-sky-300/20 blur-2xl" />
@@ -173,8 +200,7 @@ const PfDemoPortfolioAnalytics: React.FC<PfDemoPortfolioAnalyticsProps> = ({
             </section>
             {activeTabContent}
             <PortfolioGuidedRecommendationCard
-              tabLabel={activeTabDefinition?.label ?? "Portfolio Analytics"}
-              narrative={activeNarrative}
+              recommendations={recommendations}
             />
           </div>
         ) : (
