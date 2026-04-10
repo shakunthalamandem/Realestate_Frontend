@@ -54,6 +54,7 @@ export type PerformanceDriversPayload = {
       start_margin_pct?: number;
       expense_growth_pct?: number;
       revenue_growth_pct?: number;
+      noi_growth_pct?: number;
     };
     currency?: string;
     frequency?: string;

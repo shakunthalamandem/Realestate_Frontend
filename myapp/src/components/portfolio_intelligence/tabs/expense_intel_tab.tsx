@@ -168,15 +168,15 @@ const chartOptions = {
           </p>
         </div>
 
-        <div className="rounded-2xl border border-blue-200 bg-blue-50 p-5 shadow-sm">
+        {/* <div className="rounded-2xl border border-blue-200 bg-blue-50 p-5 shadow-sm">
           <p className="text-sm text-indigo-700">Total Prior Year</p>
           <p className="mt-2 text-2xl font-semibold text-slate-900">
             {fmtCurrency(data.summary?.totalPriorYear)}
           </p>
-        </div>
+        </div> */}
 
         <div className="rounded-2xl border border-blue-200 bg-blue-50 p-5 shadow-sm">
-          <p className="text-sm text-indigo-700">Overall YoY</p>
+          <p className="text-sm text-indigo-700">Expense Growth</p>
           <p className="mt-2 text-2xl font-semibold text-slate-900">
             {fmtPercent(data.summary?.overallYoYGrowth)}
           </p>
@@ -193,8 +193,8 @@ const chartOptions = {
             <tr className="text-xs font-semibold uppercase tracking-wider text-white">
               <th className="px-6 py-4">Category</th>
               <th className="px-6 py-4">Current</th>
-              <th className="px-6 py-4">Prior Year</th>
-              <th className="px-6 py-4">YoY Growth</th>
+              {/* <th className="px-6 py-4">Prior Year</th> */}
+              <th className="px-6 py-4">Expense Growth</th>
               <th className="px-6 py-4">Per Unit</th>
             </tr>
           </thead>
@@ -210,9 +210,9 @@ const chartOptions = {
                 <td className="px-6 py-4 text-black">
                   {fmtCurrency(category.current)}
                 </td>
-                <td className="px-6 py-4 text-black">
+                {/* <td className="px-6 py-4 text-black">
                   {fmtCurrency(category.priorYear)}
-                </td>
+                </td> */}
                 <td
                   className={`px-6 py-4 font-semibold ${
                     (category.yoyGrowthPercent ?? 0) < 0
@@ -251,7 +251,7 @@ const chartOptions = {
 
         <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm hover:shadow-md transition">
           <h3 className="text-lg font-semibold text-slate-900">
-            Expense Growth (YoY %)
+            Expense Growth
           </h3>
           <div className="mt-6 h-[360px]">
             <Bar data={growthData} options={chartOptions} />
