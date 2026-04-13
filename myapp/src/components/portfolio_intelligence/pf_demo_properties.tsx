@@ -514,15 +514,7 @@ const PfDemoProperties: React.FC<PfDemoPropertiesProps> = ({ onSelectProperty })
       const fetchAll = (url: string) =>
         authClient.post<{ data: PropertyRecord[] }>(url, { fetch: "all" });
 
-      let response;
-      try {
-        response = await fetchAll("/api/get_property_model_data_user_view/");
-        if (!response.data?.data?.length) {
-          throw new Error("No user data");
-        }
-      } catch {
-        response = await fetchAll("/api/get_property_model_data/");
-      }
+      const response = await fetchAll("/api/get_property_model_data_user_view/");
 
       if (isActive) {
         setData(response.data?.data ?? []);

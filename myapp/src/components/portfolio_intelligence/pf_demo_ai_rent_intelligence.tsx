@@ -171,15 +171,7 @@ const PfDemoAiRentIntelligence: React.FC<PfDemoAiRentIntelligenceProps> = ({
         return Array.isArray(responseData) ? responseData : responseData ? [responseData] : [];
       };
 
-      let fetched: PropertyRecord[] = [];
-      try {
-        fetched = await fetchFrom("/api/get_ai_rent_intelligence_data_user_view/");
-        if (!fetched.length) {
-          throw new Error("No user data");
-        }
-      } catch {
-        fetched = await fetchFrom("/api/get_ai_rent_intelligence_data/");
-      }
+      const fetched = await fetchFrom("/api/get_ai_rent_intelligence_data_user_view/");
 
       setProperties(fetched);
       if (payload.property_name && fetched.length) {
@@ -476,7 +468,7 @@ const PfDemoAiRentIntelligence: React.FC<PfDemoAiRentIntelligenceProps> = ({
 
       {loading && <p className="text-sm font-semibold text-slate-500">Loading fresh AI recommendations-</p>}
       {!loading && properties.length === 0 && (
-        <p className="text-sm text-rose-600">No rent intelligence data available for the requested property.</p>
+        <p className="text-sm text-rose-600">No properties available. Add a property.</p>
       )}
     </div>
   );
