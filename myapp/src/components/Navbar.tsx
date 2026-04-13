@@ -177,7 +177,7 @@ const Navbar = () => {
             size="default"
             onClick={() => guardNavigation(productRoutes.portfolioIntelligence)}
           >
-            Demo
+            Sample
           </Button>
           {loggedIn ? (
             <DropdownMenu>
