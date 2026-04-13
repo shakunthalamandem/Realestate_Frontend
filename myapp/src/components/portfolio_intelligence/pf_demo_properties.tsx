@@ -43,6 +43,15 @@ function fmtSize(bytes: number) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
+function formatOccupancy(value: string | number | null | undefined) {
+  if (value === null || value === undefined || value === "") return "-";
+
+  const numericValue = typeof value === "number" ? value : Number(value);
+  if (!Number.isFinite(numericValue)) return String(value);
+
+  return numericValue.toFixed(2);
+}
+
 function UploadZone({
   label,
   description,
@@ -656,7 +665,7 @@ const PfDemoProperties: React.FC<PfDemoPropertiesProps> = ({ onSelectProperty })
                         <span className="pf-properties__value">{row.units || "-"}</span>
                       </td>
                       <td className="pf-properties__cell">
-                        <span className="pf-properties__value">{row.occupancy || "-"}</span>
+                        <span className="pf-properties__value">{formatOccupancy(row.occupancy)}</span>
                       </td>
                       {/* <td className="pf-properties__cell">
                           <span className="pf-properties__value">{row.rent_per_sqft || "-"}</span>
