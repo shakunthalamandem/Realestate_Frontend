@@ -53,7 +53,11 @@ const initialFormData: FormData = {
 };
 
 const RequestDemoForm = ({ open, onOpenChange }: RequestDemoFormProps) => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [formData, setFormData] = useState<FormData>(initialFormData);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  const [submitSuccess, setSubmitSuccess] = useState("");
 
   const handleInputChange = (field: keyof FormData, value: string) => {
     setFormData((current) => ({
@@ -75,17 +79,60 @@ const RequestDemoForm = ({ open, onOpenChange }: RequestDemoFormProps) => {
     });
   };
 
+  const resetForm = () => {
+    setFormData(initialFormData);
+    setSubmitError("");
+    setSubmitSuccess("");
+    setIsSubmitting(false);
+  };
+
   const handleOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) {
-      setFormData(initialFormData);
+      resetForm();
     }
     onOpenChange(nextOpen);
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log("Request demo form data:", formData);
-    handleOpenChange(false);
+    setIsSubmitting(true);
+    setSubmitError("");
+    setSubmitSuccess("");
+
+    try {
+      const response = await fetch(`${API_URL}/api/request_demo_data/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          work_email: formData.email,
+          company_name: formData.companyName,
+          role: formData.role,
+          interested_in: formData.interests,
+          message: formData.message,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data?.error || "Failed to save demo request");
+      }
+
+      setSubmitSuccess(data?.message || "demo data saved successfully");
+
+      setTimeout(() => {
+        handleOpenChange(false);
+      }, 1000);
+    } catch (error) {
+      setSubmitError(
+        error instanceof Error ? error.message : "Something went wrong"
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -207,8 +254,22 @@ const RequestDemoForm = ({ open, onOpenChange }: RequestDemoFormProps) => {
               />
             </div>
 
-            <Button type="submit" variant="hero" size="xl" className="w-full">
-              Request My Demo
+            {submitError ? (
+              <p className="text-sm text-red-600">{submitError}</p>
+            ) : null}
+
+            {submitSuccess ? (
+              <p className="text-sm text-green-600">{submitSuccess}</p>
+            ) : null}
+
+            <Button
+              type="submit"
+              variant="hero"
+              size="xl"
+              className="w-full"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Saving..." : "Request My Demo"}
             </Button>
           </form>
         </div>
