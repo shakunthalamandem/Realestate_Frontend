@@ -453,7 +453,7 @@ const PfDemoAiRentIntelligence: React.FC<PfDemoAiRentIntelligenceProps> = ({
         </div>
       </div>
       ) : null}
-      {hasRevenueProjectionChart ? (
+      {/* {hasRevenueProjectionChart ? (
       <div className={chartContainerClass}>
         <div className="flex items-center justify-between">
           <h3 className="text-xl font-semibold   text-[#b1419d]">
@@ -464,7 +464,7 @@ const PfDemoAiRentIntelligence: React.FC<PfDemoAiRentIntelligenceProps> = ({
           <Line data={revenueLineData} options={baseChartOptions} />
         </div>
       </div>
-      ) : null}
+      ) : null} */}
 
       {loading && <p className="text-sm font-semibold text-slate-500">Loading fresh AI recommendations-</p>}
       {!loading && properties.length === 0 && (

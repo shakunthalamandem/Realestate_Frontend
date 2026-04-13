@@ -49,7 +49,11 @@ function formatOccupancy(value: string | number | null | undefined) {
   const numericValue = typeof value === "number" ? value : Number(value);
   if (!Number.isFinite(numericValue)) return String(value);
 
-  return numericValue.toFixed(2);
+  if (numericValue > 1) {
+    return `${numericValue.toFixed(1)}%`;
+  }
+
+  return `${(numericValue * 100).toFixed(1)}%`;
 }
 
 function UploadZone({
