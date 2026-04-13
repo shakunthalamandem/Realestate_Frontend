@@ -5,10 +5,12 @@ import { Button } from "./ui/button";
 import { isUserLoggedIn } from "@/lib/auth";
 import AccessBlockedModal from "./AccessBlockedModal";
 import { useNavigate } from "react-router-dom";
+import RequestDemoForm from "./RequestDemoForm";
 
 const HeroSection = () => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isRequestDemoOpen, setIsRequestDemoOpen] = useState(false);
 
   const guardSectionAccess = (sectionId: string) => {
     if (!isUserLoggedIn()) {
@@ -52,7 +54,7 @@ const HeroSection = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-up-delay-3">
-            <Button variant="hero" size="xl" onClick={() => guardSectionAccess("demo")}>
+            <Button variant="hero" size="xl" onClick={() => setIsRequestDemoOpen(true)}>
               Request a Demo
               <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
@@ -86,6 +88,10 @@ const HeroSection = () => {
         open={isModalOpen}
         onOpenChange={setIsModalOpen}
         onGoToLogin={() => navigate("/login")}
+      />
+      <RequestDemoForm
+        open={isRequestDemoOpen}
+        onOpenChange={setIsRequestDemoOpen}
       />
     </section>
   );
