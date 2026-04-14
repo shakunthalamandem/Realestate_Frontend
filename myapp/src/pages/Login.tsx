@@ -2,7 +2,6 @@ import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { login } from "./lib/auth";
 import {
   Dialog,
   DialogContent,
@@ -25,6 +24,7 @@ import {
 } from "@/lib/auth-api";
 import PasswordInput from "@/components/auth/PasswordInput";
 import { productRoutes } from "@/lib/product-routes";
+import { setDemoMode } from "@/lib/demo-mode";
 
 const REMEMBERED_LOGIN_KEY = "remembered_login_identifier";
 
@@ -92,6 +92,7 @@ const Login = () => {
         sessionId: auth.sessionId,
       });
       setAuthUser(me);
+      setDemoMode(false);
 
       navigate(fromPath, { replace: true });
     } catch (err) {
@@ -123,6 +124,7 @@ const Login = () => {
           sessionId: googleAuth.sessionId,
         });
         setAuthUser(me);
+        setDemoMode(false);
 
         navigate(fromPath, { replace: true });
       } catch (err) {

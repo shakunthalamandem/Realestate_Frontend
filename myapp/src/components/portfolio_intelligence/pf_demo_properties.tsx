@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, MapPin } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { authClient } from "@/lib/auth-api";
+import { isDemoMode } from "@/lib/demo-mode";
 import {
   Select,
   SelectContent,
@@ -518,7 +519,9 @@ const PfDemoProperties: React.FC<PfDemoPropertiesProps> = ({ onSelectProperty })
       const fetchAll = (url: string) =>
         authClient.post<{ data: PropertyRecord[] }>(url, { fetch: "all" });
 
-      const response = await fetchAll("/api/get_property_model_data_user_view/");
+      const response = await fetchAll(
+        isDemoMode() ? "/api/get_property_model_data/" : "/api/get_property_model_data_user_view/"
+      );
 
       if (isActive) {
         setData(response.data?.data ?? []);
@@ -583,13 +586,15 @@ const PfDemoProperties: React.FC<PfDemoPropertiesProps> = ({ onSelectProperty })
       <div className="pf-properties__hero">
         <div className="pf-properties__hero-inner">
           <h1 className="pf-properties__title">Property Intelligence</h1>
-          <button
-            type="button"
-            className="pf-add-property-btn"
-            onClick={() => setShowAddPropertyForm(true)}
-          >
-            Add Property
-          </button>
+          {!isDemoMode() ? (
+            <button
+              type="button"
+              className="pf-add-property-btn"
+              onClick={() => setShowAddPropertyForm(true)}
+            >
+              Add Property
+            </button>
+          ) : null}
         </div>
       </div>
 

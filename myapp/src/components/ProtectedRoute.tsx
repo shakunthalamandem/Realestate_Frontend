@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import AccessBlockedModal from "./AccessBlockedModal";
 import { isUserLoggedIn } from "@/lib/auth";
+import { isDemoMode } from "@/lib/demo-mode";
 
 type ProtectedRouteProps = {
   children: ReactNode;
@@ -11,9 +12,10 @@ type ProtectedRouteProps = {
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [isModalOpen, setIsModalOpen] = useState(!isUserLoggedIn());
+  const hasAccess = isUserLoggedIn() || isDemoMode();
+  const [isModalOpen, setIsModalOpen] = useState(!hasAccess);
 
-  if (isUserLoggedIn()) {
+  if (hasAccess) {
     return <>{children}</>;
   }
 

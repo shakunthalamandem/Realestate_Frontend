@@ -2,6 +2,7 @@
 import { Bar, Line } from "react-chartjs-2";
 import { ChevronRight } from "lucide-react";
 import { authClient } from "@/lib/auth-api";
+import { isDemoMode } from "@/lib/demo-mode";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -171,7 +172,11 @@ const PfDemoAiRentIntelligence: React.FC<PfDemoAiRentIntelligenceProps> = ({
         return Array.isArray(responseData) ? responseData : responseData ? [responseData] : [];
       };
 
-      const fetched = await fetchFrom("/api/get_ai_rent_intelligence_data_user_view/");
+      const fetched = await fetchFrom(
+        isDemoMode()
+          ? "/api/get_ai_rent_intelligence_data/"
+          : "/api/get_ai_rent_intelligence_data_user_view/"
+      );
 
       setProperties(fetched);
       if (payload.property_name && fetched.length) {

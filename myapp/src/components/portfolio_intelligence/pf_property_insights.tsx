@@ -16,6 +16,7 @@ import {
   ChartOptions,
 } from "chart.js";
 import { getPropertyNarrative } from "./property_narratives";
+import { isDemoMode } from "@/lib/demo-mode";
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -345,15 +346,19 @@ const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext
           }
         };
 
-        let response;
-        try {
-          response = await fetchSpecific("/api/get_property_model_data_user_view/");
-          if (!response.data?.data) {
-            throw new Error("No user data");
-          }
-        } catch {
-          response = await fetchSpecific("/api/get_property_model_data/");
-        }
+        const response = isDemoMode()
+          ? await fetchSpecific("/api/get_property_model_data/")
+          : await (async () => {
+              try {
+                const userResponse = await fetchSpecific("/api/get_property_model_data_user_view/");
+                if (!userResponse.data?.data) {
+                  throw new Error("No user data");
+                }
+                return userResponse;
+              } catch {
+                return fetchSpecific("/api/get_property_model_data/");
+              }
+            })();
 
         if (isActive) {
           setRecord(response.data?.data ?? null);

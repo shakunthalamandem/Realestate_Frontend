@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import { ArrowRight, FileText } from "lucide-react";
 import IcMemoIndex from "../ic-memo/Index";
 import { IcMemoTemplateData } from "../ic-memo/types";
+import { icMemoMockData } from "../ic-memo/mockData";
 import { authClient } from "@/lib/auth-api";
+import { isDemoMode } from "@/lib/demo-mode";
 
 type PfDemoIcMemoProps = {
   hasStarted: boolean;
@@ -21,6 +23,12 @@ const PfDemoIcMemo: React.FC<PfDemoIcMemoProps> = ({ hasStarted, onGenerate, onB
 
   const load = async () => {
     setStatus("loading");
+    if (isDemoMode()) {
+      setMemoData(icMemoMockData);
+      setStatus("idle");
+      return;
+    }
+
     try {
       const response = await authClient.post<{ data: IcMemoTemplateData }>(
         "/api/get_icmemo_data_user_view/",
