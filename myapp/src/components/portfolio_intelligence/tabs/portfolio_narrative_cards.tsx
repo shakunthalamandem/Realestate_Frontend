@@ -53,8 +53,12 @@ export const PortfolioOverviewCard: React.FC<PortfolioNarrativeCardProps> = ({
   );
 };
 
-export const PortfolioGuidedRecommendationCard: React.FC<PortfolioNarrativeCardProps> = ({
-  narrative,
+type PortfolioGuidedRecommendationCardProps = {
+  recommendations: string[];
+};
+
+export const PortfolioGuidedRecommendationCard: React.FC<PortfolioGuidedRecommendationCardProps> = ({
+  recommendations,
 }) => {
   return (
     <section className="portfolio-recommendation-card relative overflow-hidden rounded-[30px] border border-blue-900/20 bg-gradient-to-br from-[#0f172a] via-[#1d2f6f] to-[#143f7a] p-6 text-white shadow-[0_24px_64px_rgba(15,23,42,0.35)] md:p-8">
@@ -68,7 +72,7 @@ export const PortfolioGuidedRecommendationCard: React.FC<PortfolioNarrativeCardP
         </div>
         <h3 className="mt-4 text-2xl font-semibold md:text-3xl">AI Guided Recommendations</h3>
         <ul className="mt-5 space-y-3">
-          {narrative.recommendations.map((item) => (
+          {recommendations.map((item) => (
             <li
               key={item}
               className="flex items-start gap-3 rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-[15px] leading-7 backdrop-blur-sm"

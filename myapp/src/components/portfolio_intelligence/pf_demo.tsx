@@ -12,7 +12,6 @@ import {
   ArrowLeft,
   BarChart3,
   Building2,
-  Lightbulb,
   TrendingUp,
   FileText,
   Landmark,
@@ -20,7 +19,6 @@ import {
 import MarketRadar from "../market_radar/MarketRadar";
 import RealEstateUploader from "../deal_lens/RealEstateUploader";
 import PfDemoIcMemo from "./pf_demo_ic_memo";
-import { icMemoMockData } from "../ic-memo/mockData";
 
 const tabs = [
   "Portfolio Analytics",
@@ -41,7 +39,6 @@ const routeToTab: Record<string, DemoTab> = {
 };
 
 const PfDemo: React.FC = () => {
-  const icMemoData = icMemoMockData;
   const [activeTab, setActiveTab] = useState<DemoTab>("Portfolio Analytics");
   const [selectedProperty, setSelectedProperty] = useState<
     Pick<PropertyRecord, "property_name" | "submarket" | "region"> | null
@@ -108,7 +105,7 @@ const PfDemo: React.FC = () => {
           hasStarted={isIcMemoStarted}
           onGenerate={() => setIsIcMemoStarted(true)}
           onBack={() => setIsIcMemoStarted(false)}
-          data={icMemoData}
+          data={null}
         />
       );
     }
@@ -218,18 +215,6 @@ const PfDemo: React.FC = () => {
             >
               <Building2 className="h-4 w-4" />
               <span className="flex-1">Property Intelligence</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab("AI Rent Intelligence")}
-              className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-[15px] font-semibold transition ${activeTab === "AI Rent Intelligence"
-                  ? "bg-[#0fa77d] text-white shadow-[0_6px_18px_rgba(15,167,125,0.35)]"
-                  : "bg-white/5 text-blue-100 hover:bg-white/10"
-                }`}
-            >
-              <Lightbulb className="h-4 w-4" />
-              <span className="flex-1">AI Rent Intelligence</span>
             </button>
 
             <button

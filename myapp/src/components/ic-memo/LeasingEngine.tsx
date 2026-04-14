@@ -37,7 +37,9 @@ const ProgressRow = ({ label, value, subtitle, bar, signal = "yellow" }: IcProgr
 };
 
 const LeasingEngine = ({ data }: { data?: IcLeasingEngineData | null }) => {
-  const metrics = data?.metrics ?? [];
+  const metrics = (data?.metrics ?? []).filter(
+    (metric) => !(metric?.label ?? "").toLowerCase().includes("renewal rate"),
+  );
   const sections = data?.sideSections ?? [];
 
   return (

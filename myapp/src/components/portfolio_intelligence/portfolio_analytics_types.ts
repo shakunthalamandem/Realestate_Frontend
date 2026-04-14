@@ -19,6 +19,11 @@ export type PortfolioSnapshot = {
   operatingExpenseRatio?: DisplayMetric;
 };
 
+export type PortfolioNarrativeFields = {
+  overview?: string;
+  aiGuidedRecommendations?: string[];
+};
+
 export type PerformanceTrendPoint = {
   date: string;
   noi?: number;
@@ -49,6 +54,7 @@ export type PerformanceDriversPayload = {
       start_margin_pct?: number;
       expense_growth_pct?: number;
       revenue_growth_pct?: number;
+      noi_growth_pct?: number;
     };
     currency?: string;
     frequency?: string;
@@ -82,7 +88,7 @@ export type RevenueQualityLeaseIntelligence = {
   lease_expiration_ladder_next_12_months?: LeaseExpirationLadder;
 };
 
-export type RevenueLeasesResponse = {
+export type RevenueLeasesResponse = PortfolioNarrativeFields & {
   revenue_quality_lease_intelligence?: RevenueQualityLeaseIntelligence;
 };
 
@@ -117,7 +123,7 @@ export type ExpenseDashboard = {
   categories?: ExpenseCategory[];
 };
 
-export type ExpenseIntelResponse = {
+export type ExpenseIntelResponse = PortfolioNarrativeFields & {
   expensesDashboard?: ExpenseDashboard;
 };
 
@@ -157,7 +163,7 @@ export type RiskStabilityDashboard = {
   underperformingAssets?: UnderperformingAsset[];
 };
 
-export type RiskStabilityResponse = {
+export type RiskStabilityResponse = PortfolioNarrativeFields & {
   riskStabilityDashboard?: RiskStabilityDashboard;
 };
 
@@ -172,14 +178,18 @@ export type PortfolioAnalyticsResponse = {
 };
 
 export type PortfolioAnalyticsRecord = {
-  risk_stability_response: any;
-  expense_intel_response: any;
-  revenue_leases_response: any;
-  performance_drivers_response: any;
+  risk_stability_response?: RiskStabilityResponse | null;
+  expense_intel_response?: ExpenseIntelResponse | null;
+  revenue_leases_response?: RevenueLeasesResponse | null;
+  performance_drivers_response?: (PortfolioNarrativeFields & {
+    performance_drivers?: PerformanceDriversPayload;
+  }) | null;
   property_name: string;
   submarket: string;
   region: string;
   address: string;
   location: string;
-  portfolio_analytics_response?: PortfolioAnalyticsResponse | null;
+  portfolio_analytics_response?: (PortfolioNarrativeFields & {
+    portfolioSnapshot?: PortfolioSnapshot;
+  }) | null;
 };

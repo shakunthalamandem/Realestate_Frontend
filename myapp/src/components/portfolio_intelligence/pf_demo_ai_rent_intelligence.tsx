@@ -1,7 +1,7 @@
 ﻿import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import { Bar, Line } from "react-chartjs-2";
 import { ChevronRight } from "lucide-react";
+import { authClient } from "@/lib/auth-api";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -58,6 +58,13 @@ type PropertyRecord = {
   location?: string;
   class_type?: string;
   ai_rent_intelligence_response?: AiRentResponse;
+};
+
+const hasDisplayValue = (value: unknown) => {
+  if (value === null || value === undefined) return false;
+  if (typeof value === "number") return !Number.isNaN(value);
+  if (typeof value === "string") return value.trim() !== "" && value.trim() !== "-";
+  return true;
 };
 
 const formatCurrency = (value?: number | string) => {
@@ -122,14 +129,22 @@ const baseChartOptions: any = {
     tooltip: {
       callbacks: {
         label: (context: any) => `${context.dataset.label}: ${context.raw}`,
-                // label: (context: any) => `${context.raw}`,
+        // label: (context: any) => `${context.raw}`,
 
       },
     },
   },
 };
 
-const PfDemoAiRentIntelligence: React.FC = () => {
+type PfDemoAiRentIntelligenceProps = {
+  propertyName?: string;
+  embedded?: boolean;
+};
+
+const PfDemoAiRentIntelligence: React.FC<PfDemoAiRentIntelligenceProps> = ({
+  propertyName,
+  embedded = false,
+}) => {
   const [properties, setProperties] = useState<PropertyRecord[]>([]);
   const [selectedPropertyName, setSelectedPropertyName] = useState("");
   const [loading, setLoading] = useState(false);
@@ -146,14 +161,18 @@ const PfDemoAiRentIntelligence: React.FC = () => {
     }
     return properties[0];
   }, [properties, selectedPropertyName]);
-  const API_URL = import.meta.env.VITE_API_URL;
-
   const fetchRentData = async (payload: { fetch: "all" | "specific"; property_name?: string }) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.post(`${API_URL}/api/get_ai_rent_intelligence_data/`, payload);
-      const fetched = response.data?.data ?? [];
+      const fetchFrom = async (url: string) => {
+        const response = await authClient.post(url, payload);
+        const responseData = response.data?.data;
+        return Array.isArray(responseData) ? responseData : responseData ? [responseData] : [];
+      };
+
+      const fetched = await fetchFrom("/api/get_ai_rent_intelligence_data_user_view/");
+
       setProperties(fetched);
       if (payload.property_name && fetched.length) {
         setSelectedPropertyName(fetched[0].property_name ?? "");
@@ -168,8 +187,12 @@ const PfDemoAiRentIntelligence: React.FC = () => {
   };
 
   useEffect(() => {
+    if (propertyName) {
+      fetchRentData({ fetch: "specific", property_name: propertyName });
+      return;
+    }
     fetchRentData({ fetch: "all" });
-  }, []);
+  }, [propertyName]);
 
   const dashboard = selectedProperty?.ai_rent_intelligence_response?.dashboard;
   const inPlaceChart = dashboard?.charts?.inPlaceVsRecommended ?? [];
@@ -179,6 +202,39 @@ const PfDemoAiRentIntelligence: React.FC = () => {
   const unitSummary = dashboard?.unitSummary ?? [];
 
   const totalProjectedLift = basicInfo?.totalprojectedrevenuelift;
+  const summaryCards = [
+    {
+      title: "Total Projected Revenue Lift",
+      value: formatCompactCurrency(totalProjectedLift),
+      caption: "per year",
+    },
+    {
+      title: "12-Mo Projected Revenue",
+      value: formatCompactCurrency(basicInfo?.projected12MonthRevenue),
+    },
+    {
+      title: "Revenue at Risk",
+      value: formatCompactCurrency(basicInfo?.revenueAtRisk),
+    },
+    {
+      title: "Avg Renewal Rate",
+      value: formatPercent(basicInfo?.avgrenewalrate),
+    },
+    {
+      title: "MTM Capture",
+      value: formatCompactCurrency(basicInfo?.mtmcapturepotential),
+    },
+  ].filter((card) => hasDisplayValue(card.value));
+
+  const hasInPlaceChart = inPlaceChart.some(
+    (item) => hasDisplayValue(item.inPlace) || hasDisplayValue(item.recommended) || hasDisplayValue(item.market)
+  );
+  const hasRenewalSplitChart = renewalSplit.some(
+    (item) => hasDisplayValue(item.renewals) || hasDisplayValue(item.newLeases)
+  );
+  const hasRevenueProjectionChart = revenueProjection.some(
+    (item) => hasDisplayValue(item.projectedRevenue)
+  );
 
   const inPlaceChartData = {
     labels: inPlaceChart.map((item) => item.unitType ?? ""),
@@ -244,6 +300,7 @@ const PfDemoAiRentIntelligence: React.FC = () => {
 
         </div>
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:gap-4">
+          {!embedded ? (
           <div className="w-full md:w-auto">
             <select
               className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3 text-sm text-slate-900 shadow-inner focus:border-sky-500 focus:outline-none"
@@ -260,41 +317,21 @@ const PfDemoAiRentIntelligence: React.FC = () => {
               })}
             </select>
           </div>
+          ) : null}
 
         </div>
       </div>
-      <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
-          <p className="text-lg font-semibold text-center  text-blue-700">Total Projected Revenue Lift</p>
-          <p className="mt-1 text-2xl text-center font-semibold text-slate-900">{formatCompactCurrency(totalProjectedLift)}</p>
-          <p className="text-[0.7rem] text-center  text-slate-500">per year</p>
+      {summaryCards.length > 0 ? (
+        <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {summaryCards.map((card) => (
+            <div key={card.title} className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
+              <p className="text-lg font-semibold text-center text-blue-700">{card.title}</p>
+              <p className="mt-1 text-2xl text-center font-semibold text-slate-900">{card.value}</p>
+              {card.caption ? <p className="text-[0.7rem] text-center text-slate-500">{card.caption}</p> : null}
+            </div>
+          ))}
         </div>
-        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
-          <p className="text-lg font-semibold text-center  text-blue-700">12-Mo Projected Revenue</p>
-          <p className="mt-1 text-2xl text-center font-semibold text-slate-900">
-            {formatCompactCurrency(basicInfo?.projected12MonthRevenue)}
-          </p>
-        </div>
-        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
-          <p className="text-lg font-semibold text-center  text-blue-700">Revenue at Risk</p>
-          <p className="mt-1 text-2xl text-center font-semibold text-slate-900">
-            {formatCompactCurrency(basicInfo?.revenueAtRisk)}
-          </p>
-        </div>
-        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
-          <p className="text-lg font-semibold text-center  text-blue-700">Avg Renewal Rate</p>
-          <p className="mt-1 text-2xl text-center font-semibold text-slate-900">
-            {formatPercent(basicInfo?.avgrenewalrate)}
-          </p>
-        </div>
-        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
-          <p className="text-lg font-semibold text-center  text-blue-700">MTM Capture</p>
-          <p className="mt-1 text-2xl text-center font-semibold text-slate-900">
-            {formatCompactCurrency(basicInfo?.mtmcapturepotential)}
-          </p>
-          {/* <p className="text-[0.7rem] text-slate-500">MTM Capture: {formatCompactCurrency(basicInfo?.mtmcapturepotential)}</p> */}
-        </div>
-      </div>
+      ) : null}
       {/* </div> */}
 
       <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -356,9 +393,8 @@ const PfDemoAiRentIntelligence: React.FC = () => {
                   </td>
                   <td className="interactive-data-table__cell text-right tabular-nums">
                     <span
-                      className={`block font-semibold ${
-                        row.percentIncrease && Number(row.percentIncrease) < 0 ? "text-rose-500" : "text-emerald-600"
-                      }`}
+                      className={`block font-semibold ${row.percentIncrease && Number(row.percentIncrease) < 0 ? "text-rose-500" : "text-emerald-600"
+                        }`}
                     >
                       {formatSignedPercent(row.percentIncrease)}
                     </span>
@@ -366,9 +402,9 @@ const PfDemoAiRentIntelligence: React.FC = () => {
                   <td className="interactive-data-table__cell text-right tabular-nums">
                     <span className="interactive-data-table__value">{formatCurrency(row.annualRevenueLift)}</span>
                   </td>
-                   <td className="interactive-data-table__cell interactive-data-table__cell--last interactive-data-table__arrow-cell">
+                  <td className="interactive-data-table__cell interactive-data-table__cell--last interactive-data-table__arrow-cell">
                     {/* <ChevronRight className="interactive-data-table__arrow" strokeWidth={2.6} aria-hidden="true" /> */}
-                  </td> 
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -376,6 +412,7 @@ const PfDemoAiRentIntelligence: React.FC = () => {
         </div>
       </div>
 
+      {hasInPlaceChart ? (
       <div >
         <div className={chartContainerClass}>
           <div className="flex items-center justify-between">
@@ -389,6 +426,8 @@ const PfDemoAiRentIntelligence: React.FC = () => {
         </div>
 
       </div>
+      ) : null}
+      {hasRenewalSplitChart ? (
       <div >
         <div className={chartContainerClass}>
           <div className="flex items-center justify-between">
@@ -413,6 +452,8 @@ const PfDemoAiRentIntelligence: React.FC = () => {
           </div>
         </div>
       </div>
+      ) : null}
+      {/* {hasRevenueProjectionChart ? (
       <div className={chartContainerClass}>
         <div className="flex items-center justify-between">
           <h3 className="text-xl font-semibold   text-[#b1419d]">
@@ -423,10 +464,11 @@ const PfDemoAiRentIntelligence: React.FC = () => {
           <Line data={revenueLineData} options={baseChartOptions} />
         </div>
       </div>
+      ) : null} */}
 
       {loading && <p className="text-sm font-semibold text-slate-500">Loading fresh AI recommendations-</p>}
       {!loading && properties.length === 0 && (
-        <p className="text-sm text-rose-600">No rent intelligence data available for the requested property.</p>
+        <p className="text-sm text-rose-600">No properties available. Add a property.</p>
       )}
     </div>
   );

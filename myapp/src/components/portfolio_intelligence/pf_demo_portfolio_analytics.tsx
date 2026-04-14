@@ -1,14 +1,15 @@
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
+import { authClient } from "@/lib/auth-api";
 import SnapshotTab from "./tabs/snapshot_tab";
 import PerformanceDriversTab from "./tabs/performance_drivers_tab";
 import RevenueQualityLeaseIntelligenceTab from "./tabs/revenue_quality_lease_intelligence_tab";
 import ExpenseIntelTab from "./tabs/expense_intel_tab";
 import RiskStabilityTab from "./tabs/risk_stability_tab";
+import { PortfolioGuidedRecommendationCard } from "./tabs/portfolio_narrative_cards";
 import {
-  PortfolioGuidedRecommendationCard,
-} from "./tabs/portfolio_narrative_cards";
-import { PortfolioAnalyticsRecord } from "./portfolio_analytics_types";
+  PortfolioAnalyticsRecord,
+  PortfolioNarrativeFields,
+} from "./portfolio_analytics_types";
 import { portfolioNarratives } from "./portfolio_narratives";
 
 export const portfolioAnalyticsTabDefinitions = [
@@ -19,7 +20,8 @@ export const portfolioAnalyticsTabDefinitions = [
   { id: "risk_stability_dashboard", label: "Risk & Stability" },
 ] as const;
 
-export type PortfolioAnalyticsTabId = (typeof portfolioAnalyticsTabDefinitions)[number]["id"];
+export type PortfolioAnalyticsTabId =
+  (typeof portfolioAnalyticsTabDefinitions)[number]["id"];
 
 type PfDemoPortfolioAnalyticsProps = {
   activeSubTab?: PortfolioAnalyticsTabId;
@@ -32,57 +34,120 @@ const PfDemoPortfolioAnalytics: React.FC<PfDemoPortfolioAnalyticsProps> = ({
   onSubTabChange,
   showTabMenu = true,
 }) => {
-  const API_URL = import.meta.env.VITE_API_URL;
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [selectedRecord, setSelectedRecord] = useState<PortfolioAnalyticsRecord | null>(null);
-  const [internalActiveTab, setInternalActiveTab] = useState<PortfolioAnalyticsTabId>("snapshot");
+  const [internalActiveTab, setInternalActiveTab] =
+    useState<PortfolioAnalyticsTabId>("snapshot");
+
   const activeTab = activeSubTab ?? internalActiveTab;
+
   const setActiveTab = (tab: PortfolioAnalyticsTabId) => {
     if (onSubTabChange) onSubTabChange(tab);
     else setInternalActiveTab(tab);
   };
 
-  useEffect(() => {
-    let isMounted = true;
-    const load = async () => {
-      setStatus("loading");
-      try {
-        const response = await axios.post<{ data: PortfolioAnalyticsRecord[] }>(
-          `${API_URL}/api/get_portfolio_analytics_model_data/`,
-          { fetch: "all" }
-        );
-        if (!isMounted) return;
-        const record = response.data?.data?.[0] ?? null;
-        setSelectedRecord(record);
-        setStatus("idle");
-      } catch {
-        if (isMounted) setStatus("error");
-      }
-    };
-    load();
-    return () => {
-      isMounted = false;
-    };
-  }, [API_URL]);
+
+
+ useEffect(() => {
+  let isMounted = true;
+
+  const load = async () => {
+    setStatus("loading");
+
+    try {
+      const response = await authClient.post<{ data: PortfolioAnalyticsRecord[] }>(
+        "/api/get_portfolio_analytics_model_data_user_view/",
+        { fetch: "all" }
+      );
+
+      if (!isMounted) return;
+
+      const baseRecord = response.data?.data?.[0] ?? null;
+      setSelectedRecord(baseRecord);
+      setStatus("idle");
+
+      authClient
+        .post<{ data: PortfolioAnalyticsRecord }>("/api/get_portfolio_insights/", {})
+        .then((res) => {
+          if (!isMounted) return;
+
+          const insights = res.data?.data;
+          if (!insights) return;
+
+          setSelectedRecord((prev) => {
+            if (!prev) return prev;
+
+            return {
+              ...prev,
+              portfolio_analytics_response: {
+                ...prev.portfolio_analytics_response,
+                ...insights.portfolio_analytics_response,
+              },
+              performance_drivers_response: {
+                ...prev.performance_drivers_response,
+                ...insights.performance_drivers_response,
+              },
+              revenue_leases_response: {
+                ...prev.revenue_leases_response,
+                ...insights.revenue_leases_response,
+              },
+              expense_intel_response: {
+                ...prev.expense_intel_response,
+                ...insights.expense_intel_response,
+              },
+              risk_stability_response: {
+                ...prev.risk_stability_response,
+                ...insights.risk_stability_response,
+              },
+            };
+          });
+        })
+        .catch(() => {});
+    } catch {
+      if (isMounted) setStatus("error");
+    }
+  };
+
+  load();
+
+  return () => {
+    isMounted = false;
+  };
+}, []);
+
 
   const activeTabContent = useMemo(() => {
     if (!selectedRecord) return null;
 
+    const portfolioResponse = selectedRecord.portfolio_analytics_response;
+    const performanceDriversData =
+      selectedRecord?.performance_drivers_response?.performance_drivers;
+
+    const revenueLeaseData =
+      selectedRecord?.revenue_leases_response?.revenue_quality_lease_intelligence;
+
+    const expenseIntelData =
+      selectedRecord?.expense_intel_response?.expensesDashboard;
+
+    const riskStabilityData =
+      selectedRecord?.risk_stability_response?.riskStabilityDashboard;
+
+
     switch (activeTab) {
       case "snapshot":
-        return <SnapshotTab data={selectedRecord.portfolio_analytics_response?.portfolioSnapshot} />;
+        return <SnapshotTab data={portfolioResponse?.portfolioSnapshot} />;
       case "performance_drivers":
-        return <PerformanceDriversTab data={selectedRecord.performance_drivers_response?.performance_drivers} />;
+        return <PerformanceDriversTab data={performanceDriversData} />;
       case "revenue_quality_lease_intelligence":
         return (
           <RevenueQualityLeaseIntelligenceTab
-            data={selectedRecord.revenue_leases_response?.revenue_quality_lease_intelligence}
+            data={revenueLeaseData}
           />
         );
       case "expenses_dashboard":
-        return <ExpenseIntelTab data={selectedRecord.expense_intel_response?.expensesDashboard} />;
+        return <ExpenseIntelTab data={expenseIntelData} />;
       case "risk_stability_dashboard":
-        return <RiskStabilityTab data={selectedRecord.risk_stability_response?.riskStabilityDashboard} />;
+        return <RiskStabilityTab data={riskStabilityData} />;
       default:
         return null;
     }
@@ -94,6 +159,31 @@ const PfDemoPortfolioAnalytics: React.FC<PfDemoPortfolioAnalyticsProps> = ({
   );
 
   const activeNarrative = portfolioNarratives[activeTab];
+  const activeApiNarrative = useMemo<PortfolioNarrativeFields | null>(() => {
+    if (!selectedRecord) return null;
+
+    switch (activeTab) {
+      case "snapshot":
+        return selectedRecord.portfolio_analytics_response ?? null;
+      case "performance_drivers":
+        return selectedRecord.performance_drivers_response ?? null;
+      case "revenue_quality_lease_intelligence":
+        return selectedRecord.revenue_leases_response ?? null;
+      case "expenses_dashboard":
+        return selectedRecord.expense_intel_response ?? null;
+      case "risk_stability_dashboard":
+        return selectedRecord.risk_stability_response ?? null;
+      default:
+        return null;
+    }
+  }, [activeTab, selectedRecord]);
+
+  const overviewText =
+    activeApiNarrative?.overview?.trim() || activeNarrative.overview.join(" ");
+  const recommendations =
+    activeApiNarrative?.aiGuidedRecommendations?.length
+      ? activeApiNarrative.aiGuidedRecommendations
+      : activeNarrative.recommendations;
 
   return (
     <>
@@ -109,14 +199,12 @@ const PfDemoPortfolioAnalytics: React.FC<PfDemoPortfolioAnalyticsProps> = ({
                     key={tab.id}
                     type="button"
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-sm font-semibold transition ${
-                      isActive ? "bg-[#eef7f3] text-[#0b7a5c]" : "text-slate-700 hover:bg-slate-100"
-                    }`}
+                    className={`flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-sm font-semibold transition ${isActive ? "bg-[#eef7f3] text-[#0b7a5c]" : "text-slate-700 hover:bg-slate-100"
+                      }`}
                   >
                     <span
-                      className={`inline-block h-2.5 w-2.5 rounded-full ${
-                        isActive ? "bg-[#0fa77d]" : "bg-slate-300"
-                      }`}
+                      className={`inline-block h-2.5 w-2.5 rounded-full ${isActive ? "bg-[#0fa77d]" : "bg-slate-300"
+                        }`}
                     />
                     {tab.label}
                   </button>
@@ -134,9 +222,7 @@ const PfDemoPortfolioAnalytics: React.FC<PfDemoPortfolioAnalyticsProps> = ({
           <p className="text-sm text-rose-600">Unable to load analytics right now. Please try again later.</p>
         ) : selectedRecord ? (
           <div className="space-y-4">
-            <section
-              className="portfolio-recommendation-card relative overflow-hidden rounded-[30px] border border-blue-900/20 bg-gradient-to-br from-[#0f172a] via-[#1d2f6f] to-[#143f7a] p-6 text-white shadow-[0_24px_64px_rgba(15,23,42,0.35)] md:p-8"
-            >
+            <section className="portfolio-recommendation-card relative overflow-hidden rounded-[30px] border border-blue-900/20 bg-gradient-to-br from-[#0f172a] via-[#1d2f6f] to-[#143f7a] p-6 text-white shadow-[0_24px_64px_rgba(15,23,42,0.35)] md:p-8">
               <div className="relative z-10">
                 <h2 className="text-3xl font-semibold leading-tight">
                   {activeTabDefinition?.label ?? "Overview"}
@@ -145,7 +231,7 @@ const PfDemoPortfolioAnalytics: React.FC<PfDemoPortfolioAnalyticsProps> = ({
                   Overview
                 </p>
                 <p className="mt-3 text-sm leading-7 text-white/95 md:text-[15px]">
-                  {activeNarrative.overview.join(" ")}
+                  {overviewText}
                 </p>
               </div>
               <div className="pointer-events-none absolute -right-10 -top-10 h-36 w-36 rounded-full bg-sky-300/20 blur-2xl" />
@@ -153,8 +239,7 @@ const PfDemoPortfolioAnalytics: React.FC<PfDemoPortfolioAnalyticsProps> = ({
             </section>
             {activeTabContent}
             <PortfolioGuidedRecommendationCard
-              tabLabel={activeTabDefinition?.label ?? "Portfolio Analytics"}
-              narrative={activeNarrative}
+              recommendations={recommendations}
             />
           </div>
         ) : (

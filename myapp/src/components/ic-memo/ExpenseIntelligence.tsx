@@ -17,7 +17,14 @@ const ExpenseList = ({
           bg: "bg-green-100",
           heading: "text-green-700",
         }
-      : { text: "text-red-700", bg: "bg-red-100", heading: "text-red-700" };
+      : {
+          text: "text-red-700",
+          bg: "bg-red-100",
+          heading: "text-red-700",
+        };
+
+  // ✅ safety + fallback
+  const safeRows = rows ?? [];
 
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
@@ -26,38 +33,38 @@ const ExpenseList = ({
       >
         {title}
       </p>
-      <div className="space-y-3">
-        {Array.from({ length: Math.max(rows?.length ?? 0, 3) }).map(
-          (_, index) => {
-            const item = rows?.[index];
-            return (
-              <div
-                key={index}
-                className={`flex items-center justify-between rounded-lg border border-gray-100 p-3 shadow-sm ${styles.bg}`}
-              >
-                <div>
-                  <p className="min-h-[20px] text-sm font-medium text-slate-900">
-                    {item?.label ?? ""}
-                  </p>
-                  <p className="min-h-[16px] text-xs text-slate-500">
-                    {item?.reason ?? ""}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p
-                    className={`min-h-[20px] text-sm font-bold ${styles.text}`}
-                  >
-                    {item?.change ?? ""}
-                  </p>
-                  <p className="min-h-[16px] text-xs text-slate-500">
-                    {item?.amount ?? ""}
-                  </p>
-                </div>
+
+      {/* ✅ Empty state */}
+      {safeRows.length === 0 ? (
+        <p className="text-sm text-slate-400">No data available</p>
+      ) : (
+        <div className="space-y-3 max-h-[420px] overflow-y-auto pr-1">
+          {safeRows.map((item, index) => (
+            <div
+              key={index}
+              className={`flex items-center justify-between rounded-lg border border-gray-100 p-3 shadow-sm ${styles.bg}`}
+            >
+              <div>
+                <p className="text-sm font-medium text-slate-900">
+                  {item?.label}
+                </p>
+                <p className="text-xs text-slate-500">
+                  {item?.reason}
+                </p>
               </div>
-            );
-          },
-        )}
-      </div>
+
+              <div className="text-right">
+                <p className={`text-sm font-bold ${styles.text}`}>
+                  {item?.change}
+                </p>
+                <p className="text-xs text-slate-500">
+                  {item?.amount}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

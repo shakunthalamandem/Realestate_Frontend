@@ -59,7 +59,12 @@ const RevenueQualityLeaseIntelligenceTab: React.FC<{ data?: RevenueQualityLeaseI
   };
 
   const cards = [
-    { label: "Renewal Rate", value: formatPercent(summary?.renewal_rate_pct) },
+    {
+      label: "Renewal Rate",
+      value: summary?.renewal_rate_pct != null
+        ? formatPercent(summary.renewal_rate_pct)
+        : "-"
+    },
     { label: "Loss-to-Lease (WTD)", value: formatPercentvalue(summary?.wtd_loss_to_lease_pct) },
     { label: "Units Below Market", value: formatPercentvalue(summary?.units_below_market_pct) },
     {
@@ -93,13 +98,13 @@ const RevenueQualityLeaseIntelligenceTab: React.FC<{ data?: RevenueQualityLeaseI
           <div className="mt-4 h-56">
             <Bar data={ladderData} options={chartOptions} />
           </div>
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-2 bg-blue-50 p-4 rounded-xl mt-4">
-          {data.lease_expiration_ladder_next_12_months?.risk_flags && (
-            <p className="mt-3 text-lg uppercase tracking-wide text-red-500">
-              Peak month: {data.lease_expiration_ladder_next_12_months.risk_flags.peak_month} (
-              {data.lease_expiration_ladder_next_12_months.risk_flags.peak_expirations} expirations)
-            </p>
-          )}
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-2 bg-blue-50 p-4 rounded-xl mt-4">
+            {data.lease_expiration_ladder_next_12_months?.risk_flags && (
+              <p className="mt-3 text-lg uppercase tracking-wide text-red-500">
+                Peak month: {data.lease_expiration_ladder_next_12_months.risk_flags.peak_month} (
+                {data.lease_expiration_ladder_next_12_months.risk_flags.peak_expirations} expirations)
+              </p>
+            )}
           </div>
         </div>
       ) : (
