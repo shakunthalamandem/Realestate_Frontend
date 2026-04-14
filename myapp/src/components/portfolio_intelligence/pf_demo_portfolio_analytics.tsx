@@ -10,7 +10,6 @@ import {
   PortfolioAnalyticsRecord,
   PortfolioNarrativeFields,
 } from "./portfolio_analytics_types";
-import { portfolioNarratives } from "./portfolio_narratives";
 
 export const portfolioAnalyticsTabDefinitions = [
   { id: "snapshot", label: "Snapshot" },
@@ -35,6 +34,7 @@ const PfDemoPortfolioAnalytics: React.FC<PfDemoPortfolioAnalyticsProps> = ({
   showTabMenu = true,
 }) => {
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
+  const [insightsStatus, setInsightsStatus] = useState<"idle" | "loading" | "error">("idle");
   const [selectedRecord, setSelectedRecord] = useState<PortfolioAnalyticsRecord | null>(null);
   const [internalActiveTab, setInternalActiveTab] =
     useState<PortfolioAnalyticsTabId>("snapshot");
@@ -65,6 +65,7 @@ const PfDemoPortfolioAnalytics: React.FC<PfDemoPortfolioAnalyticsProps> = ({
       const baseRecord = response.data?.data?.[0] ?? null;
       setSelectedRecord(baseRecord);
       setStatus("idle");
+      setInsightsStatus("loading");
 
       authClient
         .post<{ data: PortfolioAnalyticsRecord }>("/api/get_portfolio_insights/", {})
@@ -72,7 +73,10 @@ const PfDemoPortfolioAnalytics: React.FC<PfDemoPortfolioAnalyticsProps> = ({
           if (!isMounted) return;
 
           const insights = res.data?.data;
-          if (!insights) return;
+          if (!insights) {
+            setInsightsStatus("error");
+            return;
+          }
 
           setSelectedRecord((prev) => {
             if (!prev) return prev;
@@ -101,10 +105,17 @@ const PfDemoPortfolioAnalytics: React.FC<PfDemoPortfolioAnalyticsProps> = ({
               },
             };
           });
+          setInsightsStatus("idle");
         })
-        .catch(() => {});
+        .catch(() => {
+          if (!isMounted) return;
+          setInsightsStatus("error");
+        });
     } catch {
-      if (isMounted) setStatus("error");
+      if (isMounted) {
+        setStatus("error");
+        setInsightsStatus("error");
+      }
     }
   };
 
@@ -158,7 +169,6 @@ const PfDemoPortfolioAnalytics: React.FC<PfDemoPortfolioAnalyticsProps> = ({
     [activeTab]
   );
 
-  const activeNarrative = portfolioNarratives[activeTab];
   const activeApiNarrative = useMemo<PortfolioNarrativeFields | null>(() => {
     if (!selectedRecord) return null;
 
@@ -178,12 +188,21 @@ const PfDemoPortfolioAnalytics: React.FC<PfDemoPortfolioAnalyticsProps> = ({
     }
   }, [activeTab, selectedRecord]);
 
-  const overviewText =
-    activeApiNarrative?.overview?.trim() || activeNarrative.overview.join(" ");
-  const recommendations =
-    activeApiNarrative?.aiGuidedRecommendations?.length
-      ? activeApiNarrative.aiGuidedRecommendations
-      : activeNarrative.recommendations;
+  const hasInsightsOverview = Boolean(activeApiNarrative?.overview?.trim());
+  const hasInsightsRecommendations = Boolean(activeApiNarrative?.aiGuidedRecommendations?.length);
+  const isInsightsLoading = insightsStatus === "loading";
+
+  const overviewText = hasInsightsOverview
+    ? activeApiNarrative?.overview?.trim()
+    : isInsightsLoading
+      ? ""
+      : "AI overview is not available yet.";
+
+  const recommendations = hasInsightsRecommendations
+    ? activeApiNarrative?.aiGuidedRecommendations ?? []
+    : isInsightsLoading
+      ? []
+      : ["AI guided recommendations are not available yet."];
 
   return (
     <>
@@ -230,9 +249,22 @@ const PfDemoPortfolioAnalytics: React.FC<PfDemoPortfolioAnalyticsProps> = ({
                 <p className="mt-5 text-xs font-semibold uppercase tracking-[0.16em] text-white/80">
                   Overview
                 </p>
-                <p className="mt-3 text-sm leading-7 text-white/95 md:text-[15px]">
-                  {overviewText}
-                </p>
+                {isInsightsLoading && !hasInsightsOverview ? (
+                  <div className="mt-4 space-y-3">
+                    <div className="inline-flex rounded-full border border-cyan-300/30 bg-cyan-300/10 px-3 py-1 text-xs font-semibold text-cyan-100">
+                      AI analyzing...
+                    </div>
+                    <div className="space-y-2">
+                      <div className="h-4 w-full animate-pulse rounded bg-white/15" />
+                      <div className="h-4 w-[92%] animate-pulse rounded bg-white/15" />
+                      <div className="h-4 w-[78%] animate-pulse rounded bg-white/15" />
+                    </div>
+                  </div>
+                ) : (
+                  <p className="mt-3 text-sm leading-7 text-white/95 md:text-[15px]">
+                    {overviewText}
+                  </p>
+                )}
               </div>
               <div className="pointer-events-none absolute -right-10 -top-10 h-36 w-36 rounded-full bg-sky-300/20 blur-2xl" />
               <div className="pointer-events-none absolute -bottom-14 -left-10 h-36 w-36 rounded-full bg-indigo-300/20 blur-2xl" />
@@ -240,6 +272,7 @@ const PfDemoPortfolioAnalytics: React.FC<PfDemoPortfolioAnalyticsProps> = ({
             {activeTabContent}
             <PortfolioGuidedRecommendationCard
               recommendations={recommendations}
+              isLoading={isInsightsLoading && !hasInsightsRecommendations}
             />
           </div>
         ) : (

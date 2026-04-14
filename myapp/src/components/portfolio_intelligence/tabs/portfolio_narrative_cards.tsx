@@ -55,10 +55,12 @@ export const PortfolioOverviewCard: React.FC<PortfolioNarrativeCardProps> = ({
 
 type PortfolioGuidedRecommendationCardProps = {
   recommendations: string[];
+  isLoading?: boolean;
 };
 
 export const PortfolioGuidedRecommendationCard: React.FC<PortfolioGuidedRecommendationCardProps> = ({
   recommendations,
+  isLoading = false,
 }) => {
   return (
     <section className="portfolio-recommendation-card relative overflow-hidden rounded-[30px] border border-blue-900/20 bg-gradient-to-br from-[#0f172a] via-[#1d2f6f] to-[#143f7a] p-6 text-white shadow-[0_24px_64px_rgba(15,23,42,0.35)] md:p-8">
@@ -69,19 +71,37 @@ export const PortfolioGuidedRecommendationCard: React.FC<PortfolioGuidedRecommen
           <span className="rounded-full border border-white/30 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-white/90">
             Execution Priorities
           </span>
+          {isLoading ? (
+            <span className="rounded-full border border-cyan-300/30 bg-cyan-300/10 px-3 py-1 text-xs font-semibold text-cyan-100">
+              AI analyzing...
+            </span>
+          ) : null}
         </div>
         <h3 className="mt-4 text-2xl font-semibold md:text-3xl">AI Guided Recommendations</h3>
-        <ul className="mt-5 space-y-3">
-          {recommendations.map((item) => (
-            <li
-              key={item}
-              className="flex items-start gap-3 rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-[15px] leading-7 backdrop-blur-sm"
-            >
-              <span className="portfolio-float-icon mt-2 inline-block h-2 w-2 shrink-0 rounded-full bg-cyan-300" />
-              <span>{item}</span>
-            </li>
-          ))}
-        </ul>
+        {isLoading ? (
+          <div className="mt-5 space-y-3">
+            {[1, 2, 3].map((item) => (
+              <div
+                key={item}
+                className="rounded-xl border border-white/15 bg-white/10 px-4 py-4 backdrop-blur-sm"
+              >
+                <div className="h-4 w-[85%] animate-pulse rounded bg-white/20" />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <ul className="mt-5 space-y-3">
+            {recommendations.map((item) => (
+              <li
+                key={item}
+                className="flex items-start gap-3 rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-[15px] leading-7 backdrop-blur-sm"
+              >
+                <span className="portfolio-float-icon mt-2 inline-block h-2 w-2 shrink-0 rounded-full bg-cyan-300" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </section>
   );
