@@ -48,34 +48,73 @@ const PfDemoPortfolioAnalytics: React.FC<PfDemoPortfolioAnalyticsProps> = ({
 
 
 
-  useEffect(() => {
-    let isMounted = true;
+ useEffect(() => {
+  let isMounted = true;
 
-    const load = async () => {
-      setStatus("loading");
+  const load = async () => {
+    setStatus("loading");
 
-      try {
-        const response = await authClient.post<{ data: PortfolioAnalyticsRecord[] }>(
-          "/api/get_portfolio_analytics_model_data_user_view/",
-          { fetch: "all" }
-        );
+    try {
+      const response = await authClient.post<{ data: PortfolioAnalyticsRecord[] }>(
+        "/api/get_portfolio_analytics_model_data_user_view/",
+        { fetch: "all" }
+      );
 
-        if (!isMounted) return;
+      if (!isMounted) return;
 
-        const record = response.data?.data?.[0] ?? null;
-        setSelectedRecord(record);
-        setStatus("idle");
-      } catch {
-        if (isMounted) setStatus("error");
-      }
-    };
+      const baseRecord = response.data?.data?.[0] ?? null;
+      setSelectedRecord(baseRecord);
+      setStatus("idle");
 
-    load();
+      authClient
+        .post<{ data: PortfolioAnalyticsRecord }>("/api/get_portfolio_insights/", {})
+        .then((res) => {
+          if (!isMounted) return;
 
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+          const insights = res.data?.data;
+          if (!insights) return;
+
+          setSelectedRecord((prev) => {
+            if (!prev) return prev;
+
+            return {
+              ...prev,
+              portfolio_analytics_response: {
+                ...prev.portfolio_analytics_response,
+                ...insights.portfolio_analytics_response,
+              },
+              performance_drivers_response: {
+                ...prev.performance_drivers_response,
+                ...insights.performance_drivers_response,
+              },
+              revenue_leases_response: {
+                ...prev.revenue_leases_response,
+                ...insights.revenue_leases_response,
+              },
+              expense_intel_response: {
+                ...prev.expense_intel_response,
+                ...insights.expense_intel_response,
+              },
+              risk_stability_response: {
+                ...prev.risk_stability_response,
+                ...insights.risk_stability_response,
+              },
+            };
+          });
+        })
+        .catch(() => {});
+    } catch {
+      if (isMounted) setStatus("error");
+    }
+  };
+
+  load();
+
+  return () => {
+    isMounted = false;
+  };
+}, []);
+
 
   const activeTabContent = useMemo(() => {
     if (!selectedRecord) return null;

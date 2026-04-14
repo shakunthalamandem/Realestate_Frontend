@@ -16,31 +16,53 @@ const PfDemoIcMemo: React.FC<PfDemoIcMemoProps> = ({ hasStarted, onGenerate, onB
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
 
   useEffect(() => {
-    if (!hasStarted) return;
-    let isMounted = true;
+  if (!hasStarted) return;
+  let isMounted = true;
 
-    const load = async () => {
-      setStatus("loading");
-      try {
-        const response = await authClient.post<{ data: IcMemoTemplateData }>(
-          "/api/get_icmemo_data_user_view/",
-          {}
-        );
-        if (!isMounted) return;
-        setMemoData(response.data?.data ?? null);
-        setStatus("idle");
-      } catch {
-        if (!isMounted) return;
-        setStatus("error");
-        setMemoData(data ?? null);
-      }
-    };
+  const load = async () => {
+    setStatus("loading");
+    try {
+      const response = await authClient.post<{ data: IcMemoTemplateData }>(
+        "/api/get_icmemo_data_user_view/",
+        {}
+      );
 
-    load();
-    return () => {
-      isMounted = false;
-    };
-  }, [data, hasStarted]);
+      if (!isMounted) return;
+
+      const baseData = response.data?.data ?? null;
+      setMemoData(baseData);
+      setStatus("idle");
+
+      authClient
+        .post<{ data: IcMemoTemplateData }>("/api/get_icmemo_insights/", {})
+        .then((res) => {
+          if (!isMounted) return;
+
+          const insights = res.data?.data;
+          if (!insights) return;
+
+          setMemoData((prev) => {
+            if (!prev) return prev;
+            return {
+              ...prev,
+              ...insights,
+            };
+          });
+        })
+        .catch(() => {});
+    } catch {
+      if (!isMounted) return;
+      setStatus("error");
+      setMemoData(data ?? null);
+    }
+  };
+
+  load();
+  return () => {
+    isMounted = false;
+  };
+}, [data, hasStarted]);
+
 
   if (hasStarted) {
     if (status === "loading" && !memoData) {
