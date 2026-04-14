@@ -52,14 +52,11 @@ const Login = () => {
       setIsSubmitting(true);
       setError("");
 
-      const normalizedIdentifier = identifier.trim();
-      const normalizedPassword = password.trim();
-
       const response = await axios.post(
         `${API_URL}/api/auth/login/`,
         {
-          identifier: normalizedIdentifier,
-          password: normalizedPassword,
+          identifier: identifier.trim(),
+          password: password.trim(),
         },
         {
           withCredentials: true,
@@ -76,7 +73,7 @@ const Login = () => {
       }
 
       if (rememberMe) {
-        window.localStorage.setItem(REMEMBERED_LOGIN_KEY, normalizedIdentifier);
+        window.localStorage.setItem(REMEMBERED_LOGIN_KEY, identifier.trim());
       } else {
         window.localStorage.removeItem(REMEMBERED_LOGIN_KEY);
       }
