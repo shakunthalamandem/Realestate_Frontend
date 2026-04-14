@@ -1,49 +1,27 @@
-import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-} from "@/components/ui/dialog";
 import axios from "axios";
 import { setAuthSession, setAuthUser } from "@/lib/auth";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { loadGoogleScript } from "@/lib/google/loadGoogleScript";
-import {
-  createNonce,
-  decodeGoogleIdToken,
-} from "@/lib/google/googleAuth";
-import {
-  forgotPasswordRequest,
-  googleLoginRequest,
-  loginRequest,
-  meRequest,
-} from "@/lib/auth-api";
 import PasswordInput from "@/components/auth/PasswordInput";
 import { productRoutes } from "@/lib/product-routes";
 import { setDemoMode } from "@/lib/demo-mode";
 
 const REMEMBERED_LOGIN_KEY = "remembered_login_identifier";
+const API_URL = import.meta.env.VITE_API_URL;
 
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const fromPath = (location.state as { from?: string } | null)?.from ?? productRoutes.portfolioIntelligence;
-  const googleButtonRef = useRef<HTMLDivElement | null>(null);
   const [identifier, setIdentifier] = useState("");
 
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
-  const [forgotOpen, setForgotOpen] = useState(false);
-  const [forgotEmail, setForgotEmail] = useState("");
-  const [forgotError, setForgotError] = useState("");
-  const [forgotSuccess, setForgotSuccess] = useState("");
-  const [isForgotSubmitting, setIsForgotSubmitting] = useState(false);
-  const [googleReady, setGoogleReady] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const getApiErrorMessage = (fallback: string, err: unknown): string => {
@@ -64,34 +42,51 @@ const Login = () => {
 
   const handleSignIn = async (event: FormEvent) => {
     event.preventDefault();
-    if (!identifier.trim() || !password.trim()) {
-  setError("Please enter email/username and password.");
-  return;
-}
 
+    if (!identifier.trim() || !password.trim()) {
+      setError("Please enter email/username and password.");
+      return;
+    }
 
     try {
       setIsSubmitting(true);
       setError("");
+
+      const normalizedIdentifier = identifier.trim();
+      const normalizedPassword = password.trim();
+
+      const response = await axios.post(
+        `${API_URL}/api/auth/login/`,
+        {
+          identifier: normalizedIdentifier,
+          password: normalizedPassword,
+        },
+        {
+          withCredentials: true,
+        },
+      );
+
+      const responseData = response.data ?? {};
+      const user = responseData.user;
+      const accessToken = responseData.tokens?.access;
+      const sessionId = responseData.session_id;
+
+      if (!user || !accessToken || !sessionId) {
+        throw new Error("Invalid login response from server.");
+      }
+
       if (rememberMe) {
-        window.localStorage.setItem(REMEMBERED_LOGIN_KEY, identifier.trim());
+        window.localStorage.setItem(REMEMBERED_LOGIN_KEY, normalizedIdentifier);
       } else {
         window.localStorage.removeItem(REMEMBERED_LOGIN_KEY);
       }
 
-      const auth = await loginRequest({ identifier, password });
-
       setAuthSession({
-        accessToken: auth.accessToken,
-        sessionId: auth.sessionId,
-        user: auth.user ?? undefined,
+        accessToken,
+        sessionId,
+        user,
       });
-
-      const me = await meRequest({
-        token: auth.accessToken,
-        sessionId: auth.sessionId,
-      });
-      setAuthUser(me);
+      setAuthUser(user);
       setDemoMode(false);
 
       navigate(fromPath, { replace: true });
@@ -102,40 +97,6 @@ const Login = () => {
     }
   };
 
-  const handleGoogleSuccess = useCallback(
-    async (idToken: string) => {
-      try {
-        setIsSubmitting(true);
-        setError("");
-
-        const decodedProfile = decodeGoogleIdToken(idToken);
-        window.sessionStorage.setItem("google_id_token", idToken);
-        window.sessionStorage.setItem("google_user_profile", JSON.stringify(decodedProfile));
-
-        const googleAuth = await googleLoginRequest(idToken);
-        setAuthSession({
-          accessToken: googleAuth.accessToken,
-          sessionId: googleAuth.sessionId,
-          user: googleAuth.user ?? undefined,
-        });
-
-        const me = await meRequest({
-          token: googleAuth.accessToken,
-          sessionId: googleAuth.sessionId,
-        });
-        setAuthUser(me);
-        setDemoMode(false);
-
-        navigate(fromPath, { replace: true });
-      } catch (err) {
-        setError(getApiErrorMessage("Google login failed. Please try again.", err));
-      } finally {
-        setIsSubmitting(false);
-      }
-    },
-    [fromPath, navigate],
-  );
-
   useEffect(() => {
     const rememberedIdentifier = window.localStorage.getItem(REMEMBERED_LOGIN_KEY);
     if (rememberedIdentifier) {
@@ -143,82 +104,6 @@ const Login = () => {
       setRememberMe(true);
     }
   }, []);
-
-  const handleForgotPassword = async (event: FormEvent) => {
-    event.preventDefault();
-    if (!forgotEmail.trim()) {
-      setForgotError("Please enter your recovery email.");
-      return;
-    }
-
-    try {
-      setIsForgotSubmitting(true);
-      setForgotError("");
-      setForgotSuccess("");
-      await forgotPasswordRequest(forgotEmail.trim());
-      setForgotSuccess("Password reset link has been sent to your email.");
-    } catch (err) {
-      setForgotError(getApiErrorMessage("Unable to process request. Please try again.", err));
-    } finally {
-      setIsForgotSubmitting(false);
-    }
-  };
-
-  useEffect(() => {
-    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-    if (!clientId) {
-      setError("Google client ID is missing. Add VITE_GOOGLE_CLIENT_ID in .env");
-      return;
-    }
-
-    let active = true;
-
-    const init = async () => {
-      try {
-        await loadGoogleScript();
-        if (!active || !window.google?.accounts?.id || !googleButtonRef.current) {
-          return;
-        }
-
-        googleButtonRef.current.innerHTML = "";
-        window.google.accounts.id.initialize({
-          client_id: clientId,
-          callback: async (response) => {
-            if (!response.credential) {
-              setError("Google login failed. Please try again.");
-              return;
-            }
-            await handleGoogleSuccess(response.credential);
-          },
-          ux_mode: "popup",
-          auto_select: false,
-          nonce: createNonce(),
-        });
-
-        window.google.accounts.id.renderButton(googleButtonRef.current, {
-          type: "standard",
-          theme: "outline",
-          size: "large",
-          text: "continue_with",
-          shape: "rectangular",
-          logo_alignment: "left",
-          width: 420,
-        });
-
-        setGoogleReady(true);
-      } catch {
-        if (active) {
-          setError("Unable to load Google login. Please refresh and try again.");
-        }
-      }
-    };
-
-    init();
-
-    return () => {
-      active = false;
-    };
-  }, [handleGoogleSuccess]);
 
   const glassInputClass =
     "h-12 border-slate-300 bg-white text-slate-800 placeholder:text-slate-400 transition-colors duration-150 hover:border-slate-400 focus-visible:border-[#5a68bf] focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:shadow-none";
@@ -252,13 +137,13 @@ const Login = () => {
 
           <form onSubmit={handleSignIn} className="space-y-5">
             <Input
-  className={glassInputClass}
-  type="text"
-  placeholder="Email or Username"
-  value={identifier}
-  onChange={(e) => setIdentifier(e.target.value)}
-  disabled={isSubmitting}
-/>
+              className={glassInputClass}
+              type="text"
+              placeholder="Email or Username"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
+              disabled={isSubmitting}
+            />
 
             <PasswordInput
               className={glassInputClass}
@@ -318,74 +203,11 @@ const Login = () => {
             </div>
           </form>
 
-          <div className="mt-5 text-center text-sm text-slate-600">
-            Don't have an account?{" "}
-            <button
-              type="button"
-              className="font-semibold text-[#3a4da5] hover:underline"
-              disabled={isSubmitting}
-              onClick={() => {
-                setError("");
-                navigate("/signup", {
-                  state: { from: fromPath },
-                });
-              }}
-            >
-              Sign up
-            </button>
+          <div className="mt-5 text-center text-sm text-slate-500">
+            Use the login credentials provided by the admin to access this application.
           </div>
-
-          <div className="mb-4 mt-4 flex items-center gap-3">
-            <span className="h-px flex-1 bg-slate-300" />
-            <span className="text-xs font-medium uppercase tracking-wider text-slate-500">OR</span>
-            <span className="h-px flex-1 bg-slate-300" />
-          </div>
-
-          <div className="flex w-full justify-center">
-            <div ref={googleButtonRef} />
-          </div>
-          {!googleReady ? (
-            <p className="mt-2 text-center text-xs text-slate-500">Loading Google sign-in...</p>
-          ) : null}
         </div>
       </main>
-      <Dialog
-        open={forgotOpen}
-        onOpenChange={(open) => {
-          setForgotOpen(open);
-          if (!open) {
-            setForgotError("");
-            setForgotSuccess("");
-          }
-        }}
-      >
-        <DialogContent className="max-w-[560px] border border-slate-200 bg-white p-6 shadow-2xl">
-          <DialogDescription className="font-auth text-[20px] font-semibold leading-snug text-[#1e2f73]">
-            Please enter your email address to reset your password
-          </DialogDescription>
-          <form onSubmit={handleForgotPassword} className="mt-5 space-y-4">
-            <Input
-              type="email"
-              placeholder="Recovery Email"
-              value={forgotEmail}
-              onChange={(e) => setForgotEmail(e.target.value)}
-              className={`${glassInputClass} h-12 bg-white text-[17px] md:text-[17px] font-medium text-[#0f172a] placeholder:text-slate-400`}
-              disabled={isForgotSubmitting}
-            />
-            {forgotError ? <p className="text-sm text-red-600">{forgotError}</p> : null}
-            {forgotSuccess ? <p className="text-sm text-emerald-700">{forgotSuccess}</p> : null}
-            <div className="flex justify-end pt-1">
-              <Button
-                type="submit"
-                className="h-11 bg-[#1e2f73] px-7 text-white hover:bg-[#233889] disabled:bg-slate-300 disabled:text-slate-500"
-                disabled={isForgotSubmitting || !forgotEmail.trim()}
-              >
-                {isForgotSubmitting ? "SUBMITTING..." : "SUBMIT"}
-              </Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
       <Footer />
     </div>
 
