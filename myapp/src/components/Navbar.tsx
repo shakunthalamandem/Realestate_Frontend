@@ -108,7 +108,7 @@ const Navbar = () => {
       setLoggedIn(false);
       setProfileName("User");
       setLogoutDialogOpen(false);
-      navigate("/logout");
+      navigate("/login", { replace: true });
     }
   };
 
