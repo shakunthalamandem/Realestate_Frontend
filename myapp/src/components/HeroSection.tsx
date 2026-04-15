@@ -2,27 +2,10 @@ import { useState } from "react";
 import heroDashboard from "../assets/section1_main_image.png";
 import { ArrowRight, Play } from "lucide-react";
 import { Button } from "./ui/button";
-import { isUserLoggedIn } from "@/lib/auth";
-import AccessBlockedModal from "./AccessBlockedModal";
-import { useNavigate } from "react-router-dom";
 import RequestDemoForm from "./RequestDemoForm";
 
 const HeroSection = () => {
-  const navigate = useNavigate();
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRequestDemoOpen, setIsRequestDemoOpen] = useState(false);
-
-  const guardSectionAccess = (sectionId: string) => {
-    if (!isUserLoggedIn()) {
-      setIsModalOpen(true);
-      return;
-    }
-
-    const target = document.getElementById(sectionId);
-    if (target) {
-      target.scrollIntoView({ behavior: "smooth" });
-    }
-  };
 
   return (
     <section className="relative overflow-hidden pt-28 pb-16 lg:pt-36 lg:pb-24 section-soft">
@@ -58,7 +41,13 @@ const HeroSection = () => {
               Request a Demo
               <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
-            <Button variant="heroOutline" size="xl" onClick={() => guardSectionAccess("platform")}>
+            <Button
+              variant="heroOutline"
+              size="xl"
+              onClick={() => {
+                window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+              }}
+            >
               <Play className="mr-2 w-4 h-4" />
               See How It Works
             </Button>
@@ -84,11 +73,6 @@ const HeroSection = () => {
           </div> */}
         </div>
       </div>
-      <AccessBlockedModal
-        open={isModalOpen}
-        onOpenChange={setIsModalOpen}
-        onGoToLogin={() => navigate("/login")}
-      />
       <RequestDemoForm
         open={isRequestDemoOpen}
         onOpenChange={setIsRequestDemoOpen}

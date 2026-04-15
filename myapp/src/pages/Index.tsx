@@ -70,7 +70,7 @@ const Index = () => {
     <div className="min-h-screen">
       <Navbar />
 
-      <div className={!isLoggedIn ? "blur-sm pointer-events-none" : ""}>
+      <div>
         <HeroSection />
         <WhyChooseAsset72 />
         <PlatformFeatures />
