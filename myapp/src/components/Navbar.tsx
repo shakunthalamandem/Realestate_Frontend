@@ -11,6 +11,7 @@ import {
   getAuthUser,
   isUserLoggedIn,
 } from "@/lib/auth";
+import { setDemoMode } from "@/lib/demo-mode";
 import { logoutRequest } from "@/lib/auth-api";
 import {
   DropdownMenu,
@@ -107,7 +108,7 @@ const Navbar = () => {
       setLoggedIn(false);
       setProfileName("User");
       setLogoutDialogOpen(false);
-      navigate("/logout");
+      navigate("/login", { replace: true });
     }
   };
 
@@ -175,7 +176,10 @@ const Navbar = () => {
           <Button
             variant="hero"
             size="default"
-            onClick={() => guardNavigation(productRoutes.portfolioIntelligence)}
+            onClick={() => {
+              setDemoMode(true);
+              navigate(productRoutes.portfolioIntelligence);
+            }}
           >
             Sample
           </Button>
@@ -245,10 +249,11 @@ const Navbar = () => {
             className="w-full"
             onClick={() => {
               setMobileOpen(false);
-              guardNavigation(productRoutes.portfolioIntelligence);
+              setDemoMode(true);
+              navigate(productRoutes.portfolioIntelligence);
             }}
           >
-            Request a Demo
+            Sample
           </Button>
           <Button
             variant="heroOutline"

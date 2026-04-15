@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
+import axios from "axios";
 import { authClient } from "@/lib/auth-api";
+import { isDemoMode } from "@/lib/demo-mode";
 import SnapshotTab from "./tabs/snapshot_tab";
 import PerformanceDriversTab from "./tabs/performance_drivers_tab";
 import RevenueQualityLeaseIntelligenceTab from "./tabs/revenue_quality_lease_intelligence_tab";
@@ -28,6 +30,16 @@ type PfDemoPortfolioAnalyticsProps = {
   showTabMenu?: boolean;
 };
 
+type PortfolioAnalyticsListResponse = {
+  data?: PortfolioAnalyticsRecord[];
+};
+
+type PortfolioAnalyticsSingleResponse = {
+  data?: PortfolioAnalyticsRecord;
+};
+
+const API_URL = import.meta.env.VITE_API_URL;
+
 const PfDemoPortfolioAnalytics: React.FC<PfDemoPortfolioAnalyticsProps> = ({
   activeSubTab,
   onSubTabChange,
@@ -55,10 +67,17 @@ const PfDemoPortfolioAnalytics: React.FC<PfDemoPortfolioAnalyticsProps> = ({
     setStatus("loading");
 
     try {
-      const response = await authClient.post<{ data: PortfolioAnalyticsRecord[] }>(
-        "/api/get_portfolio_analytics_model_data_user_view/",
-        { fetch: "all" }
-      );
+      const demoMode = isDemoMode();
+
+      const response = demoMode
+        ? await authClient.post<PortfolioAnalyticsListResponse>(
+            `${API_URL}/api/get_portfolio_analytics_model_data/`,
+            { fetch: "all" }
+          )
+        : await authClient.post<PortfolioAnalyticsListResponse>(
+            "/api/get_portfolio_analytics_model_data_user_view/",
+            { fetch: "all" }
+          );
 
       if (!isMounted) return;
 
@@ -67,12 +86,23 @@ const PfDemoPortfolioAnalytics: React.FC<PfDemoPortfolioAnalyticsProps> = ({
       setStatus("idle");
       setInsightsStatus("loading");
 
-      authClient
-        .post<{ data: PortfolioAnalyticsRecord }>("/api/get_portfolio_insights/", {})
+      const insightsRequest = demoMode
+        ? axios.post<PortfolioAnalyticsListResponse>(
+            `${API_URL}/api/get_portfolio_analytics_model_data/`,
+            { fetch: "all" }
+          )
+        : authClient.post<PortfolioAnalyticsSingleResponse>(
+            "/api/get_portfolio_insights/",
+            {}
+          );
+
+      insightsRequest
         .then((res) => {
           if (!isMounted) return;
 
-          const insights = res.data?.data;
+          const insights = demoMode
+            ? (res.data as PortfolioAnalyticsListResponse).data?.[0] ?? null
+            : (res.data as PortfolioAnalyticsSingleResponse).data;
           if (!insights) {
             setInsightsStatus("error");
             return;
