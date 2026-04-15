@@ -45,7 +45,9 @@ const HeroSection = () => {
               variant="heroOutline"
               size="xl"
               onClick={() => {
-                window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+                document
+                  .getElementById("solutions")
+                  ?.scrollIntoView({ behavior: "smooth" });
               }}
             >
               <Play className="mr-2 w-4 h-4" />
