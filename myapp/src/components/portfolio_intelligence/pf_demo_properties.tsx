@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, MapPin } from "lucide-react";
+import { ChevronLeft, ChevronRight, MapPin, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { authClient } from "@/lib/auth-api";
 import { isDemoMode } from "@/lib/demo-mode";
@@ -509,9 +509,11 @@ function AddPropertyForm({ onBack }: { onBack: () => void }) {
 }
 
 const PfDemoProperties: React.FC<PfDemoPropertiesProps> = ({ onSelectProperty }) => {
+  const { toast } = useToast();
   const [data, setData] = useState<PropertyRecord[]>([]);
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [showAddPropertyForm, setShowAddPropertyForm] = useState(false);
+  const [deletingPropertyName, setDeletingPropertyName] = useState<string | null>(null);
 
   const loadProperties = useCallback(async (isActive = true) => {
     setStatus("loading");
@@ -559,6 +561,46 @@ const PfDemoProperties: React.FC<PfDemoPropertiesProps> = ({ onSelectProperty })
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
       handleRowClick(row);
+    }
+  };
+
+  const handleDeleteProperty = async (
+    event: React.MouseEvent<HTMLButtonElement>,
+    row: PropertyRecord
+  ) => {
+    event.stopPropagation();
+
+    const propertyName = row.property_name?.trim();
+    if (!propertyName) return;
+
+    const confirmed = window.confirm(`Delete ${propertyName}?`);
+    if (!confirmed) return;
+
+    try {
+      setDeletingPropertyName(propertyName);
+
+      await authClient.post("/api/user_properties/delete/", {
+        property_name: propertyName,
+      });
+
+      setData((current) =>
+        current.filter(
+          (item) => item.property_name?.toLowerCase() !== propertyName.toLowerCase()
+        )
+      );
+
+      toast({
+        title: "Property deleted",
+        description: `${propertyName} was removed successfully.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Delete failed",
+        description: "Could not delete the property. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setDeletingPropertyName(null);
     }
   };
 
@@ -610,7 +652,7 @@ const PfDemoProperties: React.FC<PfDemoPropertiesProps> = ({ onSelectProperty })
                 <th scope="col">Occupancy</th>
                 {/* <th scope="col">Rent/sqft</th> */}
                 <th scope="col">
-                  <span className="sr-only">Open</span>
+                  <span className="sr-only">Actions</span>
                 </th>
               </tr>
             </thead>
@@ -672,7 +714,21 @@ const PfDemoProperties: React.FC<PfDemoPropertiesProps> = ({ onSelectProperty })
                           <span className="pf-properties__value">{row.rent_per_sqft || "-"}</span>
                         </td> */}
                       <td className="pf-properties__cell pf-properties__cell--last pf-properties__arrow-cell">
-                        <ChevronRight className="pf-properties__arrow" strokeWidth={2.6} />
+                        <div className="flex items-center justify-end gap-3">
+                          {!isDemoMode() ? (
+                            <button
+                              type="button"
+                              onClick={(event) => handleDeleteProperty(event, row)}
+                              disabled={deletingPropertyName === row.property_name}
+                              className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-[#b42318] transition hover:bg-[#fdecec] disabled:cursor-not-allowed disabled:opacity-60"
+                              title="Delete property"
+                              aria-label={`Delete ${row.property_name}`}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          ) : null}
+                          <ChevronRight className="pf-properties__arrow" strokeWidth={2.6} />
+                        </div>
                       </td>
                     </tr>
                   );
