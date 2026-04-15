@@ -1,11 +1,13 @@
+import { useState } from "react";
 import { ScrollReveal } from "./ScrollReveal";
 import { Button } from "../components/ui/button";
 import AccessBlockedModal from "./AccessBlockedModal";
+import RequestDemoForm from "./RequestDemoForm";
 import { useLoginGuard } from "@/hooks/use-login-guard";
-import { productRoutes } from "@/lib/product-routes";
 
 const CTASection = () => {
-  const { isModalOpen, setIsModalOpen, guardNavigation, goToLogin } = useLoginGuard();
+  const [isRequestDemoOpen, setIsRequestDemoOpen] = useState(false);
+  const { isModalOpen, setIsModalOpen, goToLogin } = useLoginGuard();
   return (
     <section className="section-padding" id="demo">
       <div className="max-w-4xl mx-auto">
@@ -23,9 +25,9 @@ const CTASection = () => {
                 variant="secondary"
                 size="xl"
                 className="bg-[#1ebc9a] text-white shadow-xl px-8 py-3"
-                onClick={() => guardNavigation(productRoutes.portfolioIntelligence)}
+                onClick={() => setIsRequestDemoOpen(true)}
               >
-               Demo
+               Request a Demo
               </Button>
             </div>
           </div>
@@ -35,6 +37,10 @@ const CTASection = () => {
         open={isModalOpen}
         onOpenChange={setIsModalOpen}
         onGoToLogin={goToLogin}
+      />
+      <RequestDemoForm
+        open={isRequestDemoOpen}
+        onOpenChange={setIsRequestDemoOpen}
       />
     </section>
   );
