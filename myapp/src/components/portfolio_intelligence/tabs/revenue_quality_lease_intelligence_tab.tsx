@@ -59,12 +59,12 @@ const RevenueQualityLeaseIntelligenceTab: React.FC<{ data?: RevenueQualityLeaseI
   };
 
   const cards = [
-    {
-      label: "Renewal Rate",
-      value: summary?.renewal_rate_pct != null
-        ? formatPercent(summary.renewal_rate_pct)
-        : "-"
-    },
+    // {
+    //   label: "Renewal Rate",
+    //   value: summary?.renewal_rate_pct != null
+    //     ? formatPercent(summary.renewal_rate_pct)
+    //     : "-"
+    // },
     { label: "Loss-to-Lease (WTD)", value: formatPercentvalue(summary?.wtd_loss_to_lease_pct) },
     { label: "Units Below Market", value: formatPercentvalue(summary?.units_below_market_pct) },
     {
