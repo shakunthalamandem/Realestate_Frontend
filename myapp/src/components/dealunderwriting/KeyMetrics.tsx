@@ -33,7 +33,9 @@ function getMetrics(deal: Deal) {
     {
       label: "Occupancy",
       value: formatPercent(deal.metrics.occupancy),
-      sub: `${Math.round((deal.units * deal.metrics.occupancy) / 100)} of ${deal.units}`,
+      sub: deal.metrics.occupancyUnits
+        ? `${deal.metrics.occupancyUnits.occupied} of ${deal.metrics.occupancyUnits.total}`
+        : `${Math.round((deal.units * deal.metrics.occupancy) / 100)} of ${deal.units}`,
     },
     {
       label: "Vacancy Loss",
@@ -43,7 +45,9 @@ function getMetrics(deal: Deal) {
     {
       label: "Rent vs Market Gap",
       value: formatPercent(deal.metrics.rentGap),
-      sub: "Below market",
+      sub: deal.metrics.totalProjectedRevenueLift
+        ? `${formatCompactCurrency(deal.metrics.totalProjectedRevenueLift)} upside`
+        : "Below market",
     },
   ];
 }

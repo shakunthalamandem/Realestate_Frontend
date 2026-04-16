@@ -12,10 +12,12 @@ import { WhatMovesTheDeal } from "./WhatMovesTheDeal";
 import { getDealById, useDealUnderwritingData } from "./data";
 
 export default function DealUnderwritingLens() {
-  const { deals, loading, error } = useDealUnderwritingData();
   const [activeDealId, setActiveDealId] = useState("");
   const [activeView, setActiveView] = useState<"deal" | "compare">("deal");
   const [compareIds, setCompareIds] = useState<string[]>([]);
+  const { deals, loading, error } = useDealUnderwritingData(
+    [activeDealId, ...compareIds].filter(Boolean)
+  );
 
   const activeDeal = getDealById(deals, activeDealId) ?? deals[0];
 
