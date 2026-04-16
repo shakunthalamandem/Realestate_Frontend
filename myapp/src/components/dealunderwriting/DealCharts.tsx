@@ -10,7 +10,7 @@ import {
   PointElement,
   Tooltip,
 } from "chart.js";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import { Bar, Line, Pie } from "react-chartjs-2";
 import type { Deal } from "./data";
 import { ChartInsight } from "./ChartInsight";
@@ -56,28 +56,34 @@ function FloorplanHeatmap({
 }) {
   const flatValues = data.flat();
   const maxValue = Math.max(...flatValues, 0);
+  const [tooltip, setTooltip] = useState<{ x: number; y: number; label: string } | null>(null);
 
   const getCellColor = (value: number) => {
-    if (maxValue <= 0) return "#eef2f8";
+    if (value <= 0 || maxValue <= 0) return "transparent";
     const ratio = value / maxValue;
-    const alpha = 0.14 + ratio * 0.76;
+    const alpha = 0.25 + ratio * 0.75;
     return `rgba(35, 159, 255, ${alpha.toFixed(2)})`;
   };
 
   return (
-    <div className="rounded-2xl bg-[#1f3e5a] p-5 text-white">
-      <h5 className="mb-4 text-center text-xl font-semibold">{title}</h5>
-      <div className="grid gap-2" style={{ gridTemplateColumns: `72px repeat(${xlabels.length}, minmax(0, 1fr))` }}>
+    <div className="relative rounded-2xl bg-[#0d1f35] p-5 text-white">
+      <h5 className="mb-4 text-center text-base font-semibold text-white">{title}</h5>
+      <div
+        className="grid gap-[3px]"
+        style={{ gridTemplateColumns: `80px repeat(${xlabels.length}, minmax(0, 1fr))` }}
+      >
+        {/* Header row */}
         <div />
         {xlabels.map((label) => (
-          <div key={label} className="text-center text-sm font-medium text-white/85">
+          <div key={label} className="text-center text-xs font-medium text-white/70 pb-1">
             {label}
           </div>
         ))}
 
+        {/* Data rows */}
         {ylabels.map((rowLabel, rowIndex) => (
           <Fragment key={rowLabel}>
-            <div key={`${rowLabel}-label`} className="flex items-center justify-end pr-2 text-sm font-semibold text-white/90">
+            <div className="flex items-center text-xs font-medium text-white/80 pr-1 leading-tight">
               {rowLabel}
             </div>
             {xlabels.map((columnLabel, columnIndex) => {
@@ -85,27 +91,56 @@ function FloorplanHeatmap({
               return (
                 <div
                   key={`${rowLabel}-${columnLabel}`}
-                  className="flex h-9 items-center justify-center rounded text-sm font-semibold text-[#0f2740]"
-                  style={{ backgroundColor: getCellColor(value) }}
-                  title={`${rowLabel} / ${columnLabel}: ${value}`}
-                >
-                  {value > 0 ? value : ""}
-                </div>
+                  className="h-7 w-full rounded-sm cursor-default"
+                  style={{
+                    backgroundColor: getCellColor(value),
+                    border: value > 0
+                      ? "1px solid rgba(35,159,255,0.3)"
+                      : "1px solid rgba(255,255,255,0.04)",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (value > 0) {
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const parentRect = e.currentTarget.closest(".relative")!.getBoundingClientRect();
+                      setTooltip({
+                        x: rect.left - parentRect.left + rect.width / 2,
+                        y: rect.top - parentRect.top - 8,
+                        label: `${columnLabel}\nValue: ${value}`,
+                      });
+                    }
+                  }}
+                  onMouseLeave={() => setTooltip(null)}
+                />
               );
             })}
           </Fragment>
         ))}
       </div>
 
-      <div className="mt-5 flex items-center gap-3 text-sm text-white/90">
+      {/* Tooltip */}
+      {tooltip && (
+        <div
+          className="pointer-events-none absolute z-10 rounded bg-[#1a3a5c] border border-[#2a5a8c] px-2 py-1 text-xs text-white shadow-lg"
+          style={{
+            left: tooltip.x,
+            top: tooltip.y,
+            transform: "translate(-50%, -100%)",
+            whiteSpace: "pre-line",
+          }}
+        >
+          {tooltip.label}
+        </div>
+      )}
+
+      {/* Legend */}
+      <div className="mt-4 flex items-center gap-3 text-xs text-white/70">
         <span>0</span>
-        <div className="h-3 flex-1 rounded-full bg-gradient-to-r from-[#eef2f8] to-[#239fff]" />
+        <div className="h-2 flex-1 rounded-full bg-gradient-to-r from-[rgba(35,159,255,0.15)] to-[#239fff]" />
         <span>{maxValue}</span>
       </div>
     </div>
   );
 }
-
 const axisColor = "rgba(15,23,42,0.08)";
 const tickColor = "#475569";
 
@@ -201,7 +236,7 @@ export function DealCharts({ deal }: { deal: Deal }) {
           />
         </ChartCard>
 
-        <ChartCard title="Expense Breakdown" insight={ci.expenseBreakdown}>
+        {/* <ChartCard title="Expense Breakdown" insight={ci.expenseBreakdown}>
           <Bar
             data={{
               labels: deal.expenseBreakdown.map((item) => item.category),
@@ -209,7 +244,7 @@ export function DealCharts({ deal }: { deal: Deal }) {
             }}
             options={{ ...barOptions, indexAxis: "y" as const }}
           />
-        </ChartCard>
+        </ChartCard> */}
 
         <ChartCard title="Expense Distribution" insight={ci.expenseDistribution}>
           <Pie
