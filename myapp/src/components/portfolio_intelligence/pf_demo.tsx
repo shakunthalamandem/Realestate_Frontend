@@ -17,11 +17,11 @@ import {
   Landmark,
 } from "lucide-react";
 import MarketRadar from "../market_radar/MarketRadar";
-import RealEstateUploader from "../deal_lens/RealEstateUploader";
 import PfDemoIcMemo from "./pf_demo_ic_memo";
 import { productRoutes } from "@/lib/product-routes";
 import { isDemoMode } from "@/lib/demo-mode";
 import { isUserLoggedIn } from "@/lib/auth";
+import DealUnderwritingLens from "../dealunderwriting/DealUnderwritingLens";
 
 const tabs = [
   "Portfolio Analytics",
@@ -131,7 +131,7 @@ const PfDemo: React.FC = () => {
         />
       );
     }
-    return <RealEstateUploader showBackButton={false} />;
+    return <DealUnderwritingLens />;
   }, [activeTab, isIcMemoStarted, portfolioSubTab, selectedProperty]);
 
   return (
@@ -268,10 +268,10 @@ const PfDemo: React.FC = () => {
 
         <main
           ref={mainScrollRef}
-          className={`h-screen min-w-0 overflow-y-auto px-4 py-6 md:px-6 md:pt-7 ${isDealLensTab ? "bg-[#0b112f]" : "bg-[#f3f6fb]"
+          className={`h-screen min-w-0 overflow-y-auto px-4 py-6 md:px-6 md:pt-7 ${isDealLensTab ? "bg-[#f3f6fb]" : "bg-[#f3f6fb]"
             }`}
         >
-          <div className={isDealLensTab ? "w-full" : "mx-auto w-full max-w-[1420px]"}>
+          <div className={isDealLensTab ? "mx-auto w-full max-w-[1600px] px-4 py-6 md:px-8 xl:px-12" : "mx-auto w-full max-w-[1420px]"}>
             {activeContent}
           </div>
         </main>
