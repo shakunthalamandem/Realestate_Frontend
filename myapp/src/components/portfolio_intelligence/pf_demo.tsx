@@ -19,6 +19,9 @@ import {
 import MarketRadar from "../market_radar/MarketRadar";
 import RealEstateUploader from "../deal_lens/RealEstateUploader";
 import PfDemoIcMemo from "./pf_demo_ic_memo";
+import { productRoutes } from "@/lib/product-routes";
+import { isDemoMode } from "@/lib/demo-mode";
+import { isUserLoggedIn } from "@/lib/auth";
 
 const tabs = [
   "Portfolio Analytics",
@@ -32,6 +35,8 @@ type DemoTab = (typeof tabs)[number];
 
 const routeToTab: Record<string, DemoTab> = {
   "/portfolio_intelligence": "Portfolio Analytics",
+  [productRoutes.portfolioIntelligence]: "Portfolio Analytics",
+  [productRoutes.propertyIntelligence]: "Properties",
   "/ai_rent_intelligence": "AI Rent Intelligence",
   "/market_radar": "Market Signal Radar",
   "/ic_memo": "IC Memo",
@@ -50,6 +55,23 @@ const PfDemo: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const isDealLensTab = activeTab === "Deal Underwriting Lens";
+  const isAuthenticatedUserView = isUserLoggedIn() && !isDemoMode();
+
+  const handleSidebarBack = () => {
+    if (isAuthenticatedUserView) {
+      if (activeTab === "Portfolio Analytics") {
+        navigate(productRoutes.propertyIntelligence);
+        return;
+      }
+
+      if (activeTab === "Properties") {
+        navigate("/");
+        return;
+      }
+    }
+
+    navigate("/", { state: { scrollTo: "demos" } });
+  };
 
   useEffect(() => {
     const requestedTab = location.state?.activeTab as DemoTab | undefined;
@@ -127,7 +149,7 @@ const PfDemo: React.FC = () => {
           <div className="mb-4">
             <button
               type="button"
-              onClick={() => navigate("/", { state: { scrollTo: "demos" } })}
+              onClick={handleSidebarBack}
               className="back-button-hex back-button-theme-sidebar flex items-center gap-2 whitespace-nowrap"
             >
               <ArrowLeft className="h-5 w-5" />
