@@ -59,7 +59,7 @@ export default function DealUnderwritingLens() {
         onViewChange={setActiveView}
       />
       <main className="min-w-0 flex-1 overflow-y-auto bg-[#f8fbff]">
-        <div className="mx-auto max-w-[1480px] px-8 py-10 2xl:px-10">
+        <div className="mx-auto max-w-[1480px] px-8 py-10 pb-28 2xl:px-10">
           {activeView === "deal" ? (
             <>
               <DealHeader deal={activeDeal} isInCompare={compareIds.includes(activeDeal.id)} onAddCompare={toggleCompare} />

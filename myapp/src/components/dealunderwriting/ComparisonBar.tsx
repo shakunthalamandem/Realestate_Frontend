@@ -12,8 +12,8 @@ export function ComparisonBar({ compareIds, deals, onRemove, onCompare }: Compar
   if (!compareIds.length) return null;
 
   return (
-    <div className="sticky bottom-0 z-20 mt-6 border-t border-[#d7e2fb] bg-white px-4 py-3 shadow-[0_-10px_30px_rgba(10,27,84,0.08)]">
-      <div className="flex flex-wrap items-center gap-3">
+    <div className="fixed bottom-0 left-[17.5rem] right-6 z-40">
+      <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-[#d7e2fb] bg-white px-4 py-3 shadow-[0_-10px_30px_rgba(10,27,84,0.08)]">
         <span className="text-sm text-[#5b647f]">Compare:</span>
         {compareIds.map((id) => {
           const deal = deals.find((item) => item.id === id);
