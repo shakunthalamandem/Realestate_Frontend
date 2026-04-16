@@ -9,6 +9,10 @@ import {
 } from "lucide-react";
 import type { Deal } from "./data";
 
+function formatPercent(value: number) {
+  return `${value.toFixed(2)}%`;
+}
+
 function ScoreRow({
   deals,
   label,
@@ -155,7 +159,7 @@ export function ComparisonView({ deals }: { deals: Deal[] }) {
             <ScoreRow deals={deals} label="Risk Level" scoreKey="riskLevel" />
             <tr className="border-b border-[#e1e7f5]">
               <td className="px-4 py-4 text-sm font-medium text-[#5b647f]">NOI Margin</td>
-              {deals.map((deal) => <td key={deal.id} className="px-4 py-4 text-center text-lg font-bold text-[#102149]">{deal.metrics.noiMargin}%</td>)}
+              {deals.map((deal) => <td key={deal.id} className="px-4 py-4 text-center text-lg font-bold text-[#102149]">{formatPercent(deal.metrics.noiMargin)}</td>)}
             </tr>
             <tr className="border-b border-[#e1e7f5]">
               <td className="px-4 py-4 text-sm font-medium text-[#5b647f]">Occupancy</td>
@@ -163,7 +167,7 @@ export function ComparisonView({ deals }: { deals: Deal[] }) {
             </tr>
             <tr>
               <td className="px-4 py-4 text-sm font-medium text-[#5b647f]">Rent Gap</td>
-              {deals.map((deal) => <td key={deal.id} className="px-4 py-4 text-center text-lg font-bold text-[#102149]">{deal.metrics.rentGap}%</td>)}
+              {deals.map((deal) => <td key={deal.id} className="px-4 py-4 text-center text-lg font-bold text-[#102149]">{formatPercent(deal.metrics.rentGap)}</td>)}
             </tr>
           </tbody>
         </table>
@@ -226,8 +230,8 @@ export function ComparisonView({ deals }: { deals: Deal[] }) {
         <h3 className="text-xl font-semibold uppercase tracking-[0.12em] text-[#d7e5ff]">Why {best.name} Is the Best Investment</h3>
         <p className="mt-4 text-3xl leading-10">{best.name} is the top-ranked deal because:</p>
         <div className="mt-5 space-y-3 text-xl leading-8 text-white/95">
-          <p className="flex gap-3"><CheckCircle2 className="mt-1 h-5 w-5 flex-shrink-0 text-[#20d5a5]" /><span>Higher rent upside ({best.metrics.rentGap}% gap vs {secondBest.metrics.rentGap}% for {secondBest.name})</span></p>
-          <p className="flex gap-3"><CheckCircle2 className="mt-1 h-5 w-5 flex-shrink-0 text-[#20d5a5]" /><span>{best.metrics.noiMargin > secondBest.metrics.noiMargin ? "Stronger" : "Competitive"} NOI margin ({best.metrics.noiMargin}% vs {secondBest.metrics.noiMargin}%)</span></p>
+          <p className="flex gap-3"><CheckCircle2 className="mt-1 h-5 w-5 flex-shrink-0 text-[#20d5a5]" /><span>Higher rent upside ({formatPercent(best.metrics.rentGap)} gap vs {formatPercent(secondBest.metrics.rentGap)} for {secondBest.name})</span></p>
+          <p className="flex gap-3"><CheckCircle2 className="mt-1 h-5 w-5 flex-shrink-0 text-[#20d5a5]" /><span>{best.metrics.noiMargin > secondBest.metrics.noiMargin ? "Stronger" : "Competitive"} NOI margin ({formatPercent(best.metrics.noiMargin)} vs {formatPercent(secondBest.metrics.noiMargin)})</span></p>
           <p className="flex gap-3"><CheckCircle2 className="mt-1 h-5 w-5 flex-shrink-0 text-[#20d5a5]" /><span>Overall deal score of {best.scores.overall}, the highest in the pipeline.</span></p>
         </div>
       </section>
