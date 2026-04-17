@@ -69,7 +69,6 @@ function UploadZone({
   helperText = "Excel | Max 20 MB",
   showTemplate = true,
   footerText = "Use the template above to ensure correct file structure",
-  uploadZoneClassName = "",
 }: {
   label: string;
   description: string;
@@ -82,7 +81,6 @@ function UploadZone({
   helperText?: string;
   showTemplate?: boolean;
   footerText?: string;
-  uploadZoneClassName?: string;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
@@ -131,7 +129,7 @@ function UploadZone({
             onDragOver={(e) => e.preventDefault()}
             onDrop={handleDrop}
             onClick={() => inputRef.current?.click()}
-            className={`flex cursor-pointer items-center justify-center rounded-2xl border-2 border-dashed px-6 py-5 transition ${uploadZoneClassName} ${dragging
+            className={`flex cursor-pointer items-center justify-center rounded-2xl border-2 border-dashed px-6 py-5 transition ${dragging
               ? "border-[#90aee8] bg-[#f3f8ff]"
               : "border-[#d7dfeb] bg-white hover:border-[#b9c8e6] hover:bg-[#fbfdff]"
               }`}
@@ -164,7 +162,7 @@ function UploadZone({
             />
           </div>
         ) : (
-          <div className={`flex items-center gap-3 rounded-2xl border border-[#d7dfeb] bg-[#fbfdff] px-4 py-3 ${uploadZoneClassName}`}>
+          <div className="flex items-center gap-3 rounded-2xl border border-[#d7dfeb] bg-[#fbfdff] px-4 py-3">
             <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-[#e9f5ef]">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1d7c4d" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
@@ -261,7 +259,6 @@ function AddPropertyForm({ onBack }: { onBack: () => void }) {
   const [assetClass, setAssetClass] = useState("");
   const [units, setUnits] = useState("");
   const [occupancy, setOccupancy] = useState("");
-  const [memorandum, setMemorandum] = useState<UploadedFile | null>(null);
   const [rentRoll, setRentRoll] = useState<UploadedFile | null>(null);
   const [t12, setT12] = useState<UploadedFile | null>(null);
   const [submitted, setSubmitted] = useState(false);
@@ -289,10 +286,6 @@ function AddPropertyForm({ onBack }: { onBack: () => void }) {
     formData.append("occupancy_rate", occupancy);
     formData.append("t12_document", t12.file);
     formData.append("rent_roll_document", rentRoll.file);
-    if (memorandum) {
-      formData.append("memorandum_document", memorandum.file);
-    }
-
     try {
       setSubmitting(true);
       await authClient.post("/api/user_properties/add/", formData);
@@ -449,23 +442,8 @@ function AddPropertyForm({ onBack }: { onBack: () => void }) {
       </div>
 
       <div className="mt-5">
-        <Section step="3" title="Supporting Documents" subtitle="Rent Roll and T12 are required, memorandum is optional">
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-            <UploadZone
-              label="Memorandum"
-              description="Offering memorandum PDF"
-              templateHref=""
-              templateName=""
-              uploaded={memorandum}
-              onUpload={(file) => setMemorandum({ name: file.name, size: file.size, file })}
-              onRemove={() => setMemorandum(null)}
-              accept=".pdf"
-              helperText="PDF | Max 20 MB"
-              showTemplate={false}
-              footerText="Optional document to provide additional property context"
-              uploadZoneClassName="mt-[18px]"
-            />
-
+        <Section step="3" title="Supporting Documents" subtitle="Both files required to enable submission">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             <UploadZone
               label="Rent Roll"
               description="All units, tenants & lease terms"

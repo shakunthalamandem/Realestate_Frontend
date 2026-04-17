@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { authClient } from "@/lib/auth-api";
 import { isDemoMode } from "@/lib/demo-mode";
 import type { IcMemoTemplateData, IcPropertyCardData } from "@/components/ic-memo/types";
@@ -221,7 +221,7 @@ export interface Deal {
   chartInsights: Record<"tenantMix" | "rentVsMarket" | "noiProjection" | "revenueVsExpenses" | "expenseBreakdown" | "expenseDistribution" | "leaseExpirations" | "occupancyVacancy", { insight: string; impact: string; drives: string }>;
 }
 
-type DealDataState = { deals: Deal[]; loading: boolean; error: string | null };
+type DealDataState = { deals: Deal[]; loading: boolean; error: string | null; refresh: () => Promise<void> };
 
 const defaultDealIds = ["deal-a", "deal-b", "deal-c"];
 const clamp = (value: number, min = 0, max = 100) => Math.min(max, Math.max(min, value));
@@ -700,33 +700,33 @@ export function useDealUnderwritingData(requestedIds: string[] = []): DealDataSt
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const loadBaseData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const properties = await loadPropertyRecords();
+      setPropertyRecords(properties);
+      if (isDemoMode()) {
+        const [aiRent, icMemo] = await Promise.all([loadAiRentRecords().catch(() => []), loadIcMemoData()]);
+        setAiRentRecords(aiRent);
+        setIcMemoData(icMemo);
+      }
+    } catch {
+      setError("Unable to load deal underwriting data.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     let mounted = true;
-    const load = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const properties = await loadPropertyRecords();
-        if (!mounted) return;
-        setPropertyRecords(properties);
-        if (isDemoMode()) {
-          const [aiRent, icMemo] = await Promise.all([loadAiRentRecords().catch(() => []), loadIcMemoData()]);
-          if (!mounted) return;
-          setAiRentRecords(aiRent);
-          setIcMemoData(icMemo);
-        }
-      } catch {
-        if (!mounted) return;
-        setError("Unable to load deal underwriting data.");
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    };
-    load();
+    loadBaseData().catch(() => {
+      if (mounted) setError("Unable to load deal underwriting data.");
+    });
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [loadBaseData]);
 
   const placeholderDeals = useMemo(() => propertyRecords.map((property, index) => createPlaceholderDeal(property, index)), [propertyRecords]);
 
@@ -773,7 +773,7 @@ export function useDealUnderwritingData(requestedIds: string[] = []): DealDataSt
     return placeholderDeals.map((deal) => userDealCache[deal.name.toUpperCase()] ?? deal);
   }, [aiRentRecords, icMemoData, placeholderDeals, propertyRecords, userDealCache]);
 
-  return { deals, loading, error };
+  return { deals, loading, error, refresh: loadBaseData };
 }
 
 export function getDealById(deals: Deal[], id: string) {

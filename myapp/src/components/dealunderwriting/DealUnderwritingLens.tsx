@@ -10,12 +10,17 @@ import { KeyMetrics } from "./KeyMetrics";
 import { RisksOpportunities } from "./RisksOpportunities";
 import { WhatMovesTheDeal } from "./WhatMovesTheDeal";
 import { getDealById, useDealUnderwritingData } from "./data";
+import PfDealUnderwritingUpload from "./pf_dealunderwriting_upload";
+import { Search } from "lucide-react";
 
 export default function DealUnderwritingLens() {
   const [activeDealId, setActiveDealId] = useState("");
   const [activeView, setActiveView] = useState<"deal" | "compare">("deal");
   const [compareIds, setCompareIds] = useState<string[]>([]);
-  const { deals, loading, error } = useDealUnderwritingData(
+  const [screen, setScreen] = useState<"library" | "upload" | "detail">("library");
+  const [search, setSearch] = useState("");
+  const [pendingPropertyName, setPendingPropertyName] = useState("");
+  const { deals, loading, error, refresh } = useDealUnderwritingData(
     [activeDealId, ...compareIds].filter(Boolean)
   );
 
@@ -26,6 +31,23 @@ export default function DealUnderwritingLens() {
       setActiveDealId(deals[0].id);
     }
   }, [activeDealId, deals]);
+
+  useEffect(() => {
+    if (!pendingPropertyName) return;
+    const matchedDeal = deals.find(
+      (deal) => deal.name.trim().toLowerCase() === pendingPropertyName.trim().toLowerCase()
+    );
+    if (!matchedDeal) return;
+    setActiveDealId(matchedDeal.id);
+    setPendingPropertyName("");
+    setScreen("detail");
+  }, [deals, pendingPropertyName]);
+
+  const openDeal = useCallback((id: string) => {
+    setActiveDealId(id);
+    setActiveView("deal");
+    setScreen("detail");
+  }, []);
 
   const toggleCompare = useCallback((id: string) => {
     setCompareIds((current) => {
@@ -38,6 +60,11 @@ export default function DealUnderwritingLens() {
   const compareDeals = compareIds
     .map((id) => getDealById(deals, id))
     .filter((deal): deal is NonNullable<typeof deal> => Boolean(deal));
+  const sidebarDeals = activeView === "compare" ? compareDeals : activeDeal ? [activeDeal] : [];
+
+  const filteredDeals = deals.filter((deal) =>
+    `${deal.name} ${deal.location} ${deal.submarket ?? ""}`.toLowerCase().includes(search.trim().toLowerCase())
+  );
 
   if (loading) {
     return <div className="flex min-h-[60vh] items-center justify-center rounded-[28px] bg-[#f8fbff] text-[#62708d]">Loading deal underwriting data...</div>;
@@ -51,17 +78,103 @@ export default function DealUnderwritingLens() {
     return <div className="flex min-h-[60vh] items-center justify-center rounded-[28px] bg-[#f8fbff] text-[#62708d]">No property data available for underwriting.</div>;
   }
 
+  if (screen === "upload") {
+    return (
+      <PfDealUnderwritingUpload
+        onBack={() => setScreen("library")}
+        onSubmitted={async (propertyName) => {
+          setPendingPropertyName(propertyName);
+          await refresh();
+          setActiveDealId(propertyName.trim().toLowerCase().replace(/\s+/g, "-"));
+          setScreen("detail");
+        }}
+      />
+    );
+  }
+
+  if (screen === "library") {
+    return (
+      <section className="mx-auto max-w-[1280px] rounded-[32px] border border-[#d8e2f1] bg-white px-10 py-12 text-[#102149] shadow-[0_24px_70px_rgba(15,23,42,0.08)]">
+        <div className="flex flex-wrap items-end justify-between gap-6">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.45em] text-[#b48a41]">Deal Lens</p>
+            <h1 className="mt-3 text-5xl font-bold tracking-[-0.04em]">Property Intelligence Library</h1>
+            <p className="mt-4 max-w-3xl text-lg text-[#587091]">
+              Click a property to preview its stored memorandum, T12, and rent roll responses.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setScreen("upload")}
+            className="rounded-full bg-[linear-gradient(90deg,#a54cf5,#5d6df9)] px-7 py-4 text-lg font-semibold text-white shadow-[0_18px_45px_rgba(118,90,255,0.35)] transition hover:scale-[1.02]"
+          >
+            + Add Property
+          </button>
+        </div>
+
+        <div className="relative mt-10">
+          <Search className="pointer-events-none absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-[#707aa0]" />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search properties..."
+            className="h-14 w-full rounded-2xl border border-[#d8e2f1] bg-[#f9fbff] pl-14 pr-4 text-[16px] text-[#102149] placeholder:text-[#6f789d] outline-none transition focus:border-[#6677d7]"
+          />
+        </div>
+
+        <div className="mt-8 rounded-[32px] border border-[#d8e2f1] bg-[#fbfcff] p-6 shadow-[0_20px_50px_rgba(15,23,42,0.05)]">
+          <div className="space-y-4">
+            {filteredDeals.map((deal) => (
+              <button
+                key={deal.id}
+                type="button"
+                onClick={() => openDeal(deal.id)}
+                className="w-full rounded-[28px] border border-[#d8e2f1] bg-white px-10 py-8 text-left transition hover:border-[#5c74ea] hover:bg-[#f7faff]"
+              >
+                <p className="text-4xl font-semibold tracking-[-0.03em] text-[#102149]">{deal.name}</p>
+                <p className="mt-2 text-xl text-[#587091]">{deal.location || deal.address || "-"}</p>
+                <div className="mt-6 flex flex-wrap items-center gap-4">
+                  {["Memorandum", "T12", "Rent Roll"].map((label) => (
+                    <div key={label} className="flex items-center gap-3">
+                      <span className="text-sm font-semibold uppercase tracking-[0.12em] text-[#102149]">{label}</span>
+                      <span className="rounded-full border border-[#14d8a4]/70 bg-[#0c3d36] px-4 py-1 text-sm font-semibold uppercase tracking-[0.2em] text-[#58f0c8]">
+                        Ready
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </button>
+            ))}
+            {!filteredDeals.length ? (
+              <div className="rounded-3xl border border-[#d8e2f1] bg-white px-8 py-10 text-center text-[#94a1c3]">
+                No properties match your search.
+              </div>
+            ) : null}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
-    <div className="flex min-h-screen overflow-hidden rounded-[28px] bg-[#f5f7fb] shadow-[0_18px_48px_rgba(15,23,42,0.06)]">
+    <div className="flex min-h-screen gap-6 overflow-hidden rounded-[28px] bg-[#f5f7fb] shadow-[0_18px_48px_rgba(15,23,42,0.06)]">
       <AppSidebar
         activeDealId={activeDeal.id}
         activeView={activeView}
-        deals={deals}
-        onDealSelect={setActiveDealId}
+        deals={sidebarDeals}
+        onDealSelect={openDeal}
         onViewChange={setActiveView}
       />
       <main className="min-w-0 flex-1 overflow-y-auto bg-[#f8fbff]">
         <div className="mx-auto max-w-[1480px] px-8 py-10 pb-28 2xl:px-10">
+          <button
+            type="button"
+            onClick={() => setScreen("library")}
+            className="mb-5 inline-flex items-center rounded-xl border border-[#d7dfeb] bg-white px-4 py-2 text-sm font-semibold text-[#193564] transition hover:bg-[#eef4ff]"
+          >
+            Back to Property List
+          </button>
           {activeView === "deal" ? (
             <>
               <DealHeader deal={activeDeal} isInCompare={compareIds.includes(activeDeal.id)} onAddCompare={toggleCompare} />
