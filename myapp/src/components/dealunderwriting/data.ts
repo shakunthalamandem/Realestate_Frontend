@@ -7,6 +7,7 @@ export type DealSignal = "Strong Buy" | "Buy" | "Neutral" | "Avoid";
 
 type TrendPoint = { month?: string; value?: number };
 type RevenueExpensePoint = { month?: string; revenue?: number; expense?: number };
+type ChartInsightRecord = { insight?: string; impact?: string; drives?: string };
 
 type PropertyResponse = {
   kpis?: {
@@ -147,6 +148,12 @@ type DealUnderwritingApiRecord = {
       ylabels?: string[];
       data?: number[][];
     };
+    tenantMixInsights?: ChartInsightRecord;
+    rentVsMarketInsights?: ChartInsightRecord;
+    revenueVsExpensesInsights?: ChartInsightRecord;
+    expenseDistributionInsights?: ChartInsightRecord;
+    leaseExpirationInsights?: ChartInsightRecord;
+    occupancyVsVacancyInsights?: ChartInsightRecord;
   };
   sourceOverview?: string | null;
 };
@@ -408,6 +415,18 @@ function buildChartInsights(propertyName: string, occupancy: number, rentGap: nu
   };
 }
 
+function mergeChartInsight(
+  fallback: { insight: string; impact: string; drives: string },
+  override?: ChartInsightRecord | null
+) {
+  if (!override) return fallback;
+  return {
+    insight: override.insight?.trim() || fallback.insight,
+    impact: override.impact?.trim() || fallback.impact,
+    drives: override.drives?.trim() || fallback.drives,
+  };
+}
+
 function formatCompactCurrencyValue(value: number) {
   return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", notation: "compact", maximumFractionDigits: 1 }).format(value);
 }
@@ -551,6 +570,12 @@ function createPlaceholderDeal(property: PropertyRecord, index: number): Deal {
 
 function mapUserApiRecordToDeal(record: DealUnderwritingApiRecord, index: number): Deal {
   const kpiCards = record.kpiCards as Record<string, unknown> | undefined;
+  const defaultChartInsights = buildChartInsights(
+    record.propertyName,
+    toNumber(record.kpiCards.occupancyRate, 0),
+    toNumber(record.kpiCards.rentVsMarketGap, 0),
+    toNumber(record.kpiCards.noiMargin, 0)
+  );
   const units = toNumber(record.header.units ?? record.kpiCards.noOfUnits, 0);
   const revenuePerUnit = toNumber(record.kpiCards.revenuePerUnit, 0);
   const estimatedRevenue = revenuePerUnit > 0 && units > 0
@@ -625,7 +650,15 @@ function mapUserApiRecordToDeal(record: DealUnderwritingApiRecord, index: number
           data: record.performanceAnalytics.leaseExpirationFloorplan.data ?? [],
         }
       : undefined,
-    chartInsights: buildChartInsights(record.propertyName, toNumber(record.kpiCards.occupancyRate, 0), rentGap, noiMargin),
+    chartInsights: {
+      ...defaultChartInsights,
+      tenantMix: mergeChartInsight(defaultChartInsights.tenantMix, record.performanceAnalytics.tenantMixInsights),
+      rentVsMarket: mergeChartInsight(defaultChartInsights.rentVsMarket, record.performanceAnalytics.rentVsMarketInsights),
+      revenueVsExpenses: mergeChartInsight(defaultChartInsights.revenueVsExpenses, record.performanceAnalytics.revenueVsExpensesInsights),
+      expenseDistribution: mergeChartInsight(defaultChartInsights.expenseDistribution, record.performanceAnalytics.expenseDistributionInsights),
+      leaseExpirations: mergeChartInsight(defaultChartInsights.leaseExpirations, record.performanceAnalytics.leaseExpirationInsights),
+      occupancyVacancy: mergeChartInsight(defaultChartInsights.occupancyVacancy, record.performanceAnalytics.occupancyVsVacancyInsights),
+    },
   };
 }
 
