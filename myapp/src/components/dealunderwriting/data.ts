@@ -156,6 +156,14 @@ type DealUnderwritingApiRecord = {
     occupancyVsVacancyInsights?: ChartInsightRecord;
   };
   sourceOverview?: string | null;
+  dealDocumentsUploadedAt?: string | null;
+  deal_documents_uploaded_at?: string | null;
+  dealMemorandumResponse?: unknown;
+  deal_memorandum_response?: unknown;
+  dealT12Response?: unknown;
+  deal_t12_response?: unknown;
+  dealRentrollResponse?: unknown;
+  deal_rentroll_response?: unknown;
 };
 
 export interface Deal {
@@ -662,6 +670,25 @@ function mapUserApiRecordToDeal(record: DealUnderwritingApiRecord, index: number
   };
 }
 
+function hasDealUnderwritingData(record: DealUnderwritingApiRecord) {
+  return Boolean(
+    record.dealDocumentsUploadedAt ||
+      record.deal_documents_uploaded_at ||
+      record.dealMemorandumResponse ||
+      record.deal_memorandum_response ||
+      record.dealT12Response ||
+      record.deal_t12_response ||
+      record.dealRentrollResponse ||
+      record.deal_rentroll_response ||
+      record.aiAcquisitionSnapshot?.investmentThesis ||
+      record.kpiCards?.noiMargin !== null ||
+      record.kpiCards?.occupancyRate !== null ||
+      (record.performanceAnalytics?.tenantMix?.length ?? 0) > 0 ||
+      (record.performanceAnalytics?.rentVsMarket?.length ?? 0) > 0 ||
+      (record.performanceAnalytics?.revenueVsExpenses?.length ?? 0) > 0
+  );
+}
+
 async function loadPropertyRecords() {
   const endpoint = isDemoMode() ? "/api/get_property_model_data/" : "/api/get_property_model_data_user_view/";
   const response = await authClient.post<{ data?: PropertyRecord[] }>(endpoint, { fetch: "all" });
@@ -684,11 +711,9 @@ async function loadIcMemoData() {
   }
 }
 
-async function loadUserDealUnderwriting(propertyNames: string[]) {
-  if (!propertyNames.length) return [];
-  const response = await authClient.post<{ data?: DealUnderwritingApiRecord[] }>("/api/dealunderwriting_demouser/", {
-    property_names: propertyNames,
-  });
+async function loadUserDealUnderwriting(propertyNames?: string[]) {
+  const payload = propertyNames?.length ? { property_names: propertyNames } : {};
+  const response = await authClient.post<{ data?: DealUnderwritingApiRecord[] }>("/api/dealunderwriting_demouser/", payload);
   return response.data?.data ?? [];
 }
 
@@ -697,6 +722,7 @@ export function useDealUnderwritingData(requestedIds: string[] = []): DealDataSt
   const [aiRentRecords, setAiRentRecords] = useState<AiRentRecord[]>([]);
   const [icMemoData, setIcMemoData] = useState<IcMemoTemplateData | null>(null);
   const [userDealCache, setUserDealCache] = useState<Record<string, Deal>>({});
+  const [userDeals, setUserDeals] = useState<Deal[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -704,12 +730,19 @@ export function useDealUnderwritingData(requestedIds: string[] = []): DealDataSt
     setLoading(true);
     setError(null);
     try {
-      const properties = await loadPropertyRecords();
-      setPropertyRecords(properties);
       if (isDemoMode()) {
+        const properties = await loadPropertyRecords();
+        setPropertyRecords(properties);
         const [aiRent, icMemo] = await Promise.all([loadAiRentRecords().catch(() => []), loadIcMemoData()]);
         setAiRentRecords(aiRent);
         setIcMemoData(icMemo);
+      } else {
+        const records = await loadUserDealUnderwriting();
+        setUserDeals(
+          records
+            .filter(hasDealUnderwritingData)
+            .map((record, index) => mapUserApiRecordToDeal(record, index))
+        );
       }
     } catch {
       setError("Unable to load deal underwriting data.");
@@ -731,12 +764,14 @@ export function useDealUnderwritingData(requestedIds: string[] = []): DealDataSt
   const placeholderDeals = useMemo(() => propertyRecords.map((property, index) => createPlaceholderDeal(property, index)), [propertyRecords]);
 
   useEffect(() => {
-    if (isDemoMode() || !placeholderDeals.length) return;
+    if (isDemoMode() || !placeholderDeals.length || userDeals.length) return;
     const idToName = new Map(placeholderDeals.map((deal) => [deal.id, deal.name]));
-    const namesToFetch = requestedIds
-      .map((id) => idToName.get(id))
-      .filter((name): name is string => Boolean(name))
-      .filter((name) => !userDealCache[name.toUpperCase()]);
+    const candidateNames = requestedIds.length
+      ? requestedIds
+          .map((id) => idToName.get(id))
+          .filter((name): name is string => Boolean(name))
+      : placeholderDeals.map((deal) => deal.name);
+    const namesToFetch = candidateNames.filter((name) => !userDealCache[name.toUpperCase()]);
     if (!namesToFetch.length) return;
 
     let mounted = true;
@@ -757,7 +792,7 @@ export function useDealUnderwritingData(requestedIds: string[] = []): DealDataSt
     return () => {
       mounted = false;
     };
-  }, [placeholderDeals, requestedIds, userDealCache]);
+  }, [placeholderDeals, requestedIds, userDealCache, userDeals.length]);
 
   const deals = useMemo(() => {
     if (isDemoMode()) {
@@ -770,8 +805,8 @@ export function useDealUnderwritingData(requestedIds: string[] = []): DealDataSt
         )
       );
     }
-    return placeholderDeals.map((deal) => userDealCache[deal.name.toUpperCase()] ?? deal);
-  }, [aiRentRecords, icMemoData, placeholderDeals, propertyRecords, userDealCache]);
+    return userDeals;
+  }, [aiRentRecords, icMemoData, propertyRecords, userDeals]);
 
   return { deals, loading, error, refresh: loadBaseData };
 }

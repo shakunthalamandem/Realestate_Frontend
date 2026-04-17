@@ -74,10 +74,6 @@ export default function DealUnderwritingLens() {
     return <div className="flex min-h-[60vh] items-center justify-center rounded-[28px] bg-[#f8fbff] text-[#b42318]">{error}</div>;
   }
 
-  if (!deals.length) {
-    return <div className="flex min-h-[60vh] items-center justify-center rounded-[28px] bg-[#f8fbff] text-[#62708d]">No property data available for underwriting.</div>;
-  }
-
   if (screen === "upload") {
     return (
       <PfDealUnderwritingUpload
@@ -89,6 +85,29 @@ export default function DealUnderwritingLens() {
           setScreen("detail");
         }}
       />
+    );
+  }
+
+  if (!deals.length) {
+    return (
+      <section className="mx-auto max-w-[1280px] rounded-[32px] border border-[#d8e2f1] bg-white px-10 py-12 text-[#102149] shadow-[0_24px_70px_rgba(15,23,42,0.08)]">
+        <div className="flex flex-wrap items-end justify-between gap-6">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.45em] text-[#b48a41]">Deal Lens</p>
+            <h1 className="mt-3 text-5xl font-bold tracking-[-0.04em]">Property Intelligence Library</h1>
+            <p className="mt-4 max-w-3xl text-lg text-[#587091]">
+              No property data available for underwriting.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setScreen("upload")}
+            className="rounded-full bg-[linear-gradient(90deg,#a54cf5,#5d6df9)] px-7 py-4 text-lg font-semibold text-white shadow-[0_18px_45px_rgba(118,90,255,0.35)] transition hover:scale-[1.02]"
+          >
+            + Add Property
+          </button>
+        </div>
+      </section>
     );
   }
 
