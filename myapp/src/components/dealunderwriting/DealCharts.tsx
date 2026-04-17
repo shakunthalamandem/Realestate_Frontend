@@ -206,7 +206,7 @@ export function DealCharts({ deal }: { deal: Deal }) {
           />
         </ChartCard>
 
-        <ChartCard title="NOI Growth Projection" insight={ci.noiProjection}>
+        {/* <ChartCard title="NOI Growth Projection" insight={ci.noiProjection}>
           <Line
             data={{
               labels: deal.noiProjection.map((item) => item.year),
@@ -221,7 +221,7 @@ export function DealCharts({ deal }: { deal: Deal }) {
             }}
             options={lineOptions}
           />
-        </ChartCard>
+        </ChartCard> */}
 
         <ChartCard title="Revenue vs Expenses" insight={ci.revenueVsExpenses}>
           <Line

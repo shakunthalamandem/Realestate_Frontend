@@ -105,6 +105,12 @@ type DealUnderwritingApiRecord = {
     occupancyRate: number | null;
     occupancyUnits?: { occupied: number | null; total: number | null } | null;
     vacancyLoss: number | null;
+    parkingSpace?: number | null;
+    parkingSpaces?: number | null;
+    parking_space?: number | null;
+    siteSize?: number | null;
+    site_size?: number | null;
+    siteAcreage?: number | null;
     noiMargin: number | null;
     revenuePerUnit: number | null;
     expenseRatio: number | null;
@@ -160,6 +166,8 @@ export interface Deal {
   confidence: number;
   thesis: string;
   metrics: {
+    noOfUnits?: number;
+    yearBuilt?: number;
     noi: number;
     noiMargin: number;
     revenuePerUnit: number;
@@ -171,6 +179,8 @@ export interface Deal {
     rentGap: number;
     totalProjectedRevenueLift?: number;
     rentPerSqft?: number;
+    parkingSpace?: number;
+    siteSize?: number;
   };
   scores: {
     overall: number;
@@ -220,6 +230,22 @@ const toPercent = (value: unknown, fallback = 0) => {
   const parsed = toNumber(value, fallback);
   return parsed <= 1 ? parsed * 100 : parsed;
 };
+
+function getKpiNumber(
+  kpiCards: Record<string, unknown> | undefined,
+  keys: string[],
+  fallback = 0
+) {
+  if (!kpiCards) return fallback;
+  for (const key of keys) {
+    const value = kpiCards[key];
+    if (value !== undefined && value !== null && value !== "") {
+      return toNumber(value, fallback);
+    }
+  }
+  return fallback;
+}
+
 const createDealId = (value: string, index: number) =>
   value?.trim().toLowerCase().replace(/\s+/g, "-") || defaultDealIds[index] || `deal-${index + 1}`;
 
@@ -435,6 +461,8 @@ function buildDemoDeal(property: PropertyRecord, aiRentRecord: AiRentRecord | un
     confidence,
     thesis: propertyResponse?.intelligence?.overview || icPropertyCard?.insights?.join(" ") || `${property.property_name || "This property"} underwriting view is mapped from the existing property and rent intelligence responses.`,
     metrics: {
+      noOfUnits: units,
+      yearBuilt,
       noi,
       noiMargin,
       revenuePerUnit,
@@ -445,6 +473,9 @@ function buildDemoDeal(property: PropertyRecord, aiRentRecord: AiRentRecord | un
       vacancyLoss: clamp(100 - occupancy, 0, 100),
       rentGap,
       totalProjectedRevenueLift: totalLift,
+      rentPerSqft: 0,
+      parkingSpace: 0,
+      siteSize: 0,
     },
     scores,
     movers: {
@@ -485,6 +516,8 @@ function createPlaceholderDeal(property: PropertyRecord, index: number): Deal {
     confidence: 0,
     thesis: "Loading underwriting response...",
     metrics: {
+      noOfUnits: units,
+      yearBuilt: 0,
       noi: 0,
       noiMargin: 0,
       revenuePerUnit: 0,
@@ -495,6 +528,9 @@ function createPlaceholderDeal(property: PropertyRecord, index: number): Deal {
       vacancyLoss: clamp(100 - occupancy, 0, 100),
       rentGap: 0,
       totalProjectedRevenueLift: 0,
+      rentPerSqft: 0,
+      parkingSpace: 0,
+      siteSize: 0,
     },
     scores: { overall: 0, marketPosition: 0, cashFlowStability: 0, valueAddPotential: 0, riskLevel: 0 },
     movers: { rentIncrease: 0, expenseOptimization: 0, occupancyImprovement: 0, totalPotentialNoiUplift: 0 },
@@ -514,6 +550,7 @@ function createPlaceholderDeal(property: PropertyRecord, index: number): Deal {
 }
 
 function mapUserApiRecordToDeal(record: DealUnderwritingApiRecord, index: number): Deal {
+  const kpiCards = record.kpiCards as Record<string, unknown> | undefined;
   const units = toNumber(record.header.units ?? record.kpiCards.noOfUnits, 0);
   const revenuePerUnit = toNumber(record.kpiCards.revenuePerUnit, 0);
   const estimatedRevenue = revenuePerUnit > 0 && units > 0
@@ -538,6 +575,8 @@ function mapUserApiRecordToDeal(record: DealUnderwritingApiRecord, index: number
     confidence: clamp(toNumber(record.aiAcquisitionSnapshot.confidenceScore, 0)),
     thesis: record.aiAcquisitionSnapshot.investmentThesis || record.sourceOverview || "",
     metrics: {
+      noOfUnits: toNumber(record.kpiCards.noOfUnits, units),
+      yearBuilt: toNumber(record.kpiCards.yearBuilt ?? record.header.yearBuilt, 0),
       noi,
       noiMargin,
       revenuePerUnit,
@@ -552,6 +591,8 @@ function mapUserApiRecordToDeal(record: DealUnderwritingApiRecord, index: number
       rentGap,
       totalProjectedRevenueLift: toNumber(record.kpiCards.totalProjectedRevenueLift, 0),
       rentPerSqft: toNumber(record.kpiCards.rentPerSqft, 0),
+      parkingSpace: getKpiNumber(kpiCards, ["parkingSpace", "parkingSpaces", "parking_space"], 0),
+      siteSize: getKpiNumber(kpiCards, ["siteSize", "site_size", "siteAcreage"], 0),
     },
     scores: {
       overall: toNumber(record.dealScorecard.overallDealScore, 0),

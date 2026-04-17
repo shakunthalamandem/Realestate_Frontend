@@ -13,8 +13,26 @@ function formatCompactCurrency(value: number) {
   }).format(value);
 }
 
+function formatWholeNumber(value: number) {
+  return new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(value);
+}
+
+function formatDecimal(value: number, maxFractionDigits = 2) {
+  return new Intl.NumberFormat("en-US", { maximumFractionDigits: maxFractionDigits }).format(value);
+}
+
 function getMetrics(deal: Deal) {
   return [
+    {
+      label: "No. of Units",
+      value: formatWholeNumber(deal.metrics.noOfUnits ?? deal.units),
+      sub: "Total rentable units",
+    },
+    {
+      label: "Year Built",
+      value: formatWholeNumber(deal.metrics.yearBuilt ?? deal.yearBuilt),
+      sub: "Original construction year",
+    },
     {
       label: "NOI Margin",
       value: formatPercent(deal.metrics.noiMargin),
@@ -24,6 +42,11 @@ function getMetrics(deal: Deal) {
       label: "Revenue / Unit",
       value: `$${deal.metrics.revenuePerUnit.toLocaleString()}`,
       sub: "Monthly avg",
+    },
+    {
+      label: "Rent / Sq Ft",
+      value: `$${formatDecimal(deal.metrics.rentPerSqft ?? 0)}`,
+      sub: "Current average",
     },
     {
       label: "Expense Ratio",
@@ -43,6 +66,16 @@ function getMetrics(deal: Deal) {
       sub: `${Math.round((deal.units * deal.metrics.vacancyLoss) / 100)} units`,
     },
     {
+      label: "Parking Spaces",
+      value: formatDecimal(deal.metrics.parkingSpace ?? 0, 0),
+      sub: "Available spaces",
+    },
+    {
+      label: "Site Size",
+      value: `${formatDecimal(deal.metrics.siteSize ?? 0)} ac`,
+      sub: "Property footprint",
+    },
+    {
       label: "Rent vs Market Gap",
       value: formatPercent(deal.metrics.rentGap),
       sub: deal.metrics.totalProjectedRevenueLift
@@ -54,7 +87,7 @@ function getMetrics(deal: Deal) {
 
 export function KeyMetrics({ deal }: { deal: Deal }) {
   return (
-    <section className="mb-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
+    <section className="mb-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-5">
       {getMetrics(deal).map((metric) => (
         <div key={metric.label} className="min-w-0 rounded-2xl border border-[#294e86] bg-white px-4 py-4">
           <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#57719c]">{metric.label}</p>
