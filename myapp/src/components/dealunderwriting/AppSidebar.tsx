@@ -1,10 +1,11 @@
-import { BarChart3, Building2, GitCompare, TrendingUp } from "lucide-react";
+import { ArrowLeft, BarChart3, Building2, GitCompare, TrendingUp } from "lucide-react";
 import type { Deal } from "./data";
 
 interface AppSidebarProps {
   activeDealId: string;
   activeView: "deal" | "compare";
   deals: Deal[];
+  onBackToLibrary?: () => void;
   onDealSelect: (id: string) => void;
   onViewChange: (view: "deal" | "compare") => void;
 }
@@ -13,19 +14,30 @@ export function AppSidebar({
   activeDealId,
   activeView,
   deals,
+  onBackToLibrary,
   onDealSelect,
   onViewChange,
 }: AppSidebarProps) {
   return (
     <aside className="sticky top-0 h-screen w-64 flex-shrink-0 bg-[#14294d] text-white">
       <div className="border-b border-white/10 p-5">
+        {onBackToLibrary ? (
+          <button
+            type="button"
+            onClick={onBackToLibrary}
+            className="mb-4 inline-flex items-center gap-2 text-base font-semibold text-white transition hover:text-white/80"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span>Back</span>
+          </button>
+        ) : null}
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#234b88]">
             <TrendingUp className="h-5 w-5" />
           </div>
           <div>
-            <h1 className="text-lg font-semibold">AcquireIQ</h1>
-            <p className="text-xs text-white/65">Underwriting Engine</p>
+            <h1 className="text-lg font-semibold">Deal Lens</h1>
+            <p className="text-xs text-white/65">Pre Underwriting Engine</p>
           </div>
         </div>
       </div>

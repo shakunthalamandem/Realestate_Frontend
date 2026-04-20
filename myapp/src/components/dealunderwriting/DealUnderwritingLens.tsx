@@ -200,18 +200,12 @@ export default function DealUnderwritingLens({ onScreenChange }: DealUnderwritin
         activeDealId={activeDeal.id}
         activeView={activeView}
         deals={sidebarDeals}
+        onBackToLibrary={() => setScreen("library")}
         onDealSelect={openDeal}
         onViewChange={setActiveView}
       />
       <main className="min-w-0 flex-1 overflow-y-auto bg-[#f8fbff]">
         <div className="mx-auto max-w-[1480px] px-8 py-10 pb-28 2xl:px-10">
-          <button
-            type="button"
-            onClick={() => setScreen("library")}
-            className="mb-5 inline-flex items-center rounded-xl border border-[#d7dfeb] bg-white px-4 py-2 text-sm font-semibold text-[#193564] transition hover:bg-[#eef4ff]"
-          >
-            Back to Property List
-          </button>
           {activeView === "deal" ? (
             <>
               <DealHeader deal={activeDeal} isInCompare={compareIds.includes(activeDeal.id)} onAddCompare={toggleCompare} />
