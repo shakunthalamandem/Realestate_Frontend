@@ -65,6 +65,7 @@ const PfDemoPortfolioAnalytics: React.FC<PfDemoPortfolioAnalyticsProps> = ({
 
   const load = async () => {
     setStatus("loading");
+    setInsightsStatus("idle");
 
     try {
       const demoMode = isDemoMode();
@@ -84,17 +85,15 @@ const PfDemoPortfolioAnalytics: React.FC<PfDemoPortfolioAnalyticsProps> = ({
       const baseRecord = response.data?.data?.[0] ?? null;
       setSelectedRecord(baseRecord);
       setStatus("idle");
+
+      if (!demoMode) return;
+
       setInsightsStatus("loading");
 
-      const insightsRequest = demoMode
-        ? axios.post<PortfolioAnalyticsListResponse>(
-            `${API_URL}/api/get_portfolio_analytics_model_data/`,
-            { fetch: "all" }
-          )
-        : authClient.post<PortfolioAnalyticsSingleResponse>(
-            "/api/get_portfolio_insights/",
-            {}
-          );
+      const insightsRequest = axios.post<PortfolioAnalyticsListResponse>(
+        `${API_URL}/api/get_portfolio_analytics_model_data/`,
+        { fetch: "all" }
+      );
 
       insightsRequest
         .then((res) => {
