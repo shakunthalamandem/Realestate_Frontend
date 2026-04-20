@@ -154,11 +154,21 @@ export default function DealUnderwritingLens() {
                 <p className="text-4xl font-semibold tracking-[-0.03em] text-[#102149]">{deal.name}</p>
                 <p className="mt-2 text-xl text-[#587091]">{deal.location || deal.address || "-"}</p>
                 <div className="mt-6 flex flex-wrap items-center gap-4">
-                  {["Memorandum", "T12", "Rent Roll"].map((label) => (
-                    <div key={label} className="flex items-center gap-3">
-                      <span className="text-sm font-semibold uppercase tracking-[0.12em] text-[#102149]">{label}</span>
-                      <span className="rounded-full border border-[#14d8a4]/70 bg-[#0c3d36] px-4 py-1 text-sm font-semibold uppercase tracking-[0.2em] text-[#58f0c8]">
-                        Ready
+                  {[
+                    { label: "Memorandum", ready: deal.docStatus?.memorandum },
+                    { label: "T12", ready: deal.docStatus?.t12 },
+                    { label: "Rent Roll", ready: deal.docStatus?.rentRoll },
+                  ].map((item) => (
+                    <div key={item.label} className="flex items-center gap-3">
+                      <span className="text-sm font-semibold uppercase tracking-[0.12em] text-[#102149]">{item.label}</span>
+                      <span
+                        className={
+                          item.ready
+                            ? "rounded-full border border-[#14d8a4]/70 bg-[#0c3d36] px-4 py-1 text-sm font-semibold uppercase tracking-[0.2em] text-[#58f0c8]"
+                            : "rounded-full border border-[#d8e2f1] bg-[#f4f7fb] px-4 py-1 text-sm font-semibold uppercase tracking-[0.2em] text-[#7b89a8]"
+                        }
+                      >
+                        {item.ready ? "Ready" : "Missing"}
                       </span>
                     </div>
                   ))}

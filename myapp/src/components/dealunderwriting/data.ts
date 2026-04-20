@@ -226,6 +226,11 @@ export interface Deal {
     ylabels: string[];
     data: number[][];
   };
+  docStatus?: {
+    memorandum: boolean;
+    t12: boolean;
+    rentRoll: boolean;
+  };
   chartInsights: Record<"tenantMix" | "rentVsMarket" | "noiProjection" | "revenueVsExpenses" | "expenseBreakdown" | "expenseDistribution" | "leaseExpirations" | "occupancyVacancy", { insight: string; impact: string; drives: string }>;
 }
 
@@ -439,6 +444,14 @@ function formatCompactCurrencyValue(value: number) {
   return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", notation: "compact", maximumFractionDigits: 1 }).format(value);
 }
 
+function getDealDocStatus(record: DealUnderwritingApiRecord) {
+  return {
+    memorandum: Boolean(record.dealMemorandumResponse || record.deal_memorandum_response),
+    t12: Boolean(record.dealT12Response || record.deal_t12_response),
+    rentRoll: Boolean(record.dealRentrollResponse || record.deal_rentroll_response),
+  };
+}
+
 function buildDemoDeal(property: PropertyRecord, aiRentRecord: AiRentRecord | undefined, icMemoData: IcMemoTemplateData | null, index: number): Deal {
   const propertyResponse = property.property_response ?? null;
   const aiRent = aiRentRecord?.ai_rent_intelligence_response ?? null;
@@ -593,6 +606,7 @@ function mapUserApiRecordToDeal(record: DealUnderwritingApiRecord, index: number
   const totalExpenses = record.performanceAnalytics.revenueVsExpenses?.reduce((sum, item) => sum + toNumber(item.expense), 0) || estimatedRevenue * (toNumber(record.kpiCards.expenseRatio, 0) / 100);
   const noi = estimatedRevenue > 0 ? estimatedRevenue * (noiMargin / 100) : Math.max(estimatedRevenue - totalExpenses, 0);
   const rentGap = toNumber(record.kpiCards.rentVsMarketGap, 0);
+  const docStatus = getDealDocStatus(record);
   return {
     id: createDealId(record.propertyName, index),
     name: record.propertyName,
@@ -658,6 +672,7 @@ function mapUserApiRecordToDeal(record: DealUnderwritingApiRecord, index: number
           data: record.performanceAnalytics.leaseExpirationFloorplan.data ?? [],
         }
       : undefined,
+    docStatus,
     chartInsights: {
       ...defaultChartInsights,
       tenantMix: mergeChartInsight(defaultChartInsights.tenantMix, record.performanceAnalytics.tenantMixInsights),
@@ -679,13 +694,7 @@ function hasDealUnderwritingData(record: DealUnderwritingApiRecord) {
       record.dealT12Response ||
       record.deal_t12_response ||
       record.dealRentrollResponse ||
-      record.deal_rentroll_response ||
-      record.aiAcquisitionSnapshot?.investmentThesis ||
-      record.kpiCards?.noiMargin !== null ||
-      record.kpiCards?.occupancyRate !== null ||
-      (record.performanceAnalytics?.tenantMix?.length ?? 0) > 0 ||
-      (record.performanceAnalytics?.rentVsMarket?.length ?? 0) > 0 ||
-      (record.performanceAnalytics?.revenueVsExpenses?.length ?? 0) > 0
+      record.deal_rentroll_response
   );
 }
 
