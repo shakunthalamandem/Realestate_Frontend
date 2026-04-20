@@ -17,8 +17,11 @@ import {
   Landmark,
 } from "lucide-react";
 import MarketRadar from "../market_radar/MarketRadar";
-import RealEstateUploader from "../deal_lens/RealEstateUploader";
 import PfDemoIcMemo from "./pf_demo_ic_memo";
+import { productRoutes } from "@/lib/product-routes";
+import { isDemoMode } from "@/lib/demo-mode";
+import { isUserLoggedIn } from "@/lib/auth";
+import DealUnderwritingLens from "../dealunderwriting/DealUnderwritingLens";
 
 const tabs = [
   "Portfolio Analytics",
@@ -32,6 +35,8 @@ type DemoTab = (typeof tabs)[number];
 
 const routeToTab: Record<string, DemoTab> = {
   "/portfolio_intelligence": "Portfolio Analytics",
+  [productRoutes.portfolioIntelligence]: "Portfolio Analytics",
+  [productRoutes.propertyIntelligence]: "Properties",
   "/ai_rent_intelligence": "AI Rent Intelligence",
   "/market_radar": "Market Signal Radar",
   "/ic_memo": "IC Memo",
@@ -46,10 +51,29 @@ const PfDemo: React.FC = () => {
   const [portfolioSubTab, setPortfolioSubTab] = useState<PortfolioAnalyticsTabId>("snapshot");
   const [isPortfolioMenuOpen, setIsPortfolioMenuOpen] = useState(true);
   const [isIcMemoStarted, setIsIcMemoStarted] = useState(false);
+  const [dealLensScreen, setDealLensScreen] = useState<"library" | "upload" | "detail">("library");
   const mainScrollRef = useRef<HTMLElement | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
   const isDealLensTab = activeTab === "Deal Underwriting Lens";
+  const hidePortfolioSidebar = isDealLensTab && dealLensScreen === "detail";
+  const isAuthenticatedUserView = isUserLoggedIn() && !isDemoMode();
+
+  const handleSidebarBack = () => {
+    if (isAuthenticatedUserView) {
+      if (activeTab === "Portfolio Analytics") {
+        navigate(productRoutes.propertyIntelligence);
+        return;
+      }
+
+      if (activeTab === "Properties") {
+        navigate("/");
+        return;
+      }
+    }
+
+    navigate("/", { state: { scrollTo: "demos" } });
+  };
 
   useEffect(() => {
     const requestedTab = location.state?.activeTab as DemoTab | undefined;
@@ -109,8 +133,14 @@ const PfDemo: React.FC = () => {
         />
       );
     }
-    return <RealEstateUploader showBackButton={false} />;
+    return <DealUnderwritingLens onScreenChange={setDealLensScreen} />;
   }, [activeTab, isIcMemoStarted, portfolioSubTab, selectedProperty]);
+
+  useEffect(() => {
+    if (!isDealLensTab) {
+      setDealLensScreen("library");
+    }
+  }, [isDealLensTab]);
 
   return (
     <section
@@ -120,136 +150,139 @@ const PfDemo: React.FC = () => {
           "radial-gradient(1200px 600px at 10% 0%, rgba(232,239,250,0.85) 0%, rgba(241,246,252,0.95) 40%, rgba(248,251,255,1) 100%)",
       }}
     >
-      <div className="grid h-screen grid-cols-[220px_minmax(0,1fr)] md:grid-cols-[240px_minmax(0,1fr)] lg:grid-cols-[260px_minmax(0,1fr)] xl:grid-cols-[280px_minmax(0,1fr)]">
-        <aside
-          className="sticky top-0 z-30 h-screen w-[220px] overflow-y-auto bg-[#0d1b4f] px-4 py-5 text-white md:w-[240px] lg:w-[260px] xl:w-[280px]"
-        >
-          <div className="mb-4">
-            <button
-              type="button"
-              onClick={() => navigate("/", { state: { scrollTo: "demos" } })}
-              className="back-button-hex back-button-theme-sidebar flex items-center gap-2 whitespace-nowrap"
-            >
-              <ArrowLeft className="h-5 w-5" />
-              <span>Back</span>
-            </button>
-          </div>
-          <div className="mb-6 rounded-2xl border border-white/10 bg-white/5 p-4">
-            <h1 className="text-2xl font-semibold">Portfolio Intelligence</h1>
-          </div>
-          <nav className="space-y-2">
-            <button
-              type="button"
-              onClick={() => setActiveTab("IC Memo")}
-              className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-[15px] font-semibold transition ${activeTab === "IC Memo"
-                  ? "bg-[#0fa77d] text-white shadow-[0_6px_18px_rgba(15,167,125,0.35)]"
-                  : "bg-white/5 text-blue-100 hover:bg-white/10"
-                }`}
-            >
-              <Landmark className="h-4 w-4" />
-              <span className="flex-1">IC Memo</span>
-            </button>
-
-            <div>
+      <div className={`grid h-screen ${hidePortfolioSidebar ? "grid-cols-[minmax(0,1fr)]" : "grid-cols-[220px_minmax(0,1fr)] md:grid-cols-[240px_minmax(0,1fr)] lg:grid-cols-[260px_minmax(0,1fr)] xl:grid-cols-[280px_minmax(0,1fr)]"}`}>
+        {!hidePortfolioSidebar ? (
+          <aside
+            className="sticky top-0 z-30 h-screen w-[220px] overflow-y-auto bg-[#0d1b4f] px-4 py-5 text-white md:w-[240px] lg:w-[260px] xl:w-[280px]"
+          >
+            {!isAuthenticatedUserView ? (
+              <div className="mb-4">
+                <button
+                  type="button"
+                  onClick={handleSidebarBack}
+                  className="back-button-hex back-button-theme-sidebar flex items-center gap-2 whitespace-nowrap"
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                  <span>Back</span>
+                </button>
+              </div>
+            ) : null}
+            <div className="mb-6 rounded-2xl border border-white/10 bg-white/5 p-4">
+              <h1 className="text-2xl font-semibold">Portfolio Intelligence</h1>
+            </div>
+            <nav className="space-y-2">
               <button
                 type="button"
-                onClick={() => {
-                  setActiveTab("Portfolio Analytics");
-                  setIsPortfolioMenuOpen((prev) => !prev);
-                }}
-                className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-[15px] font-semibold transition ${activeTab === "Portfolio Analytics"
+                onClick={() => setActiveTab("IC Memo")}
+                className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-[15px] font-semibold transition ${activeTab === "IC Memo"
                     ? "bg-[#0fa77d] text-white shadow-[0_6px_18px_rgba(15,167,125,0.35)]"
                     : "bg-white/5 text-blue-100 hover:bg-white/10"
                   }`}
               >
-                <BarChart3 className="h-4 w-4" />
-                <span className="flex-1">Portfolio Analytics</span>
-                <ChevronDown
-                  size={16}
-                  className={`transition-transform duration-200 ${
-                    isPortfolioMenuOpen ? "rotate-180" : ""
-                  }`}
-                />
+                <Landmark className="h-4 w-4" />
+                <span className="flex-1">IC Memo</span>
               </button>
 
-              {isPortfolioMenuOpen && (
-                <div className="mt-2 space-y-2 rounded-2xl bg-white p-3 shadow-lg">
-                  {portfolioAnalyticsTabDefinitions.map((subTab) => {
-                    const isSubActive =
-                      activeTab === "Portfolio Analytics" && portfolioSubTab === subTab.id;
-                    return (
-                      <button
-                        key={subTab.id}
-                        type="button"
-                        onClick={() => {
-                          setActiveTab("Portfolio Analytics");
-                          setPortfolioSubTab(subTab.id);
-                        }}
-                        className={`flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-[15px] font-semibold transition ${isSubActive
-                            ? "bg-[#dff3eb] text-[#066b52]"
-                            : "text-slate-700 hover:bg-slate-100"
-                          }`}
-                      >
-                        <span
-                          className={`inline-block h-2.5 w-2.5 rounded-full ${isSubActive ? "bg-[#0b8f6b]" : "bg-slate-300"
+              <div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveTab("Portfolio Analytics");
+                    setIsPortfolioMenuOpen((prev) => !prev);
+                  }}
+                  className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-[15px] font-semibold transition ${activeTab === "Portfolio Analytics"
+                      ? "bg-[#0fa77d] text-white shadow-[0_6px_18px_rgba(15,167,125,0.35)]"
+                      : "bg-white/5 text-blue-100 hover:bg-white/10"
+                    }`}
+                >
+                  <BarChart3 className="h-4 w-4" />
+                  <span className="flex-1">Portfolio Analytics</span>
+                  <ChevronDown
+                    size={16}
+                    className={`transition-transform duration-200 ${
+                      isPortfolioMenuOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+
+                {isPortfolioMenuOpen && (
+                  <div className="mt-2 space-y-2 rounded-2xl bg-white p-3 shadow-lg">
+                    {portfolioAnalyticsTabDefinitions.map((subTab) => {
+                      const isSubActive =
+                        activeTab === "Portfolio Analytics" && portfolioSubTab === subTab.id;
+                      return (
+                        <button
+                          key={subTab.id}
+                          type="button"
+                          onClick={() => {
+                            setActiveTab("Portfolio Analytics");
+                            setPortfolioSubTab(subTab.id);
+                          }}
+                          className={`flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-[15px] font-semibold transition ${isSubActive
+                              ? "bg-[#dff3eb] text-[#066b52]"
+                              : "text-slate-700 hover:bg-slate-100"
                             }`}
-                        />
-                        {subTab.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
+                        >
+                          <span
+                            className={`inline-block h-2.5 w-2.5 rounded-full ${isSubActive ? "bg-[#0b8f6b]" : "bg-slate-300"
+                              }`}
+                          />
+                          {subTab.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
 
-            <button
-              type="button"
-              onClick={() => {
-                setActiveTab("Properties");
-                setSelectedProperty(null);
-              }}
-              className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-[15px] font-semibold transition ${activeTab === "Properties"
-                  ? "bg-[#0fa77d] text-white shadow-[0_6px_18px_rgba(15,167,125,0.35)]"
-                  : "bg-white/5 text-blue-100 hover:bg-white/10"
-                }`}
-            >
-              <Building2 className="h-4 w-4" />
-              <span className="flex-1">Property Intelligence</span>
-            </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab("Properties");
+                  setSelectedProperty(null);
+                }}
+                className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-[15px] font-semibold transition ${activeTab === "Properties"
+                    ? "bg-[#0fa77d] text-white shadow-[0_6px_18px_rgba(15,167,125,0.35)]"
+                    : "bg-white/5 text-blue-100 hover:bg-white/10"
+                  }`}
+              >
+                <Building2 className="h-4 w-4" />
+                <span className="flex-1">Property Intelligence</span>
+              </button>
 
-            <button
-              type="button"
-              onClick={() => setActiveTab("Market Signal Radar")}
-              className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-[15px] font-semibold transition ${activeTab === "Market Signal Radar"
-                  ? "bg-[#0fa77d] text-white shadow-[0_6px_18px_rgba(15,167,125,0.35)]"
-                  : "bg-white/5 text-blue-100 hover:bg-white/10"
-                }`}
-            >
-              <TrendingUp className="h-4 w-4" />
-              <span className="flex-1">Market Signal Radar</span>
-            </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("Market Signal Radar")}
+                className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-[15px] font-semibold transition ${activeTab === "Market Signal Radar"
+                    ? "bg-[#0fa77d] text-white shadow-[0_6px_18px_rgba(15,167,125,0.35)]"
+                    : "bg-white/5 text-blue-100 hover:bg-white/10"
+                  }`}
+              >
+                <TrendingUp className="h-4 w-4" />
+                <span className="flex-1">Market Signal Radar</span>
+              </button>
 
-            <button
-              type="button"
-              onClick={() => setActiveTab("Deal Underwriting Lens")}
-              className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-[15px] font-semibold transition ${activeTab === "Deal Underwriting Lens"
-                  ? "bg-[#0fa77d] text-white shadow-[0_6px_18px_rgba(15,167,125,0.35)]"
-                  : "bg-white/5 text-blue-100 hover:bg-white/10"
-                }`}
-            >
-              <FileText className="h-4 w-4" />
-              <span className="flex-1">Deal Underwriting Lens</span>
-            </button>
-            
-          </nav>
-        </aside>
+              <button
+                type="button"
+                onClick={() => setActiveTab("Deal Underwriting Lens")}
+                className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-[15px] font-semibold transition ${activeTab === "Deal Underwriting Lens"
+                    ? "bg-[#0fa77d] text-white shadow-[0_6px_18px_rgba(15,167,125,0.35)]"
+                    : "bg-white/5 text-blue-100 hover:bg-white/10"
+                  }`}
+              >
+                <FileText className="h-4 w-4" />
+                <span className="flex-1">Deal Underwriting Lens</span>
+              </button>
+            </nav>
+          </aside>
+        ) : null}
 
         <main
           ref={mainScrollRef}
-          className={`h-screen min-w-0 overflow-y-auto px-4 py-6 md:px-6 md:pt-7 ${isDealLensTab ? "bg-[#0b112f]" : "bg-[#f3f6fb]"
+          className={`h-screen min-w-0 overflow-y-auto ${hidePortfolioSidebar ? "px-0 py-0" : "px-4 py-6 md:px-6 md:pt-7"} ${isDealLensTab ? "bg-[#f3f6fb]" : "bg-[#f3f6fb]"
             }`}
         >
-          <div className={isDealLensTab ? "w-full" : "mx-auto w-full max-w-[1420px]"}>
+          <div className={hidePortfolioSidebar ? "w-full" : isDealLensTab ? "mx-auto w-full max-w-[1600px] px-4 py-6 md:px-8 xl:px-12" : "mx-auto w-full max-w-[1420px]"}>
             {activeContent}
           </div>
         </main>

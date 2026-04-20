@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, MapPin } from "lucide-react";
+import { ChevronLeft, ChevronRight, MapPin, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { authClient } from "@/lib/auth-api";
 import { isDemoMode } from "@/lib/demo-mode";
@@ -65,6 +65,10 @@ function UploadZone({
   uploaded,
   onUpload,
   onRemove,
+  accept = ".xlsx,.xls,.csv",
+  helperText = "Excel | Max 20 MB",
+  showTemplate = true,
+  footerText = "Use the template above to ensure correct file structure",
 }: {
   label: string;
   description: string;
@@ -73,6 +77,10 @@ function UploadZone({
   uploaded: UploadedFile | null;
   onUpload: (f: File) => void;
   onRemove: () => void;
+  accept?: string;
+  helperText?: string;
+  showTemplate?: boolean;
+  footerText?: string;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
@@ -89,102 +97,108 @@ function UploadZone({
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex min-h-[42px] flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-[15px] font-semibold text-[#101828]">{label}</p>
           <p className="mt-0.5 text-[12px] text-[#49648d]">{description}</p>
         </div>
-        <a
-          href={templateHref}
-          download={templateName}
-          className="inline-flex items-center gap-1.5 rounded-xl border border-[#ebc68f] px-4 py-2 text-[12px] font-semibold text-[#d49b3d] transition hover:bg-[#fff7ea]"
-        >
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-            <polyline points="14 2 14 8 20 8" />
-            <line x1="12" y1="18" x2="12" y2="12" />
-            <polyline points="9 15 12 18 15 15" />
-          </svg>
-          Download Template
-        </a>
-      </div>
-
-      {!uploaded ? (
-        <div
-          onDragEnter={() => setDragging(true)}
-          onDragLeave={() => setDragging(false)}
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={handleDrop}
-          onClick={() => inputRef.current?.click()}
-          className={`flex cursor-pointer items-center justify-center rounded-2xl border-2 border-dashed px-6 py-5 transition ${dragging
-            ? "border-[#90aee8] bg-[#f3f8ff]"
-            : "border-[#d7dfeb] bg-white hover:border-[#b9c8e6] hover:bg-[#fbfdff]"
-            }`}
-        >
-          <div className="flex items-center gap-4 text-center sm:text-left">
-            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-[#edf1f6]">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#63799d" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                <polyline points="17 8 12 3 7 8" />
-                <line x1="12" y1="3" x2="12" y2="15" />
-              </svg>
-            </div>
-            <div>
-              <p className="text-[15px] font-semibold text-[#111c4e]">
-                Drop file or{" "}
-                <span className="underline decoration-dotted underline-offset-2">browse</span>
-              </p>
-              <p className="text-[12px] text-[#49648d]">Excel | Max 20 MB</p>
-            </div>
-          </div>
-          <input
-            ref={inputRef}
-            type="file"
-            accept=".xlsx,.xls,.csv"
-            className="hidden"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) onUpload(file);
-            }}
-          />
-        </div>
-      ) : (
-        <div className="flex items-center gap-3 rounded-2xl border border-[#d7dfeb] bg-[#fbfdff] px-4 py-3">
-          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-[#e9f5ef]">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1d7c4d" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        {showTemplate ? (
+          <a
+            href={templateHref}
+            download={templateName}
+            className="inline-flex items-center gap-1.5 rounded-xl border border-[#f1a5a5] px-4 py-2 text-[12px] font-semibold text-[#c62828] transition hover:bg-[#fff1f1]"
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
               <polyline points="14 2 14 8 20 8" />
-              <polyline points="9 12 11 14 15 10" />
+              <line x1="12" y1="18" x2="12" y2="12" />
+              <polyline points="9 15 12 18 15 15" />
             </svg>
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-[14px] font-semibold text-[#111c4e]">{uploaded.name}</p>
-            <p className="text-[12px] text-[#49648d]">{fmtSize(uploaded.size)}</p>
-          </div>
-          <span className="rounded-full bg-[#eaf7f0] px-2.5 py-1 text-[11px] font-semibold text-[#1d7c4d]">
-            Uploaded
-          </span>
-          <button
-            type="button"
-            onClick={onRemove}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-[#667085] transition hover:bg-[#fdecec] hover:text-[#b42318]"
-            title="Remove file"
-          >
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
-        </div>
-      )}
+            Download Template
+          </a>
+        ) : (
+          <div className="h-[38px]" aria-hidden="true" />
+        )}
+      </div>
 
-      <p className="flex items-center gap-1.5 text-[12px] text-[#49648d]">
+      <div>
+        {!uploaded ? (
+          <div
+            onDragEnter={() => setDragging(true)}
+            onDragLeave={() => setDragging(false)}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={handleDrop}
+            onClick={() => inputRef.current?.click()}
+            className={`flex cursor-pointer items-center justify-center rounded-2xl border-2 border-dashed px-6 py-5 transition ${dragging
+              ? "border-[#90aee8] bg-[#f3f8ff]"
+              : "border-[#d7dfeb] bg-white hover:border-[#b9c8e6] hover:bg-[#fbfdff]"
+              }`}
+          >
+            <div className="flex items-center gap-4 text-center sm:text-left">
+              <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-[#edf1f6]">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#63799d" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="17 8 12 3 7 8" />
+                  <line x1="12" y1="3" x2="12" y2="15" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-[15px] font-semibold text-[#111c4e]">
+                  Drop file or{" "}
+                  <span className="underline decoration-dotted underline-offset-2">browse</span>
+                </p>
+                <p className="text-[12px] text-[#49648d]">{helperText}</p>
+              </div>
+            </div>
+            <input
+              ref={inputRef}
+              type="file"
+              accept={accept}
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) onUpload(file);
+              }}
+            />
+          </div>
+        ) : (
+          <div className="flex items-center gap-3 rounded-2xl border border-[#d7dfeb] bg-[#fbfdff] px-4 py-3">
+            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-[#e9f5ef]">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1d7c4d" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <polyline points="9 12 11 14 15 10" />
+              </svg>
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-[14px] font-semibold text-[#111c4e]">{uploaded.name}</p>
+              <p className="text-[12px] text-[#49648d]">{fmtSize(uploaded.size)}</p>
+            </div>
+            <span className="rounded-full bg-[#eaf7f0] px-2.5 py-1 text-[11px] font-semibold text-[#1d7c4d]">
+              Uploaded
+            </span>
+            <button
+              type="button"
+              onClick={onRemove}
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-[#667085] transition hover:bg-[#fdecec] hover:text-[#b42318]"
+              title="Remove file"
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          </div>
+        )}
+      </div>
+
+      <p className="flex items-start gap-1.5 text-[12px] text-[#49648d]">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="12" cy="12" r="10" />
           <line x1="12" y1="8" x2="12" y2="12" />
           <line x1="12" y1="16" x2="12.01" y2="16" />
         </svg>
-        Use the template above to ensure correct file structure
+        {footerText}
       </p>
     </div>
   );
@@ -272,7 +286,6 @@ function AddPropertyForm({ onBack }: { onBack: () => void }) {
     formData.append("occupancy_rate", occupancy);
     formData.append("t12_document", t12.file);
     formData.append("rent_roll_document", rentRoll.file);
-
     try {
       setSubmitting(true);
       await authClient.post("/api/user_properties/add/", formData);
@@ -509,9 +522,11 @@ function AddPropertyForm({ onBack }: { onBack: () => void }) {
 }
 
 const PfDemoProperties: React.FC<PfDemoPropertiesProps> = ({ onSelectProperty }) => {
+  const { toast } = useToast();
   const [data, setData] = useState<PropertyRecord[]>([]);
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [showAddPropertyForm, setShowAddPropertyForm] = useState(false);
+  const [deletingPropertyName, setDeletingPropertyName] = useState<string | null>(null);
 
   const loadProperties = useCallback(async (isActive = true) => {
     setStatus("loading");
@@ -559,6 +574,46 @@ const PfDemoProperties: React.FC<PfDemoPropertiesProps> = ({ onSelectProperty })
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
       handleRowClick(row);
+    }
+  };
+
+  const handleDeleteProperty = async (
+    event: React.MouseEvent<HTMLButtonElement>,
+    row: PropertyRecord
+  ) => {
+    event.stopPropagation();
+
+    const propertyName = row.property_name?.trim();
+    if (!propertyName) return;
+
+    const confirmed = window.confirm(`Delete ${propertyName}?`);
+    if (!confirmed) return;
+
+    try {
+      setDeletingPropertyName(propertyName);
+
+      await authClient.post("/api/user_properties/delete/", {
+        property_name: propertyName,
+      });
+
+      setData((current) =>
+        current.filter(
+          (item) => item.property_name?.toLowerCase() !== propertyName.toLowerCase()
+        )
+      );
+
+      toast({
+        title: "Property deleted",
+        description: `${propertyName} was removed successfully.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Delete failed",
+        description: "Could not delete the property. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setDeletingPropertyName(null);
     }
   };
 
@@ -610,7 +665,7 @@ const PfDemoProperties: React.FC<PfDemoPropertiesProps> = ({ onSelectProperty })
                 <th scope="col">Occupancy</th>
                 {/* <th scope="col">Rent/sqft</th> */}
                 <th scope="col">
-                  <span className="sr-only">Open</span>
+                  <span className="sr-only">Actions</span>
                 </th>
               </tr>
             </thead>
@@ -672,7 +727,21 @@ const PfDemoProperties: React.FC<PfDemoPropertiesProps> = ({ onSelectProperty })
                           <span className="pf-properties__value">{row.rent_per_sqft || "-"}</span>
                         </td> */}
                       <td className="pf-properties__cell pf-properties__cell--last pf-properties__arrow-cell">
-                        <ChevronRight className="pf-properties__arrow" strokeWidth={2.6} />
+                        <div className="flex items-center justify-end gap-3">
+                          {!isDemoMode() ? (
+                            <button
+                              type="button"
+                              onClick={(event) => handleDeleteProperty(event, row)}
+                              disabled={deletingPropertyName === row.property_name}
+                              className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-[#b42318] transition hover:bg-[#fdecec] disabled:cursor-not-allowed disabled:opacity-60"
+                              title="Delete property"
+                              aria-label={`Delete ${row.property_name}`}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          ) : null}
+                          <ChevronRight className="pf-properties__arrow" strokeWidth={2.6} />
+                        </div>
                       </td>
                     </tr>
                   );

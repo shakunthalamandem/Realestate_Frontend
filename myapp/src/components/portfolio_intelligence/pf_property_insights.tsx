@@ -854,10 +854,10 @@ const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext
               <p className="text-xs font-semibold uppercase tracking-wide text-rose-600">Avg Tenure</p>
               <p className="mt-1 text-xl font-semibold text-slate-900">{avgTenure !== undefined ? `${avgTenure} months` : "-"}</p>
             </div>
-            <div className="rounded-2xl border border-white bg-white px-4 py-3">
+            {/* <div className="rounded-2xl border border-white bg-white px-4 py-3">
               <p className="text-xs font-semibold uppercase tracking-wide text-rose-600">Renewal Rate</p>
               <p className="mt-1 text-xl font-semibold text-slate-900">{formatPercent(riskAlert?.renewalRate)}</p>
-            </div>
+            </div> */}
           </div>
         </div>
         ) : null}
