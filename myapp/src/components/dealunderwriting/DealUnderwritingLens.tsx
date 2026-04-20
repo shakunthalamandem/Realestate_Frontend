@@ -13,7 +13,11 @@ import { getDealById, useDealUnderwritingData } from "./data";
 import PfDealUnderwritingUpload from "./pf_dealunderwriting_upload";
 import { Search } from "lucide-react";
 
-export default function DealUnderwritingLens() {
+interface DealUnderwritingLensProps {
+  onScreenChange?: (screen: "library" | "upload" | "detail") => void;
+}
+
+export default function DealUnderwritingLens({ onScreenChange }: DealUnderwritingLensProps) {
   const [activeDealId, setActiveDealId] = useState("");
   const [activeView, setActiveView] = useState<"deal" | "compare">("deal");
   const [compareIds, setCompareIds] = useState<string[]>([]);
@@ -42,6 +46,10 @@ export default function DealUnderwritingLens() {
     setPendingPropertyName("");
     setScreen("detail");
   }, [deals, pendingPropertyName]);
+
+  useEffect(() => {
+    onScreenChange?.(screen);
+  }, [onScreenChange, screen]);
 
   const openDeal = useCallback((id: string) => {
     setActiveDealId(id);
