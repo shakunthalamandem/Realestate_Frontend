@@ -6,7 +6,7 @@ export function WhatMovesTheDeal({ deal }: { deal: Deal }) {
     { label: "Rent Increase", value: deal.movers.rentIncrease },
     { label: "Expense Optimization", value: deal.movers.expenseOptimization },
     { label: "Occupancy Improvement", value: deal.movers.occupancyImprovement },
-  ];
+  ].filter((item) => item.value !== 0);
   const total = movers.reduce((sum, item) => sum + item.value, 0);
 
   return (
