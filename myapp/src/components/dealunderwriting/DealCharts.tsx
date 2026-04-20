@@ -59,15 +59,15 @@ function FloorplanHeatmap({
   const [tooltip, setTooltip] = useState<{ x: number; y: number; label: string } | null>(null);
 
   const getCellColor = (value: number) => {
-    if (value <= 0 || maxValue <= 0) return "transparent";
+    if (value <= 0 || maxValue <= 0) return "#f5f2ea";
     const ratio = value / maxValue;
-    const alpha = 0.25 + ratio * 0.75;
-    return `rgba(35, 159, 255, ${alpha.toFixed(2)})`;
+    const alpha = 0.22 + ratio * 0.7;
+    return `rgba(200, 33, 111, ${alpha.toFixed(2)})`;
   };
 
   return (
-    <div className="relative rounded-2xl bg-[#0d1f35] p-5 text-white">
-      <h5 className="mb-4 text-center text-base font-semibold text-white">{title}</h5>
+    <div className="relative rounded-2xl bg-[#fffdfa] p-5 text-[#2a2a2a]">
+      <h5 className="mb-4 text-center text-[15px] font-semibold text-[#2a2a2a]">{title}</h5>
       <div
         className="grid gap-[3px]"
         style={{ gridTemplateColumns: `80px repeat(${xlabels.length}, minmax(0, 1fr))` }}
@@ -75,7 +75,7 @@ function FloorplanHeatmap({
         {/* Header row */}
         <div />
         {xlabels.map((label) => (
-          <div key={label} className="text-center text-xs font-medium text-white/70 pb-1">
+          <div key={label} className="pb-1 text-center text-xs font-medium text-[#494949]">
             {label}
           </div>
         ))}
@@ -83,7 +83,7 @@ function FloorplanHeatmap({
         {/* Data rows */}
         {ylabels.map((rowLabel, rowIndex) => (
           <Fragment key={rowLabel}>
-            <div className="flex items-center text-xs font-medium text-white/80 pr-1 leading-tight">
+            <div className="flex items-center pr-1 text-xs font-medium leading-tight text-[#494949]">
               {rowLabel}
             </div>
             {xlabels.map((columnLabel, columnIndex) => {
@@ -95,8 +95,8 @@ function FloorplanHeatmap({
                   style={{
                     backgroundColor: getCellColor(value),
                     border: value > 0
-                      ? "1px solid rgba(35,159,255,0.3)"
-                      : "1px solid rgba(255,255,255,0.04)",
+                      ? "1px solid rgba(200,33,111,0.12)"
+                      : "1px solid rgba(224,218,205,0.75)",
                   }}
                   onMouseEnter={(e) => {
                     if (value > 0) {
@@ -120,7 +120,7 @@ function FloorplanHeatmap({
       {/* Tooltip */}
       {tooltip && (
         <div
-          className="pointer-events-none absolute z-10 rounded bg-[#1a3a5c] border border-[#2a5a8c] px-2 py-1 text-xs text-white shadow-lg"
+          className="pointer-events-none absolute z-10 rounded border border-[#d8bfd0] bg-white px-2 py-1 text-xs text-[#2a2a2a] shadow-lg"
           style={{
             left: tooltip.x,
             top: tooltip.y,
@@ -133,9 +133,9 @@ function FloorplanHeatmap({
       )}
 
       {/* Legend */}
-      <div className="mt-4 flex items-center gap-3 text-xs text-white/70">
+      <div className="mt-4 flex items-center gap-3 text-xs text-[#494949]">
         <span>0</span>
-        <div className="h-2 flex-1 rounded-full bg-gradient-to-r from-[rgba(35,159,255,0.15)] to-[#239fff]" />
+        <div className="h-2 flex-1 rounded-full bg-gradient-to-r from-[#f3d7e3] via-[#e888b2] to-[#c8216f]" />
         <span>{maxValue}</span>
       </div>
     </div>

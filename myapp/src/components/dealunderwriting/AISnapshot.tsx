@@ -1,4 +1,4 @@
-import { Brain, Shield, TrendingUp } from "lucide-react";
+import { Brain, TrendingUp } from "lucide-react";
 import type { Deal } from "./data";
 
 const signalStyles: Record<string, string> = {
@@ -16,13 +16,13 @@ export function AISnapshot({ deal }: { deal: Deal }) {
         <span>AI Acquisition Snapshot</span>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-[240px_minmax(0,1fr)]">
         <div className="flex items-center gap-4">
           <TrendingUp className="h-9 w-9 text-[#bcd4ff]" />
           <div>
-            <p className="text-sm text-[#d7e5ff]">Recommendation</p>
+            <p className="text-md text-[#d7e5ff]">Recommendation</p>
             <span
-              className={`mt-2 inline-flex rounded-full border px-3 py-1 text-sm font-semibold ${
+              className={`mt-2 inline-flex rounded-full border px-3 py-1 text-md font-semibold ${
                 signalStyles[deal.signal]
               }`}
             >
@@ -31,16 +31,8 @@ export function AISnapshot({ deal }: { deal: Deal }) {
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
-          <Shield className="h-9 w-9 text-[#bcd4ff]" />
-          <div>
-            <p className="text-sm text-[#d7e5ff]">Confidence Score</p>
-            <p className="text-4xl font-bold">{deal.confidence}%</p>
-          </div>
-        </div>
-
-        <div>
-          <p className="text-sm text-[#d7e5ff]">Investment Thesis</p>
+        <div className="md:pl-9">
+          <p className="text-md text-[#d7e5ff]">Investment Thesis</p>
           <p className="mt-2 text-base leading-7 text-white/95">{deal.thesis}</p>
         </div>
       </div>

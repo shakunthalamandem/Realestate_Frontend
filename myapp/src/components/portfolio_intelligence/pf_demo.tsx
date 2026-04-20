@@ -155,16 +155,18 @@ const PfDemo: React.FC = () => {
           <aside
             className="sticky top-0 z-30 h-screen w-[220px] overflow-y-auto bg-[#0d1b4f] px-4 py-5 text-white md:w-[240px] lg:w-[260px] xl:w-[280px]"
           >
-            <div className="mb-4">
-              <button
-                type="button"
-                onClick={handleSidebarBack}
-                className="back-button-hex back-button-theme-sidebar flex items-center gap-2 whitespace-nowrap"
-              >
-                <ArrowLeft className="h-5 w-5" />
-                <span>Back</span>
-              </button>
-            </div>
+            {!isAuthenticatedUserView ? (
+              <div className="mb-4">
+                <button
+                  type="button"
+                  onClick={handleSidebarBack}
+                  className="back-button-hex back-button-theme-sidebar flex items-center gap-2 whitespace-nowrap"
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                  <span>Back</span>
+                </button>
+              </div>
+            ) : null}
             <div className="mb-6 rounded-2xl border border-white/10 bg-white/5 p-4">
               <h1 className="text-2xl font-semibold">Portfolio Intelligence</h1>
             </div>
