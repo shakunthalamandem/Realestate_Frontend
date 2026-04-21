@@ -224,6 +224,7 @@ export default function DealUnderwritingLens({ onScreenChange }: DealUnderwritin
           <ComparisonBar
             compareIds={compareIds}
             deals={deals}
+            onAdd={toggleCompare}
             onRemove={(id) => setCompareIds((current) => current.filter((item) => item !== id))}
             onCompare={() => setActiveView("compare")}
           />
