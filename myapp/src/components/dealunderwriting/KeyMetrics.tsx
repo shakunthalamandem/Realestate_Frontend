@@ -69,11 +69,13 @@ function getMetrics(deal: Deal) {
       label: "Parking Spaces",
       value: formatDecimal(deal.metrics.parkingSpace ?? 0, 0),
       sub: "Available spaces",
+      hidden: (deal.metrics.parkingSpace ?? 0) === 0,
     },
     {
       label: "Site Size",
       value: `${formatDecimal(deal.metrics.siteSize ?? 0)} ac`,
       sub: "Property footprint",
+      hidden: (deal.metrics.siteSize ?? 0) === 0,
     },
     {
       label: "Rent vs Market Gap",
@@ -82,7 +84,7 @@ function getMetrics(deal: Deal) {
         ? `${formatCompactCurrency(deal.metrics.totalProjectedRevenueLift)} upside`
         : "Below market",
     },
-  ];
+  ].filter((metric) => !metric.hidden);
 }
 
 export function KeyMetrics({ deal }: { deal: Deal }) {
