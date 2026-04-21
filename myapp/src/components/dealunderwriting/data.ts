@@ -293,6 +293,12 @@ function getSignal(overall: number, riskLevel: number): DealSignal {
   return "Avoid";
 }
 
+function getDemoSignalOverride(propertyName?: string): DealSignal | null {
+  const normalizedName = propertyName?.trim().toLowerCase();
+  if (normalizedName === "summit ridge apartments") return "Buy";
+  return null;
+}
+
 function getConfidence(overall: number, riskLevel: number) {
   return clamp(Math.round(overall - riskLevel * 0.15 + 15));
 }
@@ -495,7 +501,7 @@ function buildDemoDeal(property: PropertyRecord, aiRentRecord: AiRentRecord | un
   const scores = deriveScores(propertyResponse, aiRent);
   const strategy = getStrategy(property.class_type, scores.riskLevel, rentGap);
   const confidence = getConfidence(scores.overall, scores.riskLevel);
-  const signal = getSignal(scores.overall, scores.riskLevel);
+  const signal = getDemoSignalOverride(property.property_name) ?? getSignal(scores.overall, scores.riskLevel);
   const yearBuilt = toNumber(propertyMeta?.yearBuilt, 2005);
   const address = property.address || propertyMeta?.location || property.location || "-";
   const askingPrice = Math.round(noiMargin > 0 ? noi / (noiMargin / 100) * 8.5 : revenue * 7);
