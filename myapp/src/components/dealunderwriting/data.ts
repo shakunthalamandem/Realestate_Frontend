@@ -14,6 +14,8 @@ type PropertyResponse = {
     noi?: number;
     noiMargin?: number;
     revenue?: number;
+    rentPerSqft?: number;
+    rent_per_sqft?: number;
     expenseRatio?: number;
     occupancy?: number;
     lossToLease?: number;
@@ -58,6 +60,7 @@ type PropertyRecord = {
   class_type?: string;
   units?: number | string;
   occupancy?: string | number;
+  rent_per_sqft?: number | string;
   property_response?: PropertyResponse | null;
 };
 
@@ -500,6 +503,7 @@ function buildDemoDeal(property: PropertyRecord, aiRentRecord: AiRentRecord | un
   const totalLift = toNumber(aiRent?.dashboard?.basic_info?.totalprojectedrevenuelift, 0);
   const markToMarket = toNumber(aiRent?.dashboard?.basic_info?.mtmcapturepotential ?? kpis?.markToMarket, 0);
   const revenueAtRisk = toNumber(aiRent?.dashboard?.basic_info?.revenueAtRisk ?? propertyResponse?.intelligence?.riskAlert?.revenueAtRisk, 0);
+  const rentPerSqft = toNumber(kpis?.rentPerSqft ?? kpis?.rent_per_sqft ?? property.rent_per_sqft, 0);
 
   return {
     id: createDealId(property.property_name || "", index),
@@ -528,7 +532,7 @@ function buildDemoDeal(property: PropertyRecord, aiRentRecord: AiRentRecord | un
       vacancyLoss: clamp(100 - occupancy, 0, 100),
       rentGap,
       totalProjectedRevenueLift: totalLift,
-      rentPerSqft: 0,
+      rentPerSqft,
       parkingSpace: 0,
       siteSize: 0,
     },
