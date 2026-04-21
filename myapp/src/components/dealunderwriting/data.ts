@@ -446,9 +446,24 @@ function formatCompactCurrencyValue(value: number) {
 
 function getDealDocStatus(record: DealUnderwritingApiRecord) {
   return {
-    memorandum: Boolean(record.dealMemorandumResponse || record.deal_memorandum_response),
-    t12: Boolean(record.dealT12Response || record.deal_t12_response),
-    rentRoll: Boolean(record.dealRentrollResponse || record.deal_rentroll_response),
+    memorandum: Boolean(
+      record.header?.yearBuilt ||
+      record.header?.locationAddress ||
+      record.address
+    ),
+    t12: Boolean(
+      record.kpiCards ||
+      record.performanceAnalytics?.revenueVsExpenses?.length ||
+      record.performanceAnalytics?.expenseBreakdown?.length ||
+      record.performanceAnalytics?.expenseDistribution?.length
+    ),
+    rentRoll: Boolean(
+      record.performanceAnalytics?.rentVsMarket?.length ||
+      record.performanceAnalytics?.leaseExpiration?.length ||
+      record.performanceAnalytics?.tenantMix?.length ||
+      record.performanceAnalytics?.occupancyVsVacancy?.length ||
+      record.performanceAnalytics?.leaseExpirationFloorplan?.data?.length
+    ),
   };
 }
 
@@ -687,14 +702,15 @@ function mapUserApiRecordToDeal(record: DealUnderwritingApiRecord, index: number
 
 function hasDealUnderwritingData(record: DealUnderwritingApiRecord) {
   return Boolean(
-    record.dealDocumentsUploadedAt ||
-      record.deal_documents_uploaded_at ||
-      record.dealMemorandumResponse ||
-      record.deal_memorandum_response ||
-      record.dealT12Response ||
-      record.deal_t12_response ||
-      record.dealRentrollResponse ||
-      record.deal_rentroll_response
+    record.propertyName &&
+      (
+        record.aiAcquisitionSnapshot ||
+        record.kpiCards ||
+        record.dealScorecard ||
+        record.whatDrivesThisInvestment ||
+        record.performanceAnalytics ||
+        record.sourceOverview
+      )
   );
 }
 
