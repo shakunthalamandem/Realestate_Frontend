@@ -146,8 +146,8 @@ const PerformanceSnapshot = ({ data }: { data?: IcPerformanceSnapshotData | null
   return (
     <section>
       <SectionHeader number="03" title="Performance Snapshot" />
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
-        <div className="rounded-xl border bg-white p-5 lg:col-span-2">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+        <div className="rounded-xl border bg-white p-5 lg:col-span-7">
           <div className="h-[400px]">
             <Bar data={trendChartData} options={trendChartOptions} />
           </div>
@@ -161,7 +161,7 @@ const PerformanceSnapshot = ({ data }: { data?: IcPerformanceSnapshotData | null
           </div>
         </div>
 
-        <div className="space-y-3 lg:col-span-3">
+        <div className="space-y-3 lg:col-span-5">
           {insightCards.map((insight, index) => (
             <InsightCard key={`${insight.title ?? "insight"}-${index}`} {...insight} />
           ))}
