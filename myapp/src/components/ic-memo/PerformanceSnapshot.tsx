@@ -1,68 +1,157 @@
+import { Bar } from "react-chartjs-2";
+import {
+  BarElement,
+  CategoryScale,
+  Chart as ChartJS,
+  ChartData,
+  ChartOptions,
+  Legend,
+  LinearScale,
+  Tooltip,
+} from "chart.js";
 import { SectionHeader } from "./KpiStrip";
 import { IcInsightItem, IcPerformanceSnapshotData, IcTrendCard } from "./types";
 
-const MiniBar = ({ label, values = [], color = "bg-slate-300" }: IcTrendCard) => {
-  const data = values.length > 0 ? values : [0, 0, 0, 0, 0, 0];
-  const max = Math.max(...data, 1);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
-  return (
-    <div className="mb-4">
-      <p className="mb-2 text-xs font-medium uppercase tracking-[0.16em] text-slate-500">{label ?? ""}</p>
-      <div className="flex h-10 items-end gap-1">
-        {data.map((value, index) => (
-          <div
-            key={index}
-            className={`flex-1 rounded-sm ${color} transition-all`}
-            style={{ height: `${(value / max) * 100}%`, opacity: 0.55 + (index / data.length) * 0.3 }}
-          />
-        ))}
-      </div>
-      <div className="mt-1 flex justify-between">
-        <span className="text-[10px] text-slate-400">Oct</span>
-        <span className="text-[10px] text-slate-400">Mar</span>
-      </div>
-    </div>
-  );
+const MONTH_LABELS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
+
+const formatCompactMoney = (value: number) =>
+  new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    notation: "compact",
+    maximumFractionDigits: value >= 1_000_000 ? 1 : 0,
+  }).format(value);
+
+const datasetColorMap: Record<string, { bg: string; border: string }> = {
+  "bg-blue-600": { bg: "#2563eb", border: "#1d4ed8" },
+  "bg-orange-500": { bg: "#f97316", border: "#ea580c" },
+  "bg-green-600": { bg: "#16a34a", border: "#15803d" },
+  "bg-slate-300": { bg: "#cbd5e1", border: "#94a3b8" },
 };
 
+const resolveDatasetColors = (color?: string | null) =>
+  datasetColorMap[color ?? ""] ?? datasetColorMap["bg-slate-300"];
+
 const InsightCard = ({ signal = "neutral", title, text }: IcInsightItem) => {
+  const resolvedSignal = signal ?? "neutral";
   const styles = {
     green: "border-l-[3px] border-l-[#10b981] bg-[#ecfdf5]",
     red: "border-l-[3px] border-l-[#f43f5e] bg-[#fff1f2]",
-    neutral: "border-l-[3px] border-l-[#64748b] bg-[#f8fafc]", // updated
+    neutral: "border-l-[3px] border-l-[#64748b] bg-[#f8fafc]",
+    yellow: "border-l-[3px] border-l-[#f59e0b] bg-[#fffbeb]",
   };
 
   const textStyles = {
     green: "text-[#047857]",
     red: "text-[#be123c]",
     neutral: "text-[#475569]",
+    yellow: "text-[#b45309]",
   };
 
   return (
-    <div className={`rounded-r-xl p-4 ${styles[signal]}`}>
-      <p className={`mb-1 min-h-[20px] text-sm font-semibold ${textStyles[signal]}`}>
+    <div className={`rounded-r-xl p-4 ${styles[resolvedSignal]}`}>
+      <p className={`mb-1 min-h-[20px] text-sm font-semibold ${textStyles[resolvedSignal]}`}>
         {title ?? ""}
       </p>
-      <p className={`min-h-[42px] text-sm leading-relaxed ${textStyles[signal]}`}>
+      <p className={`min-h-[42px] text-sm leading-relaxed ${textStyles[resolvedSignal]}`}>
         {text ?? ""}
       </p>
     </div>
   );
 };
 
+const buildTrendChartData = (trends: IcTrendCard[]): ChartData<"bar"> => {
+  const chartTrends =
+    trends.length > 0
+      ? trends
+      : [
+          { label: "Revenue", values: [0, 0, 0, 0, 0, 0], color: "bg-blue-600" },
+          { label: "Expenses", values: [0, 0, 0, 0, 0, 0], color: "bg-orange-500" },
+          { label: "NOI", values: [0, 0, 0, 0, 0, 0], color: "bg-green-600" },
+        ];
+
+  return {
+    labels: MONTH_LABELS,
+    datasets: chartTrends.map((trend) => {
+      const colors = resolveDatasetColors(trend.color);
+      const values = MONTH_LABELS.map((_, index) => trend.values?.[index] ?? 0);
+
+      return {
+        label: trend.label ?? "",
+        data: values,
+        backgroundColor: colors.bg,
+        borderColor: colors.border,
+        borderWidth: 1,
+        borderRadius: 6,
+        maxBarThickness: 34,
+      };
+    }),
+  };
+};
+
+const trendChartOptions: ChartOptions<"bar"> = {
+  responsive: true,
+  maintainAspectRatio: false,
+  interaction: {
+    mode: "index",
+    intersect: false,
+  },
+  scales: {
+    x: {
+      grid: { display: false },
+      ticks: { color: "#64748b", font: { size: 11 } },
+    },
+    y: {
+      beginAtZero: true,
+      grid: { color: "rgba(148,163,184,0.18)" },
+      ticks: {
+        color: "#64748b",
+        callback: (value) => formatCompactMoney(Number(value)),
+      },
+    },
+  },
+  plugins: {
+    legend: {
+      position: "top",
+      labels: {
+        color: "#0f172a",
+        boxWidth: 14,
+        boxHeight: 14,
+        font: { weight: 600 },
+      },
+    },
+    tooltip: {
+      backgroundColor: "rgba(15, 23, 42, 0.92)",
+      padding: 10,
+      displayColors: true,
+      callbacks: {
+        title: (items) => items[0]?.label ?? "",
+        label: (context) => `${context.dataset.label}: ${formatCompactMoney(Number(context.raw ?? 0))}`,
+      },
+    },
+  },
+};
+
 const PerformanceSnapshot = ({ data }: { data?: IcPerformanceSnapshotData | null }) => {
   const trends = data?.trends ?? [];
   const insights = data?.insights ?? [];
+  const insightCards: IcInsightItem[] =
+    insights.length > 0
+      ? insights
+      : Array.from({ length: 3 }, () => ({ title: "", text: "", signal: "neutral" }));
+  const trendChartData = buildTrendChartData(trends);
 
   return (
     <section>
       <SectionHeader number="03" title="Performance Snapshot" />
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
-        <div className="grid grid-cols-3 gap-4 rounded-xl border bg-white p-5 lg:col-span-2">
-          {Array.from({ length: Math.max(trends.length, 3) }).map((_, index) => (
-            <MiniBar key={index} {...(trends[index] ?? {})} />
-          ))}
-          <div className="col-span-3 flex items-center gap-2 border-t pt-3">
+        <div className="rounded-xl border bg-white p-5 lg:col-span-2">
+          <div className="h-[320px]">
+            <Bar data={trendChartData} options={trendChartOptions} />
+          </div>
+          <div className="mt-4 flex items-center gap-2 border-t pt-3">
             <span className="text-[10px] uppercase tracking-[0.16em] text-slate-500">
               {data?.trendFooterLabel ?? ""}
             </span>
@@ -73,8 +162,8 @@ const PerformanceSnapshot = ({ data }: { data?: IcPerformanceSnapshotData | null
         </div>
 
         <div className="space-y-3 lg:col-span-3">
-          {Array.from({ length: Math.max(insights.length, 3) }).map((_, index) => (
-            <InsightCard key={index} {...(insights[index] ?? {})} />
+          {insightCards.map((insight, index) => (
+            <InsightCard key={`${insight.title ?? "insight"}-${index}`} {...insight} />
           ))}
         </div>
       </div>
