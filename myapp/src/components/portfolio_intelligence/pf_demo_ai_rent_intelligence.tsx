@@ -83,12 +83,13 @@ const formatCompactCurrency = (value?: number | string) => {
   if (value === undefined || value === null) return "-";
   const num = typeof value === "string" ? Number(value) : value;
   if (Number.isNaN(num)) return String(value);
-  return new Intl.NumberFormat("en-US", {
+  const formatted = new Intl.NumberFormat("en-US", {
     notation: "compact",
     maximumFractionDigits: 1,
     style: "currency",
     currency: "USD",
   }).format(num);
+  return formatted.replace(/(\.\d+)([kK])$/, "$2");
 };
 
 const formatPercent = (value?: number | string) => {

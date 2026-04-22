@@ -91,7 +91,7 @@ export function ComparisonView({ deals }: { deals: Deal[] }) {
         </div>
         <p className="text-lg leading-8 text-white/95">
           {best.name} ranks first with an overall score of {best.scores.overall}, supported by a{" "}
-          {best.metrics.noiMargin}% NOI margin and {best.metrics.rentGap}% rent gap.
+          {formatPercent(best.metrics.noiMargin)} NOI margin and {formatPercent(best.metrics.rentGap)} rent gap.
           {secondBest ? ` ${secondBest.name} is the runner-up with a score of ${secondBest.scores.overall}.` : ""}
           {shouldAvoid ? ` ${worst.name} deserves caution because risk is elevated at ${worst.scores.riskLevel}.` : ""}
         </p>
@@ -163,7 +163,7 @@ export function ComparisonView({ deals }: { deals: Deal[] }) {
             </tr>
             <tr className="border-b border-[#e1e7f5]">
               <td className="px-4 py-4 text-sm font-medium text-[#5b647f]">Occupancy</td>
-              {deals.map((deal) => <td key={deal.id} className="px-4 py-4 text-center text-lg font-bold text-[#102149]">{deal.metrics.occupancy}%</td>)}
+              {deals.map((deal) => <td key={deal.id} className="px-4 py-4 text-center text-lg font-bold text-[#102149]">{formatPercent(deal.metrics.occupancy)}</td>)}
             </tr>
             <tr>
               <td className="px-4 py-4 text-sm font-medium text-[#5b647f]">Rent Gap</td>
@@ -238,7 +238,7 @@ export function ComparisonView({ deals }: { deals: Deal[] }) {
       <section className="rounded-2xl border border-[#294e86] bg-white p-6">
         <h3 className="text-xl font-semibold uppercase tracking-[0.12em] text-[#102149]">Final Recommendation</h3>
         <div className="mt-5 space-y-4 text-xl leading-8 text-[#102149]">
-          <p className="flex gap-3"><CheckCircle2 className="mt-1 h-5 w-5 flex-shrink-0 text-[#10b981]" /><span><strong>Select {best.name} for acquisition</strong> due to strong upside and a {best.metrics.rentGap}% rent gap.</span></p>
+          <p className="flex gap-3"><CheckCircle2 className="mt-1 h-5 w-5 flex-shrink-0 text-[#10b981]" /><span><strong>Select {best.name} for acquisition</strong> due to strong upside and a {formatPercent(best.metrics.rentGap)} rent gap.</span></p>
           <p className="flex gap-3"><Shield className="mt-1 h-5 w-5 flex-shrink-0 text-[#3b82f6]" /><span><strong>{secondBest.name} can be considered</strong> as the lower-risk alternative with a score of {secondBest.scores.overall}.</span></p>
           {shouldAvoid ? <p className="flex gap-3"><XCircle className="mt-1 h-5 w-5 flex-shrink-0 text-[#ef4444]" /><span><strong>Avoid {worst.name}</strong> because risk is elevated at {worst.scores.riskLevel}.</span></p> : null}
         </div>

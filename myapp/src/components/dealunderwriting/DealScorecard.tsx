@@ -7,7 +7,7 @@ const scoreLabels: { key: keyof Deal["scores"]; label: string; weight: number; i
   { key: "riskLevel", label: "Risk Level", weight: 0.2, invert: true },
 ];
 
-function getBarColor(score: number, invert?: boolean) {
+export function getBarColor(score: number, invert?: boolean) {
   const effective = invert ? 100 - score : score;
   if (effective >= 75) return "bg-[#19b68f]";
   if (effective >= 50) return "bg-[#f3a122]";

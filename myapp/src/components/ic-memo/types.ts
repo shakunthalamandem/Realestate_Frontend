@@ -24,7 +24,7 @@ export interface IcKpiItem {
 export interface IcInsightItem {
   title?: string | null;
   text?: string | null;
-  signal?: Exclude<IcSignal, "neutral"> | null;
+  signal?: IcSignal | null;
 }
 
 export interface IcTrendCard {
@@ -45,7 +45,7 @@ export interface IcProgressMetric {
   value?: string | null;
   subtitle?: string | null;
   bar?: number | null;
-  signal?: Exclude<IcSignal, "neutral"> | null;
+  signal?: IcSignal | null;
 }
 
 export interface IcTextPanelSection {
