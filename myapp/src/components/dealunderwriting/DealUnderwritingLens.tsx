@@ -6,6 +6,7 @@ import { ComparisonView } from "./ComparisonView";
 import { DealCharts } from "./DealCharts";
 import { DealHeader } from "./DealHeader";
 import { DealScorecard } from "./DealScorecard";
+import { getBarColor } from "./DealScorecard";
 import { KeyMetrics } from "./KeyMetrics";
 import { RisksOpportunities } from "./RisksOpportunities";
 import { WhatMovesTheDeal } from "./WhatMovesTheDeal";
@@ -176,8 +177,26 @@ export default function DealUnderwritingLens({ onScreenChange }: DealUnderwritin
                 onClick={() => openDeal(deal.id)}
                 className="w-full rounded-[28px] border border-[#d8e2f1] bg-white px-10 py-8 text-left transition hover:border-[#5c74ea] hover:bg-[#f7faff]"
               >
-                <p className="text-4xl font-semibold tracking-[-0.03em] text-[#102149]">{deal.name}</p>
-                <p className="mt-2 text-xl text-[#587091]">{deal.location || deal.address || "-"}</p>
+                <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-4xl font-semibold tracking-[-0.03em] text-[#102149]">{deal.name}</p>
+                    <p className="mt-2 text-xl text-[#587091]">{deal.location || deal.address || "-"}</p>
+                  </div>
+
+                  <div className="w-full max-w-[320px] shrink-0 lg:ml-8">
+                    <div className="mb-2 flex items-center justify-between gap-4 text-lg">
+                      <span className="font-semibold text-[#102149]">Overall Deal Score</span>
+                      <span className="text-3xl font-bold text-[#102149]">{deal.scores.overall}</span>
+                    </div>
+                    <div className="h-4 rounded-full bg-[#edf2fb]">
+                      <div
+                        className={`h-4 rounded-full ${getBarColor(deal.scores.overall)}`}
+                        style={{ width: `${deal.scores.overall}%` }}
+                      />
+                    </div>
+                  </div>
+                </div>
+
                 <div className="mt-6 flex flex-wrap items-center gap-4">
                   {[
                     { label: "Memorandum", ready: deal.docStatus?.memorandum },
