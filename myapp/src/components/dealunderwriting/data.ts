@@ -237,6 +237,10 @@ type DealDataState = {
   refresh: () => Promise<void>;
 };
 
+type DealUnderwritingMixedResponse =
+  | DemoDealUnderwritingRecord
+  | DealUnderwritingApiRecord;
+
 const defaultDealIds = ["deal-a", "deal-b", "deal-c"];
 const monthOrder = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -866,15 +870,48 @@ function hasDealUnderwritingData(record: DealUnderwritingApiRecord) {
   );
 }
 
+function isMappedDealRecord(
+  record: DealUnderwritingMixedResponse
+): record is DealUnderwritingApiRecord {
+  return typeof (record as DealUnderwritingApiRecord)?.propertyName === "string";
+}
+
+function isRawDemoDealRecord(
+  record: DealUnderwritingMixedResponse
+): record is DemoDealUnderwritingRecord {
+  return typeof (record as DemoDealUnderwritingRecord)?.property_name === "string";
+}
+
 async function loadUserDealUnderwriting(propertyNames?: string[]) {
   const payload = propertyNames?.length ? { property_names: propertyNames } : {};
   const response = await authClient.post<{ data?: DealUnderwritingApiRecord[] }>("/api/dealunderwriting_demouser/", payload);
   return response.data?.data ?? [];
 }
 
-async function loadDemoDealUnderwriting() {
-  const response = await authClient.get<DemoDealUnderwritingRecord[]>("/api/deal_underwriting_data/");
-  return Array.isArray(response.data) ? response.data : [];
+async function loadDemoDealUnderwriting(): Promise<Deal[]> {
+  const response = await authClient.get<
+    DealUnderwritingMixedResponse[] | { data?: DealUnderwritingMixedResponse[] }
+  >("/api/deal_underwriting_data/");
+
+  const payload = Array.isArray(response.data)
+    ? response.data
+    : Array.isArray(response.data?.data)
+      ? response.data.data
+      : [];
+
+  return payload
+    .map((record, index) => {
+      if (isMappedDealRecord(record)) {
+        return mapUserApiRecordToDeal(record, index);
+      }
+
+      if (isRawDemoDealRecord(record)) {
+        return buildDemoDeal(record, index);
+      }
+
+      return null;
+    })
+    .filter((deal): deal is Deal => Boolean(deal));
 }
 
 export function useDealUnderwritingData(_requestedIds: string[] = []): DealDataState {
@@ -887,8 +924,8 @@ export function useDealUnderwritingData(_requestedIds: string[] = []): DealDataS
     setError(null);
     try {
       if (isDemoMode()) {
-        const demoRecords = await loadDemoDealUnderwriting();
-        setDeals(demoRecords.map((record, index) => buildDemoDeal(record, index)));
+        const demoDeals = await loadDemoDealUnderwriting();
+        setDeals(demoDeals);
       } else {
         const records = await loadUserDealUnderwriting();
         setDeals(records.filter(hasDealUnderwritingData).map((record, index) => mapUserApiRecordToDeal(record, index)));
