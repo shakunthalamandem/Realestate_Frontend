@@ -12,12 +12,14 @@ import { WhatMovesTheDeal } from "./WhatMovesTheDeal";
 import { getDealById, useDealUnderwritingData } from "./data";
 import PfDealUnderwritingUpload from "./pf_dealunderwriting_upload";
 import { Search } from "lucide-react";
+import { isDemoMode } from "@/lib/demo-mode";
 
 interface DealUnderwritingLensProps {
   onScreenChange?: (screen: "library" | "upload" | "detail") => void;
 }
 
 export default function DealUnderwritingLens({ onScreenChange }: DealUnderwritingLensProps) {
+  const demoMode = isDemoMode();
   const [activeDealId, setActiveDealId] = useState("");
   const [activeView, setActiveView] = useState<"deal" | "compare">("deal");
   const [compareIds, setCompareIds] = useState<string[]>([]);
@@ -112,19 +114,21 @@ export default function DealUnderwritingLens({ onScreenChange }: DealUnderwritin
       <section className="mx-auto max-w-[1280px] rounded-[32px] border border-[#d8e2f1] bg-white px-10 py-12 text-[#102149] shadow-[0_24px_70px_rgba(15,23,42,0.08)]">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.45em] text-[#b48a41]">Deal Lens</p>
-            <h1 className="mt-3 text-5xl font-bold tracking-[-0.04em]">Property Intelligence Library</h1>
+            {/* <p className="text-xs font-semibold uppercase tracking-[0.45em] text-[#b48a41]">Deal Lens</p> */}
+            <h1 className="mt-3 text-5xl font-bold tracking-[-0.04em]">Deal Lens</h1>
             <p className="mt-4 max-w-3xl text-lg text-[#587091]">
               No property data available for underwriting.
             </p>
           </div>
-          <button
-            type="button"
-            onClick={() => setScreen("upload")}
-            className="rounded-full bg-[linear-gradient(90deg,#a54cf5,#5d6df9)] px-7 py-4 text-lg font-semibold text-white shadow-[0_18px_45px_rgba(118,90,255,0.35)] transition hover:scale-[1.02]"
-          >
-            + Add Property
-          </button>
+          {!demoMode ? (
+            <button
+              type="button"
+              onClick={() => setScreen("upload")}
+              className="rounded-full bg-[linear-gradient(90deg,#a54cf5,#5d6df9)] px-7 py-4 text-lg font-semibold text-white shadow-[0_18px_45px_rgba(118,90,255,0.35)] transition hover:scale-[1.02]"
+            >
+              + Add Property
+            </button>
+          ) : null}
         </div>
       </section>
     );
@@ -135,19 +139,21 @@ export default function DealUnderwritingLens({ onScreenChange }: DealUnderwritin
       <section className="mx-auto max-w-[1280px] rounded-[32px] border border-[#d8e2f1] bg-white px-10 py-12 text-[#102149] shadow-[0_24px_70px_rgba(15,23,42,0.08)]">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.45em] text-[#b48a41]">Deal Lens</p>
-            <h1 className="mt-3 text-5xl font-bold tracking-[-0.04em]">Property Intelligence Library</h1>
+            {/* <p className="text-xs font-semibold uppercase tracking-[0.45em] text-[#b48a41]">Deal Lens</p> */}
+            <h1 className="mt-3 text-5xl font-bold tracking-[-0.04em]">Deal Lens</h1>
             <p className="mt-4 max-w-3xl text-lg text-[#587091]">
               Click a property to preview its stored memorandum, T12, and rent roll responses.
             </p>
           </div>
-          <button
-            type="button"
-            onClick={() => setScreen("upload")}
-            className="rounded-full bg-[linear-gradient(90deg,#a54cf5,#5d6df9)] px-7 py-4 text-lg font-semibold text-white shadow-[0_18px_45px_rgba(118,90,255,0.35)] transition hover:scale-[1.02]"
-          >
-            + Add Property
-          </button>
+          {!demoMode ? (
+            <button
+              type="button"
+              onClick={() => setScreen("upload")}
+              className="rounded-full bg-[linear-gradient(90deg,#a54cf5,#5d6df9)] px-7 py-4 text-lg font-semibold text-white shadow-[0_18px_45px_rgba(118,90,255,0.35)] transition hover:scale-[1.02]"
+            >
+              + Add Property
+            </button>
+          ) : null}
         </div>
 
         <div className="relative mt-10">

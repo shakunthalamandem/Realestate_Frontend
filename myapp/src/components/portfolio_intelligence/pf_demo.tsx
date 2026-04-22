@@ -271,7 +271,7 @@ const PfDemo: React.FC = () => {
                   }`}
               >
                 <FileText className="h-4 w-4" />
-                <span className="flex-1">Deal Underwriting Lens</span>
+                <span className="flex-1">Deal Lens</span>
               </button>
             </nav>
           </aside>
