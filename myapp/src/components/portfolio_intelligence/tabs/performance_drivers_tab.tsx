@@ -10,6 +10,7 @@ import {
   Legend,
   ChartOptions,
 } from "chart.js";
+import { isDemoMode } from "@/lib/demo-mode";
 import { PerformanceDriversPayload } from "../portfolio_analytics_types";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend);
@@ -125,19 +126,21 @@ const PerformanceDriversTab: React.FC<{ data?: PerformanceDriversPayload }> = ({
           </p>
         </div>
 
-        <div className="rounded-2xl border border-blue-200 bg-blue-50 p-5">
-          <p className="text-m uppercase tracking-wide text-center text-indigo-700">
-            NOI Growth
-          </p>
-          <p className="mt-2 text-2xl font-semibold text-center text-slate-900">
-            {derived?.noi_growth_pct !== undefined && derived?.noi_growth_pct !== null
-              ? `${(derived.noi_growth_pct * 100).toFixed(1)}%`
-              : "-"}
-          </p>
-          <p className="text-sm text-center text-slate-500">
-            Period-over-period growth
-          </p>
-        </div>
+        {!isDemoMode() ? (
+          <div className="rounded-2xl border border-blue-200 bg-blue-50 p-5">
+            <p className="text-m uppercase tracking-wide text-center text-indigo-700">
+              NOI Growth
+            </p>
+            <p className="mt-2 text-2xl font-semibold text-center text-slate-900">
+              {derived?.noi_growth_pct !== undefined && derived?.noi_growth_pct !== null
+                ? `${(derived.noi_growth_pct * 100).toFixed(1)}%`
+                : "-"}
+            </p>
+            <p className="text-sm text-center text-slate-500">
+              Period-over-period growth
+            </p>
+          </div>
+        ) : null}
 
       </div>
 

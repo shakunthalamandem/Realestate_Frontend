@@ -181,6 +181,8 @@ const formatPercent = (value?: number | null): string => {
   return `${(value * 100).toFixed(1)}%`;
 };
 
+const formatWholeUnits = (value: number): string => Math.round(value).toLocaleString("en-US");
+
 const formatYoY = (value?: number | null): string | undefined => {
   if (!isValidNumber(value)) return undefined;
 
@@ -210,6 +212,22 @@ const baseBarOptions = {
     tooltip: {
       callbacks: {
         label: (context: any) => `${context.dataset.label}: ${context.raw} units`,
+      },
+    },
+  },
+};
+
+const rentComparisonBarOptions: ChartOptions<"bar"> = {
+  ...baseBarOptions,
+  plugins: {
+    ...baseBarOptions.plugins,
+    tooltip: {
+      ...baseBarOptions.plugins.tooltip,
+      callbacks: {
+        label: (context: any) => {
+          const value = typeof context.raw === "number" ? formatCurrency(context.raw) : context.raw;
+          return `${context.dataset.label}: ${value} units`;
+        },
       },
     },
   },
@@ -788,7 +806,7 @@ const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext
               </div>
               {rentComparisonChartData ? (
                 <div className="mt-4 h-72">
-                  <Bar data={rentComparisonChartData} options={baseBarOptions} />
+                  <Bar data={rentComparisonChartData} options={rentComparisonBarOptions} />
                 </div>
               ) : (
                 <p className="mt-3 text-sm text-slate-400">Rent comparison unavailable</p>
