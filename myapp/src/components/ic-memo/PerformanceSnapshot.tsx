@@ -148,7 +148,7 @@ const PerformanceSnapshot = ({ data }: { data?: IcPerformanceSnapshotData | null
       <SectionHeader number="03" title="Performance Snapshot" />
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
         <div className="rounded-xl border bg-white p-5 lg:col-span-2">
-          <div className="h-[320px]">
+          <div className="h-[400px]">
             <Bar data={trendChartData} options={trendChartOptions} />
           </div>
           <div className="mt-4 flex items-center gap-2 border-t pt-3">
