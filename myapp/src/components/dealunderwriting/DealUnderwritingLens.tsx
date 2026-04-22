@@ -24,9 +24,8 @@ export default function DealUnderwritingLens({ onScreenChange }: DealUnderwritin
   const [screen, setScreen] = useState<"library" | "upload" | "detail">("library");
   const [search, setSearch] = useState("");
   const [pendingPropertyName, setPendingPropertyName] = useState("");
-  const { deals, loading, error, refresh } = useDealUnderwritingData(
-    [activeDealId, ...compareIds].filter(Boolean)
-  );
+
+  const { deals, loading, error, refresh } = useDealUnderwritingData();
 
   const activeDeal = getDealById(deals, activeDealId) ?? deals[0];
 
@@ -38,10 +37,13 @@ export default function DealUnderwritingLens({ onScreenChange }: DealUnderwritin
 
   useEffect(() => {
     if (!pendingPropertyName) return;
+
     const matchedDeal = deals.find(
       (deal) => deal.name.trim().toLowerCase() === pendingPropertyName.trim().toLowerCase()
     );
+
     if (!matchedDeal) return;
+
     setActiveDealId(matchedDeal.id);
     setPendingPropertyName("");
     setScreen("detail");
@@ -68,18 +70,29 @@ export default function DealUnderwritingLens({ onScreenChange }: DealUnderwritin
   const compareDeals = compareIds
     .map((id) => getDealById(deals, id))
     .filter((deal): deal is NonNullable<typeof deal> => Boolean(deal));
+
   const sidebarDeals = activeView === "compare" ? compareDeals : activeDeal ? [activeDeal] : [];
 
   const filteredDeals = deals.filter((deal) =>
-    `${deal.name} ${deal.location} ${deal.submarket ?? ""}`.toLowerCase().includes(search.trim().toLowerCase())
+    `${deal.name} ${deal.location} ${deal.submarket ?? ""}`
+      .toLowerCase()
+      .includes(search.trim().toLowerCase())
   );
 
   if (loading) {
-    return <div className="flex min-h-[60vh] items-center justify-center rounded-[28px] bg-[#f8fbff] text-[#62708d]">Loading deal underwriting data...</div>;
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center rounded-[28px] bg-[#f8fbff] text-[#62708d]">
+        Loading deal underwriting data...
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="flex min-h-[60vh] items-center justify-center rounded-[28px] bg-[#f8fbff] text-[#b42318]">{error}</div>;
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center rounded-[28px] bg-[#f8fbff] text-[#b42318]">
+        {error}
+      </div>
+    );
   }
 
   if (screen === "upload") {
@@ -89,8 +102,6 @@ export default function DealUnderwritingLens({ onScreenChange }: DealUnderwritin
         onSubmitted={async (propertyName) => {
           setPendingPropertyName(propertyName);
           await refresh();
-          setActiveDealId(propertyName.trim().toLowerCase().replace(/\s+/g, "-"));
-          setScreen("detail");
         }}
       />
     );
@@ -168,7 +179,9 @@ export default function DealUnderwritingLens({ onScreenChange }: DealUnderwritin
                     { label: "Rent Roll", ready: deal.docStatus?.rentRoll },
                   ].map((item) => (
                     <div key={item.label} className="flex items-center gap-3">
-                      <span className="text-sm font-semibold uppercase tracking-[0.12em] text-[#102149]">{item.label}</span>
+                      <span className="text-sm font-semibold uppercase tracking-[0.12em] text-[#102149]">
+                        {item.label}
+                      </span>
                       <span
                         className={
                           item.ready
@@ -208,12 +221,20 @@ export default function DealUnderwritingLens({ onScreenChange }: DealUnderwritin
         <div className="mx-auto max-w-[1480px] px-8 py-10 pb-28 2xl:px-10">
           {activeView === "deal" ? (
             <>
-              <DealHeader deal={activeDeal} isInCompare={compareIds.includes(activeDeal.id)} onAddCompare={toggleCompare} />
+              <DealHeader
+                deal={activeDeal}
+                isInCompare={compareIds.includes(activeDeal.id)}
+                onAddCompare={toggleCompare}
+              />
               <AISnapshot deal={activeDeal} />
               <KeyMetrics deal={activeDeal} />
               <div className="mb-6 grid gap-4 xl:grid-cols-3">
-                <div className="xl:col-span-1"><DealScorecard deal={activeDeal} /></div>
-                <div className="xl:col-span-2"><WhatMovesTheDeal deal={activeDeal} /></div>
+                <div className="xl:col-span-1">
+                  <DealScorecard deal={activeDeal} />
+                </div>
+                <div className="xl:col-span-2">
+                  <WhatMovesTheDeal deal={activeDeal} />
+                </div>
               </div>
               <DealCharts deal={activeDeal} />
               <RisksOpportunities deal={activeDeal} />

@@ -1,87 +1,79 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { authClient } from "@/lib/auth-api";
 import { isDemoMode } from "@/lib/demo-mode";
-import type { IcMemoTemplateData, IcPropertyCardData } from "@/components/ic-memo/types";
 
 export type DealSignal = "Strong Buy" | "Buy" | "Neutral" | "Avoid";
 
-type TrendPoint = { month?: string; value?: number };
-type RevenueExpensePoint = { month?: string; revenue?: number; expense?: number };
 type ChartInsightRecord = { insight?: string; impact?: string; drives?: string };
 
-type PropertyResponse = {
-  kpis?: {
-    noi?: number;
-    noiMargin?: number;
-    revenue?: number;
-    rentPerSqft?: number;
-    rent_per_sqft?: number;
-    expenseRatio?: number;
-    occupancy?: number;
-    lossToLease?: number;
-    markToMarket?: number;
-    renewalRate?: number;
-  };
-  trends?: {
-    noiTrend12Month?: TrendPoint[];
-    revenueVsExpense?: RevenueExpensePoint[];
-  };
-  property?: {
-    units?: number;
-    location?: string;
+type DemoDealUnderwritingRecord = {
+  id?: number;
+  property_name?: string;
+  memorandum?: {
+    location?: string | null;
+    siteSize?: string | null;
     yearBuilt?: number | null;
-  };
-  intelligence?: {
-    overview?: string;
-    aiGuidedRecommendations?: string[];
-    riskAlert?: {
-      riskScore?: number;
-      riskDrivers?: string[];
-      revenueAtRisk?: number;
-      whyThisMatters?: string;
-    };
-    marketMomentum?: { whyThisMatters?: string };
-    reviewIntelligence?: {
-      avgRating?: number;
-      rating?: number;
-      ratingScore?: number;
-    };
-  };
-  rentComparison?: Array<{ unitType?: string; market?: number; inPlace?: number }> | { lossToLeasePercent?: number | null };
-  leaseExpirationLadder?: Array<{ month?: string; units?: number }>;
-};
-
-type PropertyRecord = {
-  property_name?: string;
-  submarket?: string;
-  region?: string;
-  address?: string;
-  location?: string;
-  class_type?: string;
-  units?: number | string;
-  occupancy?: string | number;
-  rent_per_sqft?: number | string;
-  property_response?: PropertyResponse | null;
-};
-
-type AiRentResponse = {
-  dashboard?: {
-    charts?: {
-      inPlaceVsRecommended?: Array<{ unitType?: string; inPlace?: number; market?: number; recommended?: number }>;
-    };
-    basic_info?: {
-      revenueAtRisk?: number;
-      avgrenewalrate?: number;
-      mtmcapturepotential?: number;
-      totalprojectedrevenuelift?: number;
-    };
-    unitSummary?: Array<{ unitType?: string; units?: string }>;
-  };
-};
-
-type AiRentRecord = {
-  property_name?: string;
-  ai_rent_intelligence_response?: AiRentResponse | null;
+    parkingSpace?: string | null;
+  } | null;
+  t12?: {
+    NOI?: string | number | null;
+    "NOI Margin"?: string | number | null;
+    Taxes?: string | number | null;
+    Grounds?: string | number | null;
+    Payroll?: string | number | null;
+    Renting?: string | number | null;
+    Insurance?: string | number | null;
+    Utilities?: string | number | null;
+    Maintenance?: string | number | null;
+    Administrative?: string | number | null;
+    "Management Fees"?: string | number | null;
+    "Professional Fees"?: string | number | null;
+    "Operating Expenses"?: string | number | null;
+    "Operating Expense Ratio"?: string | number | null;
+    "Revenue per Unit"?: string | number | null;
+    "Expense per Unit"?: string | number | null;
+    "Revenue per Month"?: Record<string, string | number> | null;
+    "Expense per Month"?: Record<string, string | number> | null;
+    "NOI per Month"?: Record<string, string | number> | null;
+    Vacancy?: Record<string, string | number> | null;
+    "Vacancy per Month"?: Record<string, string | number> | null;
+    "Gross Potential Rent"?: string | number | null;
+    "Gross Potential Rent Monthly"?: Record<string, string | number> | null;
+    "Gross Potential Rent per Month"?: Record<string, string | number> | null;
+    "Expense Categories"?: {
+      current?: Record<string, string | number> | null;
+      monthly?: Record<string, Record<string, string | number>> | null;
+    } | null;
+  } | null;
+  rent_roll?: {
+    "Avg Tenure"?: string | null;
+    "Average Occupancy"?: string | number | null;
+    "Vacancy Loss"?: string | number | null;
+    "Projected Revenue Lift"?: string | number | null;
+    "Revenue at Risk"?: string | number | null;
+    "Revenue at Risk (60d)"?: string | number | null;
+    "Revenue at Risk (90d)"?: string | number | null;
+    "Avg Renewal Rate"?: string | number | null;
+    "Renewal Rate"?: string | number | null;
+    "MTM Capture"?: {
+      "Loss to Lease"?: string | number | null;
+      "MTM Units"?: string | number | null;
+      "MTM Market Rent"?: string | number | null;
+      "MTM In-Place Rent"?: string | number | null;
+    } | null;
+    validation?: {
+      total_units?: number | null;
+      vacant_units?: number | null;
+      occupied_units?: number | null;
+    } | null;
+    "Lease Expiration Ladder"?: Record<string, string | number> | null;
+    "Lease Expiration Floorplan"?: Array<Record<string, string | number>> | null;
+    "In Place vs Market Rent"?: Array<Record<string, string | number>> | null;
+    "In Place vs Recommended Rent"?: Array<Record<string, string | number>> | null;
+    "Raw Rent Roll Rows"?: Array<Record<string, unknown>> | null;
+  } | null;
+  created_at?: string;
+  updated_at?: string;
 };
 
 type DealUnderwritingApiRecord = {
@@ -159,8 +151,6 @@ type DealUnderwritingApiRecord = {
     occupancyVsVacancyInsights?: ChartInsightRecord;
   };
   sourceOverview?: string | null;
-  dealDocumentsUploadedAt?: string | null;
-  deal_documents_uploaded_at?: string | null;
   dealMemorandumResponse?: unknown;
   deal_memorandum_response?: unknown;
   dealT12Response?: unknown;
@@ -234,13 +224,24 @@ export interface Deal {
     t12: boolean;
     rentRoll: boolean;
   };
-  chartInsights: Record<"tenantMix" | "rentVsMarket" | "noiProjection" | "revenueVsExpenses" | "expenseBreakdown" | "expenseDistribution" | "leaseExpirations" | "occupancyVacancy", { insight: string; impact: string; drives: string }>;
+  chartInsights: Record<
+    "tenantMix" | "rentVsMarket" | "noiProjection" | "revenueVsExpenses" | "expenseBreakdown" | "expenseDistribution" | "leaseExpirations" | "occupancyVacancy",
+    { insight: string; impact: string; drives: string }
+  >;
 }
 
-type DealDataState = { deals: Deal[]; loading: boolean; error: string | null; refresh: () => Promise<void> };
+type DealDataState = {
+  deals: Deal[];
+  loading: boolean;
+  error: string | null;
+  refresh: () => Promise<void>;
+};
 
 const defaultDealIds = ["deal-a", "deal-b", "deal-c"];
+const monthOrder = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
 const clamp = (value: number, min = 0, max = 100) => Math.min(max, Math.max(min, value));
+
 const toNumber = (value: unknown, fallback = 0) => {
   if (typeof value === "number" && !Number.isNaN(value)) return value;
   if (typeof value === "string") {
@@ -249,25 +250,22 @@ const toNumber = (value: unknown, fallback = 0) => {
   }
   return fallback;
 };
-const toPercent = (value: unknown, fallback = 0) => {
-  const parsed = toNumber(value, fallback);
-  return parsed <= 1 ? parsed * 100 : parsed;
-};
 
-function getKpiNumber(
-  kpiCards: Record<string, unknown> | undefined,
-  keys: string[],
-  fallback = 0
-) {
-  if (!kpiCards) return fallback;
-  for (const key of keys) {
-    const value = kpiCards[key];
-    if (value !== undefined && value !== null && value !== "") {
-      return toNumber(value, fallback);
-    }
+const parseLooseNumber = (value: unknown, fallback = 0) => {
+  if (typeof value === "number" && !Number.isNaN(value)) return value;
+  if (typeof value === "string") {
+    const cleaned = value.replace(/[^0-9.-]/g, "");
+    if (!cleaned) return fallback;
+    const parsed = Number(cleaned);
+    return Number.isNaN(parsed) ? fallback : parsed;
   }
   return fallback;
-}
+};
+
+const toPercent = (value: unknown, fallback = 0) => {
+  const parsed = parseLooseNumber(value, fallback);
+  return parsed <= 1 ? parsed * 100 : parsed;
+};
 
 const createDealId = (value: string, index: number) =>
   value?.trim().toLowerCase().replace(/\s+/g, "-") || defaultDealIds[index] || `deal-${index + 1}`;
@@ -303,24 +301,41 @@ function getConfidence(overall: number, riskLevel: number) {
   return clamp(Math.round(overall - riskLevel * 0.15 + 15));
 }
 
-function getIcPropertyCard(memoData: IcMemoTemplateData | null, propertyName: string) {
-  const properties = memoData?.propertyIntelligence?.properties ?? [];
-  return properties.find((property) => property.name?.trim().toLowerCase() === propertyName.trim().toLowerCase());
-}
-
-function deriveScores(propertyResponse: PropertyResponse | null | undefined, aiRent: AiRentResponse | null | undefined) {
+function deriveScores(
+  propertyResponse: {
+    kpis?: {
+      noi?: number;
+      noiMargin?: number;
+      revenue?: number;
+      expenseRatio?: number;
+      occupancy?: number;
+      lossToLease?: number;
+      markToMarket?: number;
+    };
+  } | null | undefined,
+  aiRent:
+    | {
+        dashboard?: {
+          basic_info?: {
+            revenueAtRisk?: number;
+            avgrenewalrate?: number;
+            mtmcapturepotential?: number;
+            totalprojectedrevenuelift?: number;
+          };
+        };
+      }
+    | null
+    | undefined
+) {
   const kpis = propertyResponse?.kpis;
-  const riskAlert = propertyResponse?.intelligence?.riskAlert;
-  const review = propertyResponse?.intelligence?.reviewIntelligence;
   const occupancy = toPercent(kpis?.occupancy);
   const noiMargin = toPercent(kpis?.noiMargin);
   const expenseRatio = toPercent(kpis?.expenseRatio);
   const lossToLease = toPercent(kpis?.lossToLease);
-  const reviewRating = toNumber(review?.ratingScore ?? review?.avgRating ?? review?.rating, 3.5);
-  const riskScore = toNumber(riskAlert?.riskScore, 50);
+  const riskScore = 50;
   const mtm = toNumber(aiRent?.dashboard?.basic_info?.mtmcapturepotential ?? kpis?.markToMarket, 0);
   const totalLift = toNumber(aiRent?.dashboard?.basic_info?.totalprojectedrevenuelift, 0);
-  const marketPosition = clamp(Math.round(occupancy * 0.45 + noiMargin * 0.2 + reviewRating * 10 + 15));
+  const marketPosition = clamp(Math.round(occupancy * 0.45 + noiMargin * 0.2 + 50));
   const cashFlowStability = clamp(Math.round(occupancy * 0.55 + noiMargin * 0.35 - expenseRatio * 0.1 + 10));
   const valueAddPotential = clamp(Math.round(lossToLease * 1.6 + Math.min(mtm / 10000, 25) + Math.min(totalLift / 30000, 25)));
   const riskLevel = clamp(Math.round(riskScore || 100 - occupancy + expenseRatio * 0.4));
@@ -328,100 +343,16 @@ function deriveScores(propertyResponse: PropertyResponse | null | undefined, aiR
   return { marketPosition, cashFlowStability, valueAddPotential, riskLevel, overall };
 }
 
-function buildTenantMix(aiRent: AiRentResponse | null | undefined) {
-  const unitSummary = aiRent?.dashboard?.unitSummary ?? [];
-  const numericUnits = unitSummary.map((item) => ({ name: item.unitType || "Unit", units: toNumber(item.units) })).filter((item) => item.units > 0);
-  const totalUnits = numericUnits.reduce((sum, item) => sum + item.units, 0);
-  if (!totalUnits) return [{ name: "1BR", percentage: 40, count: 40 }, { name: "2BR", percentage: 45, count: 45 }, { name: "3BR", percentage: 15, count: 15 }];
-  return numericUnits.map((item) => ({ name: item.name, percentage: Math.round((item.units / totalUnits) * 1000) / 10, count: item.units }));
-}
-
-function buildRentVsMarket(propertyResponse: PropertyResponse | null | undefined, aiRent: AiRentResponse | null | undefined) {
-  const rentComparison = propertyResponse?.rentComparison;
-  if (Array.isArray(rentComparison) && rentComparison.length) {
-    return rentComparison.map((item) => ({ type: item.unitType || "Unit", current: toNumber(item.inPlace), market: toNumber(item.market) }));
-  }
-  const inPlaceChart = aiRent?.dashboard?.charts?.inPlaceVsRecommended ?? [];
-  if (inPlaceChart.length) {
-    return inPlaceChart.map((item) => ({ type: item.unitType || "Unit", current: toNumber(item.inPlace), market: toNumber(item.market || item.recommended) }));
-  }
-  return [{ type: "1BR", current: 1400, market: 1500 }, { type: "2BR", current: 1650, market: 1800 }];
-}
-
-function buildNoiProjection(propertyResponse: PropertyResponse | null | undefined, currentNoi: number) {
-  const trend = propertyResponse?.trends?.noiTrend12Month ?? [];
-  if (trend.length >= 4) {
-    const recent = trend.slice(-4);
-    return recent.map((point, index) => ({ year: String(new Date().getFullYear() + index), noi: toNumber(point.value, currentNoi) }));
-  }
-  return Array.from({ length: 5 }, (_, index) => ({
-    year: String(new Date().getFullYear() + index),
-    noi: Math.round(currentNoi * (1 + index * 0.06)),
-  }));
-}
-
-function buildRevenueVsExpenses(propertyResponse: PropertyResponse | null | undefined, revenue: number, expenseRatio: number) {
-  const points = propertyResponse?.trends?.revenueVsExpense ?? [];
-  if (points.length) {
-    return points.map((point) => ({ month: point.month || "", revenue: toNumber(point.revenue), expenses: toNumber(point.expense) }));
-  }
-  const monthlyRevenue = revenue / 12;
-  const monthlyExpense = monthlyRevenue * (expenseRatio / 100);
-  return ["Jan", "Feb", "Mar", "Apr", "May", "Jun"].map((month, index) => ({
-    month,
-    revenue: Math.round(monthlyRevenue * (0.97 + index * 0.01)),
-    expenses: Math.round(monthlyExpense * (0.98 + index * 0.008)),
-  }));
-}
-
-function buildExpenseBreakdown(totalExpenses: number) {
-  const weights = [["Payroll", 0.32], ["Maintenance", 0.2], ["Utilities", 0.15], ["Insurance", 0.12], ["Property Tax", 0.18], ["Admin", 0.03]] as const;
-  return weights.map(([category, weight]) => ({ category, amount: Math.round(totalExpenses * weight), percent: Math.round(weight * 1000) / 10 }));
-}
-
-function buildLeaseExpirations(propertyResponse: PropertyResponse | null | undefined, units: number) {
-  const ladder = propertyResponse?.leaseExpirationLadder ?? [];
-  if (ladder.length) return ladder.map((item) => ({ year: item.month || "Period", units: toNumber(item.units) }));
-  return [
-    { year: "2024", units: Math.round(units * 0.18) },
-    { year: "2025", units: Math.round(units * 0.26) },
-    { year: "2026", units: Math.round(units * 0.22) },
-    { year: "2027", units: Math.round(units * 0.14) },
-    { year: "2028", units: Math.round(units * 0.08) },
-  ];
-}
-
-function buildOccupancyHistory(occupancy: number) {
-  return ["Jan", "Feb", "Mar", "Apr", "May", "Jun"].map((month, index) => {
-    const occ = clamp(Math.round((occupancy - 1 + (index % 3)) * 10) / 10, 75, 100);
-    return { month, occupancy: occ, vacancy: Math.round((100 - occ) * 10) / 10 };
-  });
-}
-
-function buildRisks(propertyResponse: PropertyResponse | null | undefined, icPropertyCard: IcPropertyCardData | undefined, riskLevel: number, revenueAtRisk: number) {
-  const riskDrivers = propertyResponse?.intelligence?.riskAlert?.riskDrivers ?? [];
-  const icRisks = icPropertyCard?.risks?.filter(Boolean) ?? [];
-  const titles = [...riskDrivers, ...icRisks].slice(0, 3);
-  if (!titles.length) titles.push("Lease Rollover Exposure", "Expense Pressure");
-  return titles.map((title, index) => ({
-    title,
-    severity: getSeverity(riskLevel + index * 5),
-    impact: index === 0 ? `-${formatCompactCurrencyValue(revenueAtRisk || 120000)} revenue at risk` : "Monitor operational downside",
-    explanation: propertyResponse?.intelligence?.riskAlert?.whyThisMatters || "Derived from existing property intelligence and operating signals.",
-  }));
-}
-
-function buildOpportunities(propertyResponse: PropertyResponse | null | undefined, icPropertyCard: IcPropertyCardData | undefined, totalLift: number, markToMarket: number) {
-  const actions = propertyResponse?.intelligence?.aiGuidedRecommendations ?? [];
-  const icOpps = icPropertyCard?.opportunities?.filter(Boolean) ?? [];
-  const titles = [...actions, ...icOpps].slice(0, 3);
-  if (!titles.length) titles.push("Mark-to-Market Opportunity", "Renewal Pricing Optimization");
-  return titles.map((title, index) => ({
-    title,
-    severity: index === 0 ? "High" : "Medium",
-    impact: index === 0 ? `+${formatCompactCurrencyValue(totalLift || markToMarket || 100000)} upside` : "Incremental NOI improvement",
-    explanation: propertyResponse?.intelligence?.marketMomentum?.whyThisMatters || "Built from AI rent, property intelligence, and memo recommendations.",
-  }));
+function mergeChartInsight(
+  fallback: { insight: string; impact: string; drives: string },
+  override?: ChartInsightRecord | null
+) {
+  if (!override) return fallback;
+  return {
+    insight: override.insight?.trim() || fallback.insight,
+    impact: override.impact?.trim() || fallback.impact,
+    drives: override.drives?.trim() || fallback.drives,
+  };
 }
 
 function buildChartInsights(propertyName: string, occupancy: number, rentGap: number, noiMargin: number) {
@@ -437,201 +368,382 @@ function buildChartInsights(propertyName: string, occupancy: number, rentGap: nu
   };
 }
 
-function mergeChartInsight(
-  fallback: { insight: string; impact: string; drives: string },
-  override?: ChartInsightRecord | null
-) {
-  if (!override) return fallback;
-  return {
-    insight: override.insight?.trim() || fallback.insight,
-    impact: override.impact?.trim() || fallback.impact,
-    drives: override.drives?.trim() || fallback.drives,
-  };
-}
-
 function formatCompactCurrencyValue(value: number) {
-  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", notation: "compact", maximumFractionDigits: 1 }).format(value);
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    notation: "compact",
+    maximumFractionDigits: 1,
+  }).format(value);
 }
 
 function getDealDocStatus(record: DealUnderwritingApiRecord) {
+  const hasMemorandumData = Boolean(
+    record.dealMemorandumResponse ??
+    record.deal_memorandum_response ??
+    record.header?.locationAddress ??
+    record.header?.locationSubtitle ??
+    record.header?.yearBuilt ??
+    record.address ??
+    record.location
+  );
+
+  const hasT12Data = Boolean(
+    record.dealT12Response ??
+    record.deal_t12_response ??
+    record.kpiCards ??
+    record.performanceAnalytics?.revenueVsExpenses?.length ??
+    record.performanceAnalytics?.expenseBreakdown?.length ??
+    record.performanceAnalytics?.expenseDistribution?.length
+  );
+
+  const hasRentRollData = Boolean(
+    record.dealRentrollResponse ??
+    record.deal_rentroll_response ??
+    record.performanceAnalytics?.rentVsMarket?.length ??
+    record.performanceAnalytics?.leaseExpiration?.length ??
+    record.performanceAnalytics?.tenantMix?.length ??
+    record.performanceAnalytics?.occupancyVsVacancy?.length ??
+    record.performanceAnalytics?.leaseExpirationFloorplan?.data?.length
+  );
+
   return {
-    memorandum: Boolean(
-      record.header?.yearBuilt ||
-      record.header?.locationAddress ||
-      record.address
-    ),
-    t12: Boolean(
-      record.kpiCards ||
-      record.performanceAnalytics?.revenueVsExpenses?.length ||
-      record.performanceAnalytics?.expenseBreakdown?.length ||
-      record.performanceAnalytics?.expenseDistribution?.length
-    ),
-    rentRoll: Boolean(
-      record.performanceAnalytics?.rentVsMarket?.length ||
-      record.performanceAnalytics?.leaseExpiration?.length ||
-      record.performanceAnalytics?.tenantMix?.length ||
-      record.performanceAnalytics?.occupancyVsVacancy?.length ||
-      record.performanceAnalytics?.leaseExpirationFloorplan?.data?.length
-    ),
+    memorandum: hasMemorandumData,
+    t12: hasT12Data,
+    rentRoll: hasRentRollData,
   };
 }
 
-function buildDemoDeal(property: PropertyRecord, aiRentRecord: AiRentRecord | undefined, icMemoData: IcMemoTemplateData | null, index: number): Deal {
-  const propertyResponse = property.property_response ?? null;
-  const aiRent = aiRentRecord?.ai_rent_intelligence_response ?? null;
-  const kpis = propertyResponse?.kpis;
-  const propertyMeta = propertyResponse?.property;
-  const icPropertyCard = getIcPropertyCard(icMemoData, property.property_name ?? "");
-  const occupancy = toPercent(kpis?.occupancy ?? property.occupancy, 92);
-  const noi = toNumber(kpis?.noi, 2000000 + index * 350000);
-  const revenue = toNumber(kpis?.revenue, noi / 0.6);
-  const noiMargin = toPercent(kpis?.noiMargin, 55);
-  const expenseRatio = toPercent(kpis?.expenseRatio, 100 - noiMargin);
-  const totalExpenses = Math.max(Math.round(revenue * (expenseRatio / 100)), 0);
-  const units = toNumber(propertyMeta?.units ?? property.units, 100);
-  const lossToLease = toPercent(kpis?.lossToLease, 5);
-  const rentComparison = propertyResponse?.rentComparison;
-  const rentGap = Array.isArray(rentComparison)
-    ? clamp(rentComparison.reduce((sum, item) => {
-        const market = toNumber(item.market);
-        const inPlace = toNumber(item.inPlace);
-        return sum + (market > 0 ? ((market - inPlace) / market) * 100 : 0);
-      }, 0) / Math.max(rentComparison.length, 1), 0, 40)
-    : toPercent(rentComparison?.lossToLeasePercent ?? lossToLease, lossToLease);
-  const scores = deriveScores(propertyResponse, aiRent);
-  const strategy = getStrategy(property.class_type, scores.riskLevel, rentGap);
-  const confidence = getConfidence(scores.overall, scores.riskLevel);
-  const signal = getDemoSignalOverride(property.property_name) ?? getSignal(scores.overall, scores.riskLevel);
-  const yearBuilt = toNumber(propertyMeta?.yearBuilt, 2005);
-  const address = property.address || propertyMeta?.location || property.location || "-";
-  const askingPrice = Math.round(noiMargin > 0 ? noi / (noiMargin / 100) * 8.5 : revenue * 7);
-  const revenuePerUnit = units > 0 ? Math.round(revenue / 12 / units) : 0;
-  const totalLift = toNumber(aiRent?.dashboard?.basic_info?.totalprojectedrevenuelift, 0);
-  const markToMarket = toNumber(aiRent?.dashboard?.basic_info?.mtmcapturepotential ?? kpis?.markToMarket, 0);
-  const revenueAtRisk = toNumber(aiRent?.dashboard?.basic_info?.revenueAtRisk ?? propertyResponse?.intelligence?.riskAlert?.revenueAtRisk, 0);
-  const rentPerSqft = toNumber(kpis?.rentPerSqft ?? kpis?.rent_per_sqft ?? property.rent_per_sqft, 0);
+function parseSiteSize(value: string | null | undefined) {
+  if (!value) return 0;
+  const acreMatch = value.match(/([0-9.]+)\s*acres?/i);
+  if (acreMatch) return parseLooseNumber(acreMatch[1], 0);
+  return parseLooseNumber(value, 0);
+}
+
+function parseParkingSpaces(value: string | null | undefined) {
+  return parseLooseNumber(value, 0);
+}
+
+function buildLeaseExpirationFloorplan(floorplan: Array<Record<string, string | number>> | null | undefined) {
+  if (!floorplan?.length) return undefined;
+  const ylabels = floorplan
+    .map((row) => String(row["Unit Type"] ?? "").trim())
+    .filter(Boolean);
+  if (!ylabels.length) return undefined;
+  const data = floorplan.map((row) => monthOrder.map((month) => parseLooseNumber(row[month], 0)));
+  return {
+    title: "Lease Expirations and Occupied Units by Floorplan",
+    xlabels: monthOrder,
+    ylabels,
+    data,
+  };
+}
+
+function buildDemoExpenseBreakdownFromT12(t12: DemoDealUnderwritingRecord["t12"]) {
+  const current = t12?.["Expense Categories"]?.current;
+  if (current) {
+    const total = Object.entries(current).reduce((sum, [, amount]) => sum + parseLooseNumber(amount, 0), 0);
+    return Object.entries(current)
+      .map(([category, amount]) => {
+        const numericAmount = parseLooseNumber(amount, 0);
+        return {
+          category,
+          amount: numericAmount,
+          percent: total > 0 ? Math.round((numericAmount / total) * 1000) / 10 : undefined,
+        };
+      })
+      .filter((item) => item.amount > 0);
+  }
+
+  const fallbackEntries = [
+    ["Taxes", t12?.Taxes],
+    ["Grounds", t12?.Grounds],
+    ["Payroll", t12?.Payroll],
+    ["Renting", t12?.Renting],
+    ["Insurance", t12?.Insurance],
+    ["Utilities", t12?.Utilities],
+    ["Maintenance", t12?.Maintenance],
+    ["Administrative", t12?.Administrative],
+    ["Management Fees", t12?.["Management Fees"]],
+    ["Professional Fees", t12?.["Professional Fees"]],
+    ["Operating Expenses", t12?.["Operating Expenses"]],
+  ] as const;
+
+  const items = fallbackEntries
+    .map(([category, amount]) => ({ category, amount: parseLooseNumber(amount, 0) }))
+    .filter((item) => item.amount > 0);
+  const total = items.reduce((sum, item) => sum + item.amount, 0);
+  return items.map((item) => ({
+    ...item,
+    percent: total > 0 ? Math.round((item.amount / total) * 1000) / 10 : undefined,
+  }));
+}
+
+function buildDemoDeal(record: DemoDealUnderwritingRecord, index: number): Deal {
+  const memorandum = record.memorandum ?? {};
+  const t12 = record.t12 ?? {};
+  const rentRoll = record.rent_roll ?? {};
+  const validation = rentRoll.validation ?? {};
+
+  const units = toNumber(validation.total_units, 0);
+  const occupiedUnits = toNumber(validation.occupied_units, 0);
+
+  const occupancy = toPercent(
+    rentRoll["Average Occupancy"],
+    units > 0 ? (occupiedUnits / units) * 100 : 0
+  );
+
+  const noi = parseLooseNumber(t12.NOI, 0);
+  const noiMargin = toPercent(t12["NOI Margin"], 0);
+  const expenseRatio = toPercent(t12["Operating Expense Ratio"], 100 - noiMargin);
+
+  const revenuePerMonth = monthOrder.map((month) => ({
+    month,
+    value: parseLooseNumber(t12["Revenue per Month"]?.[month], 0),
+  }));
+
+  const expensePerMonth = monthOrder.map((month) => ({
+    month,
+    value: parseLooseNumber(t12["Expense per Month"]?.[month], 0),
+  }));
+
+  const noiPerMonth = monthOrder.map((month) => ({
+    month,
+    value: parseLooseNumber(t12["NOI per Month"]?.[month], 0),
+  }));
+
+  const totalRevenue = revenuePerMonth.reduce((sum, item) => sum + item.value, 0);
+  const totalExpenses = expensePerMonth.reduce((sum, item) => sum + item.value, 0);
+
+  const revenuePerUnit =
+    parseLooseNumber(t12["Revenue per Unit"], 0) || (units > 0 ? totalRevenue / units : 0);
+
+  const rentVsMarket = (rentRoll["In Place vs Market Rent"] ?? []).map((item) => ({
+    type: String(item["Unit Type"] ?? "Unit"),
+    current: parseLooseNumber(item["Avg In Place Rent"], 0),
+    market: parseLooseNumber(item["Avg Market Rent"], 0),
+  }));
+
+  const averageRentGap = rentVsMarket.length
+    ? rentVsMarket.reduce((sum, item) => {
+        return sum + (item.market > 0 ? ((item.market - item.current) / item.market) * 100 : 0);
+      }, 0) / rentVsMarket.length
+    : 0;
+
+  const dealScorecard = deriveScores(
+    {
+      kpis: {
+        noi,
+        noiMargin,
+        revenue: totalRevenue,
+        expenseRatio,
+        occupancy,
+        lossToLease: parseLooseNumber(rentRoll["MTM Capture"]?.["Loss to Lease"], 0),
+        markToMarket: parseLooseNumber(rentRoll["Projected Revenue Lift"], 0),
+      },
+    },
+    {
+      dashboard: {
+        basic_info: {
+          revenueAtRisk: parseLooseNumber(rentRoll["Revenue at Risk"], 0),
+          avgrenewalrate: toPercent(rentRoll["Avg Renewal Rate"] ?? rentRoll["Renewal Rate"], 0),
+          mtmcapturepotential: parseLooseNumber(rentRoll["MTM Capture"]?.["Loss to Lease"], 0),
+          totalprojectedrevenuelift: parseLooseNumber(rentRoll["Projected Revenue Lift"], 0),
+        },
+      },
+    }
+  );
+
+  const signal =
+    getDemoSignalOverride(record.property_name) ??
+    getSignal(dealScorecard.overall, dealScorecard.riskLevel);
+
+  const confidence = getConfidence(dealScorecard.overall, dealScorecard.riskLevel);
+
+  const expenseBreakdown = buildDemoExpenseBreakdownFromT12(t12);
+
+  const revenueVsExpenses = monthOrder.map((month, index) => ({
+    month,
+    revenue: revenuePerMonth[index].value,
+    expenses: expensePerMonth[index].value,
+  }));
+
+  const occupancyHistory = monthOrder.map((month) => {
+    const vacancyAmount = parseLooseNumber(
+      t12["Vacancy per Month"]?.[month] ?? t12.Vacancy?.[month],
+      0
+    );
+    const grossPotential = parseLooseNumber(
+      t12["Gross Potential Rent per Month"]?.[month] ?? t12["Gross Potential Rent Monthly"]?.[month],
+      0
+    );
+    const vacancyRate =
+      grossPotential > 0 ? clamp((vacancyAmount / grossPotential) * 100, 0, 100) : clamp(100 - occupancy, 0, 100);
+
+    return {
+      month,
+      occupancy: clamp(100 - vacancyRate, 0, 100),
+      vacancy: vacancyRate,
+    };
+  });
+
+  const leaseExpirations = monthOrder.map((month) => ({
+    year: month,
+    units: parseLooseNumber(rentRoll["Lease Expiration Ladder"]?.[month], 0),
+  }));
+
+  const floorplan = buildLeaseExpirationFloorplan(rentRoll["Lease Expiration Floorplan"]);
+  const tenantMix =
+    floorplan?.ylabels
+      .map((label, rowIndex) => {
+        const rowTotal = floorplan.data[rowIndex].reduce((sum, value) => sum + value, 0);
+        return {
+          name: label,
+          count: rowTotal,
+          percentage: units > 0 ? Math.round((rowTotal / units) * 1000) / 10 : 0,
+        };
+      })
+      .filter((item) => item.count > 0) ?? [];
+
+  const moversLift = parseLooseNumber(rentRoll["Projected Revenue Lift"], 0);
+
+  const risks: Deal["risks"] = [
+    {
+      title: "Revenue At Risk",
+      severity: getSeverity(dealScorecard.riskLevel),
+      impact: `-${formatCompactCurrencyValue(parseLooseNumber(rentRoll["Revenue at Risk"], 0))} exposure`,
+      explanation: `${parseLooseNumber(rentRoll["Revenue at Risk (60d)"], 0)} in 60d and ${parseLooseNumber(rentRoll["Revenue at Risk (90d)"], 0)} in 90d pipeline risk.`,
+    },
+    {
+      title: "Vacancy Exposure",
+      severity: getSeverity(clamp(100 - occupancy)),
+      impact: `-${formatCompactCurrencyValue(parseLooseNumber(rentRoll["Vacancy Loss"], 0))} vacancy loss`,
+      explanation: `${occupiedUnits} occupied out of ${units} total units with ${occupancy.toFixed(1)}% average occupancy.`,
+    },
+    {
+      title: "Expense Pressure",
+      severity: getSeverity(Math.round(expenseRatio)),
+      impact: `${expenseRatio.toFixed(1)}% expense ratio`,
+      explanation: "Operating expenses are mapped from the T12 expense categories and monthly expense totals.",
+    },
+  ];
+
+  const opportunities: Deal["opportunities"] = [
+    {
+      title: "Projected Revenue Lift",
+      severity: "High",
+      impact: `+${formatCompactCurrencyValue(moversLift)} upside`,
+      explanation: "Projected revenue lift is mapped directly from the rent roll response.",
+    },
+    {
+      title: "Mark-to-Market Capture",
+      severity: "Medium",
+      impact: `+${formatCompactCurrencyValue(parseLooseNumber(rentRoll["MTM Capture"]?.["Loss to Lease"], 0))} upside`,
+      explanation: `${parseLooseNumber(rentRoll["MTM Capture"]?.["MTM Units"], 0)} MTM units remain below market.`,
+    },
+    {
+      title: "Recommended Rent Growth",
+      severity: "Medium",
+      impact: `${(rentRoll["In Place vs Recommended Rent"] ?? []).length} unit types with pricing recommendations`,
+      explanation: "Recommended rents are mapped from the in-place vs recommended rent table.",
+    },
+  ];
 
   return {
-    id: createDealId(property.property_name || "", index),
-    name: property.property_name || `Property ${index + 1}`,
-    address,
-    location: property.location || propertyMeta?.location || "",
-    submarket: property.submarket,
-    region: property.region,
-    strategy,
+    id: createDealId(record.property_name || "", index),
+    name: record.property_name || `Property ${index + 1}`,
+    address: memorandum.location || "",
+    location: memorandum.location || "",
+    submarket: "",
+    region: "",
+    strategy: getStrategy(undefined, dealScorecard.riskLevel, averageRentGap),
     units,
-    yearBuilt,
-    askingPrice,
+    yearBuilt: toNumber(memorandum.yearBuilt, 0),
+    askingPrice: totalRevenue > 0 ? Math.round(totalRevenue * 8.5) : 0,
     signal,
     confidence,
-    thesis: propertyResponse?.intelligence?.overview || icPropertyCard?.insights?.join(" ") || `${property.property_name || "This property"} underwriting view is mapped from the existing property and rent intelligence responses.`,
+    thesis: `${record.property_name || "This property"} demo underwriting is mapped from memorandum, T12, and rent roll data from /api/deal_underwriting_data/.`,
     metrics: {
       noOfUnits: units,
-      yearBuilt,
+      yearBuilt: toNumber(memorandum.yearBuilt, 0),
       noi,
       noiMargin,
       revenuePerUnit,
       expenseRatio,
       totalExpenses,
       occupancy,
-      occupancyUnits: { occupied: Math.round((units * occupancy) / 100), total: units },
-      vacancyLoss: clamp(100 - occupancy, 0, 100),
-      rentGap,
-      totalProjectedRevenueLift: totalLift,
-      rentPerSqft,
-      parkingSpace: 0,
-      siteSize: 0,
-    },
-    scores,
-    movers: {
-      rentIncrease: Math.round(totalLift || markToMarket || revenue * (rentGap / 100) * 0.35),
-      expenseOptimization: Math.round(totalExpenses * Math.min(expenseRatio / 100, 0.12)),
-      occupancyImprovement: Math.round((100 - occupancy) / 100 * revenue * 0.4),
-    },
-    risks: buildRisks(propertyResponse, icPropertyCard, scores.riskLevel, revenueAtRisk),
-    opportunities: buildOpportunities(propertyResponse, icPropertyCard, totalLift, markToMarket),
-    tenantMix: buildTenantMix(aiRent),
-    rentVsMarket: buildRentVsMarket(propertyResponse, aiRent),
-    noiProjection: buildNoiProjection(propertyResponse, noi),
-    revenueVsExpenses: buildRevenueVsExpenses(propertyResponse, revenue, expenseRatio),
-    expenseBreakdown: buildExpenseBreakdown(totalExpenses),
-    expenseDistribution: buildExpenseBreakdown(totalExpenses),
-    leaseExpirations: buildLeaseExpirations(propertyResponse, units),
-    occupancyHistory: buildOccupancyHistory(occupancy),
-    leaseExpirationFloorplan: undefined,
-    chartInsights: buildChartInsights(property.property_name || "Property", occupancy, rentGap, noiMargin),
-  };
-}
-
-function createPlaceholderDeal(property: PropertyRecord, index: number): Deal {
-  const units = toNumber(property.units, 0);
-  const occupancy = toPercent(property.occupancy, 0);
-  return {
-    id: createDealId(property.property_name || "", index),
-    name: property.property_name || `Property ${index + 1}`,
-    address: property.address || property.location || "",
-    location: property.location || "",
-    submarket: property.submarket,
-    region: property.region,
-    strategy: getStrategy(property.class_type, 50, 0),
-    units,
-    yearBuilt: 0,
-    askingPrice: 0,
-    signal: "Neutral",
-    confidence: 0,
-    thesis: "Loading underwriting response...",
-    metrics: {
-      noOfUnits: units,
-      yearBuilt: 0,
-      noi: 0,
-      noiMargin: 0,
-      revenuePerUnit: 0,
-      expenseRatio: 0,
-      totalExpenses: 0,
-      occupancy,
-      occupancyUnits: { occupied: Math.round((units * occupancy) / 100), total: units },
-      vacancyLoss: clamp(100 - occupancy, 0, 100),
-      rentGap: 0,
-      totalProjectedRevenueLift: 0,
+      occupancyUnits: { occupied: occupiedUnits, total: units },
+      vacancyLoss: parseLooseNumber(rentRoll["Vacancy Loss"], clamp(100 - occupancy, 0, 100)),
+      rentGap: clamp(averageRentGap, -100, 100),
+      totalProjectedRevenueLift: moversLift,
       rentPerSqft: 0,
-      parkingSpace: 0,
-      siteSize: 0,
+      parkingSpace: parseParkingSpaces(memorandum.parkingSpace),
+      siteSize: parseSiteSize(memorandum.siteSize),
     },
-    scores: { overall: 0, marketPosition: 0, cashFlowStability: 0, valueAddPotential: 0, riskLevel: 0 },
-    movers: { rentIncrease: 0, expenseOptimization: 0, occupancyImprovement: 0, totalPotentialNoiUplift: 0 },
-    risks: [],
-    opportunities: [],
-    tenantMix: [],
-    rentVsMarket: [],
-    noiProjection: [],
-    revenueVsExpenses: [],
-    expenseBreakdown: [],
-    expenseDistribution: [],
-    leaseExpirations: [],
-    occupancyHistory: [],
-    leaseExpirationFloorplan: undefined,
-    chartInsights: buildChartInsights(property.property_name || "Property", occupancy, 0, 0),
+    scores: dealScorecard,
+    movers: {
+      rentIncrease: moversLift,
+      expenseOptimization: Math.round(totalExpenses * Math.min(expenseRatio / 100, 0.12)),
+      occupancyImprovement: Math.round((100 - occupancy) / 100 * Math.max(totalRevenue, 0) * 0.4),
+      totalPotentialNoiUplift: moversLift,
+    },
+    risks,
+    opportunities,
+    tenantMix,
+    rentVsMarket,
+    noiProjection: noiPerMonth.map((item) => ({
+      year: item.month,
+      noi: item.value,
+    })),
+    revenueVsExpenses,
+    expenseBreakdown,
+    expenseDistribution: expenseBreakdown,
+    leaseExpirations,
+    occupancyHistory,
+    leaseExpirationFloorplan: floorplan,
+    docStatus: {
+      memorandum: Boolean(record.memorandum),
+      t12: Boolean(record.t12),
+      rentRoll: Boolean(record.rent_roll),
+    },
+    chartInsights: {
+      tenantMix: { insight: "Tenant mix is mapped from the lease expiration floorplan table.", impact: "Shows full unit-type concentration.", drives: "Market Position" },
+      rentVsMarket: { insight: `Average rent gap is ${averageRentGap.toFixed(1)}%.`, impact: "Highlights mark-to-market upside or over-market exposure.", drives: "Value-Add Potential" },
+      noiProjection: { insight: "NOI projection is mapped from all 12 monthly NOI values in the T12 response.", impact: "Shows full monthly earnings trend.", drives: "Overall Deal Score" },
+      revenueVsExpenses: { insight: "Revenue and expense charts are mapped from all 12 T12 monthly values.", impact: "Shows margin compression or expansion over time.", drives: "NOI Margin" },
+      expenseBreakdown: { insight: "Expense breakdown is mapped from T12 expense categories.", impact: "Identifies the largest cost buckets.", drives: "Expense Ratio" },
+      expenseDistribution: { insight: "Expense distribution mirrors the T12 category totals.", impact: "Shows where optimization work is likely to matter most.", drives: "Expense Optimization" },
+      leaseExpirations: { insight: "Lease expirations are mapped from the full 12-month rent roll ladder.", impact: "Shows rollover concentration by month.", drives: "Risk Level" },
+      occupancyVacancy: { insight: "Occupancy and vacancy are derived from full 12-month vacancy and rent data.", impact: "Anchors recurring income stability.", drives: "Cash Flow Stability" },
+    },
   };
 }
 
 function mapUserApiRecordToDeal(record: DealUnderwritingApiRecord, index: number): Deal {
-  const kpiCards = record.kpiCards as Record<string, unknown> | undefined;
   const defaultChartInsights = buildChartInsights(
     record.propertyName,
     toNumber(record.kpiCards.occupancyRate, 0),
     toNumber(record.kpiCards.rentVsMarketGap, 0),
     toNumber(record.kpiCards.noiMargin, 0)
   );
+
   const units = toNumber(record.header.units ?? record.kpiCards.noOfUnits, 0);
   const revenuePerUnit = toNumber(record.kpiCards.revenuePerUnit, 0);
-  const estimatedRevenue = revenuePerUnit > 0 && units > 0
-    ? revenuePerUnit * units
-    : record.performanceAnalytics.revenueVsExpenses?.reduce((sum, item) => sum + toNumber(item.revenue), 0) || 0;
+  const estimatedRevenue =
+    revenuePerUnit > 0 && units > 0
+      ? revenuePerUnit * units
+      : record.performanceAnalytics.revenueVsExpenses?.reduce((sum, item) => sum + toNumber(item.revenue), 0) || 0;
+
   const noiMargin = toNumber(record.kpiCards.noiMargin, 0);
-  const totalExpenses = record.performanceAnalytics.revenueVsExpenses?.reduce((sum, item) => sum + toNumber(item.expense), 0) || estimatedRevenue * (toNumber(record.kpiCards.expenseRatio, 0) / 100);
+  const totalExpenses =
+    record.performanceAnalytics.revenueVsExpenses?.reduce((sum, item) => sum + toNumber(item.expense), 0) ||
+    estimatedRevenue * (toNumber(record.kpiCards.expenseRatio, 0) / 100);
+
   const noi = estimatedRevenue > 0 ? estimatedRevenue * (noiMargin / 100) : Math.max(estimatedRevenue - totalExpenses, 0);
   const rentGap = toNumber(record.kpiCards.rentVsMarketGap, 0);
   const docStatus = getDealDocStatus(record);
+
   return {
     id: createDealId(record.propertyName, index),
     name: record.propertyName,
@@ -655,16 +767,18 @@ function mapUserApiRecordToDeal(record: DealUnderwritingApiRecord, index: number
       expenseRatio: toNumber(record.kpiCards.expenseRatio, 0),
       totalExpenses,
       occupancy: toNumber(record.kpiCards.occupancyRate, 0),
-      occupancyUnits: record.kpiCards.occupancyUnits ? {
-        occupied: toNumber(record.kpiCards.occupancyUnits.occupied, 0),
-        total: toNumber(record.kpiCards.occupancyUnits.total, units),
-      } : undefined,
+      occupancyUnits: record.kpiCards.occupancyUnits
+        ? {
+            occupied: toNumber(record.kpiCards.occupancyUnits.occupied, 0),
+            total: toNumber(record.kpiCards.occupancyUnits.total, units),
+          }
+        : undefined,
       vacancyLoss: toNumber(record.kpiCards.vacancyLoss, 0),
       rentGap,
       totalProjectedRevenueLift: toNumber(record.kpiCards.totalProjectedRevenueLift, 0),
       rentPerSqft: toNumber(record.kpiCards.rentPerSqft, 0),
-      parkingSpace: getKpiNumber(kpiCards, ["parkingSpace", "parkingSpaces", "parking_space"], 0),
-      siteSize: getKpiNumber(kpiCards, ["siteSize", "site_size", "siteAcreage"], 0),
+      parkingSpace: toNumber(record.kpiCards.parkingSpace ?? record.kpiCards.parkingSpaces ?? record.kpiCards.parking_space, 0),
+      siteSize: toNumber(record.kpiCards.siteSize ?? record.kpiCards.site_size ?? record.kpiCards.siteAcreage, 0),
     },
     scores: {
       overall: toNumber(record.dealScorecard.overallDealScore, 0),
@@ -681,14 +795,44 @@ function mapUserApiRecordToDeal(record: DealUnderwritingApiRecord, index: number
     },
     risks: record.risks ?? [],
     opportunities: record.opportunities ?? [],
-    tenantMix: (record.performanceAnalytics.tenantMix ?? []).map((item) => ({ name: item.unitType, percentage: toNumber(item.percent), count: toNumber(item.count) })),
-    rentVsMarket: (record.performanceAnalytics.rentVsMarket ?? []).map((item) => ({ type: item.unitType, current: toNumber(item.inPlace), market: toNumber(item.market) })),
-    noiProjection: (record.performanceAnalytics.noiGrowthProjection ?? []).map((item) => ({ year: String(item.year), noi: toNumber(item.noi) })),
-    revenueVsExpenses: (record.performanceAnalytics.revenueVsExpenses ?? []).map((item) => ({ month: item.month, revenue: toNumber(item.revenue), expenses: toNumber(item.expense) })),
-    expenseBreakdown: (record.performanceAnalytics.expenseBreakdown ?? []).map((item) => ({ category: item.category, amount: toNumber(item.amount), percent: toNumber(item.percent) })),
-    expenseDistribution: (record.performanceAnalytics.expenseDistribution ?? record.performanceAnalytics.expenseBreakdown ?? []).map((item) => ({ category: item.category, amount: toNumber(item.amount), percent: toNumber(item.percent) })),
-    leaseExpirations: (record.performanceAnalytics.leaseExpiration ?? []).map((item) => ({ year: item.month, units: toNumber(item.units) })),
-    occupancyHistory: (record.performanceAnalytics.occupancyVsVacancy ?? []).map((item) => ({ month: item.month, occupancy: toNumber(item.occupancyRate), vacancy: toNumber(item.vacancyRate) })),
+    tenantMix: (record.performanceAnalytics.tenantMix ?? []).map((item) => ({
+      name: item.unitType,
+      percentage: toNumber(item.percent),
+      count: toNumber(item.count),
+    })),
+    rentVsMarket: (record.performanceAnalytics.rentVsMarket ?? []).map((item) => ({
+      type: item.unitType,
+      current: toNumber(item.inPlace),
+      market: toNumber(item.market),
+    })),
+    noiProjection: (record.performanceAnalytics.noiGrowthProjection ?? []).map((item) => ({
+      year: String(item.year),
+      noi: toNumber(item.noi),
+    })),
+    revenueVsExpenses: (record.performanceAnalytics.revenueVsExpenses ?? []).map((item) => ({
+      month: item.month,
+      revenue: toNumber(item.revenue),
+      expenses: toNumber(item.expense),
+    })),
+    expenseBreakdown: (record.performanceAnalytics.expenseBreakdown ?? []).map((item) => ({
+      category: item.category,
+      amount: toNumber(item.amount),
+      percent: toNumber(item.percent),
+    })),
+    expenseDistribution: (record.performanceAnalytics.expenseDistribution ?? record.performanceAnalytics.expenseBreakdown ?? []).map((item) => ({
+      category: item.category,
+      amount: toNumber(item.amount),
+      percent: toNumber(item.percent),
+    })),
+    leaseExpirations: (record.performanceAnalytics.leaseExpiration ?? []).map((item) => ({
+      year: item.month,
+      units: toNumber(item.units),
+    })),
+    occupancyHistory: (record.performanceAnalytics.occupancyVsVacancy ?? []).map((item) => ({
+      month: item.month,
+      occupancy: toNumber(item.occupancyRate),
+      vacancy: toNumber(item.vacancyRate),
+    })),
     leaseExpirationFloorplan: record.performanceAnalytics.leaseExpirationFloorplan
       ? {
           title: record.performanceAnalytics.leaseExpirationFloorplan.title || "Lease Expirations and Occupied Units by Floorplan",
@@ -713,37 +857,13 @@ function mapUserApiRecordToDeal(record: DealUnderwritingApiRecord, index: number
 function hasDealUnderwritingData(record: DealUnderwritingApiRecord) {
   return Boolean(
     record.propertyName &&
-      (
-        record.aiAcquisitionSnapshot ||
+      (record.aiAcquisitionSnapshot ||
         record.kpiCards ||
         record.dealScorecard ||
         record.whatDrivesThisInvestment ||
         record.performanceAnalytics ||
-        record.sourceOverview
-      )
+        record.sourceOverview)
   );
-}
-
-async function loadPropertyRecords() {
-  const endpoint = isDemoMode() ? "/api/get_property_model_data/" : "/api/get_property_model_data_user_view/";
-  const response = await authClient.post<{ data?: PropertyRecord[] }>(endpoint, { fetch: "all" });
-  return response.data?.data ?? [];
-}
-
-async function loadAiRentRecords() {
-  const endpoint = isDemoMode() ? "/api/get_ai_rent_intelligence_data/" : "/api/get_ai_rent_intelligence_data_user_view/";
-  const response = await authClient.post<{ data?: AiRentRecord[] }>(endpoint, { fetch: "all" });
-  return response.data?.data ?? [];
-}
-
-async function loadIcMemoData() {
-  if (isDemoMode()) return null;
-  try {
-    const response = await authClient.post<{ data?: IcMemoTemplateData }>("/api/get_icmemo_data_user_view/", {});
-    return response.data?.data ?? null;
-  } catch {
-    return null;
-  }
 }
 
 async function loadUserDealUnderwriting(propertyNames?: string[]) {
@@ -752,12 +872,13 @@ async function loadUserDealUnderwriting(propertyNames?: string[]) {
   return response.data?.data ?? [];
 }
 
-export function useDealUnderwritingData(requestedIds: string[] = []): DealDataState {
-  const [propertyRecords, setPropertyRecords] = useState<PropertyRecord[]>([]);
-  const [aiRentRecords, setAiRentRecords] = useState<AiRentRecord[]>([]);
-  const [icMemoData, setIcMemoData] = useState<IcMemoTemplateData | null>(null);
-  const [userDealCache, setUserDealCache] = useState<Record<string, Deal>>({});
-  const [userDeals, setUserDeals] = useState<Deal[]>([]);
+async function loadDemoDealUnderwriting() {
+  const response = await authClient.get<DemoDealUnderwritingRecord[]>("/api/deal_underwriting_data/");
+  return Array.isArray(response.data) ? response.data : [];
+}
+
+export function useDealUnderwritingData(_requestedIds: string[] = []): DealDataState {
+  const [deals, setDeals] = useState<Deal[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -766,18 +887,11 @@ export function useDealUnderwritingData(requestedIds: string[] = []): DealDataSt
     setError(null);
     try {
       if (isDemoMode()) {
-        const properties = await loadPropertyRecords();
-        setPropertyRecords(properties);
-        const [aiRent, icMemo] = await Promise.all([loadAiRentRecords().catch(() => []), loadIcMemoData()]);
-        setAiRentRecords(aiRent);
-        setIcMemoData(icMemo);
+        const demoRecords = await loadDemoDealUnderwriting();
+        setDeals(demoRecords.map((record, index) => buildDemoDeal(record, index)));
       } else {
         const records = await loadUserDealUnderwriting();
-        setUserDeals(
-          records
-            .filter(hasDealUnderwritingData)
-            .map((record, index) => mapUserApiRecordToDeal(record, index))
-        );
+        setDeals(records.filter(hasDealUnderwritingData).map((record, index) => mapUserApiRecordToDeal(record, index)));
       }
     } catch {
       setError("Unable to load deal underwriting data.");
@@ -787,61 +901,10 @@ export function useDealUnderwritingData(requestedIds: string[] = []): DealDataSt
   }, []);
 
   useEffect(() => {
-    let mounted = true;
     loadBaseData().catch(() => {
-      if (mounted) setError("Unable to load deal underwriting data.");
+      setError("Unable to load deal underwriting data.");
     });
-    return () => {
-      mounted = false;
-    };
   }, [loadBaseData]);
-
-  const placeholderDeals = useMemo(() => propertyRecords.map((property, index) => createPlaceholderDeal(property, index)), [propertyRecords]);
-
-  useEffect(() => {
-    if (isDemoMode() || !placeholderDeals.length || userDeals.length) return;
-    const idToName = new Map(placeholderDeals.map((deal) => [deal.id, deal.name]));
-    const candidateNames = requestedIds.length
-      ? requestedIds
-          .map((id) => idToName.get(id))
-          .filter((name): name is string => Boolean(name))
-      : placeholderDeals.map((deal) => deal.name);
-    const namesToFetch = candidateNames.filter((name) => !userDealCache[name.toUpperCase()]);
-    if (!namesToFetch.length) return;
-
-    let mounted = true;
-    loadUserDealUnderwriting(namesToFetch)
-      .then((records) => {
-        if (!mounted) return;
-        setUserDealCache((current) => {
-          const next = { ...current };
-          records.forEach((record, index) => {
-            next[record.propertyName.toUpperCase()] = mapUserApiRecordToDeal(record, index);
-          });
-          return next;
-        });
-      })
-      .catch(() => {
-        if (mounted) setError("Unable to load deal underwriting data.");
-      });
-    return () => {
-      mounted = false;
-    };
-  }, [placeholderDeals, requestedIds, userDealCache, userDeals.length]);
-
-  const deals = useMemo(() => {
-    if (isDemoMode()) {
-      return propertyRecords.map((property, index) =>
-        buildDemoDeal(
-          property,
-          aiRentRecords.find((record) => record.property_name?.trim().toLowerCase() === property.property_name?.trim().toLowerCase()),
-          icMemoData,
-          index
-        )
-      );
-    }
-    return userDeals;
-  }, [aiRentRecords, icMemoData, propertyRecords, userDeals]);
 
   return { deals, loading, error, refresh: loadBaseData };
 }
