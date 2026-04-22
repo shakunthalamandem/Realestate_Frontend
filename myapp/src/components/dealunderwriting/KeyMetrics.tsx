@@ -17,6 +17,10 @@ function formatWholeNumber(value: number) {
   return new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(value);
 }
 
+function formatPlainWholeNumber(value: number) {
+  return Math.round(value).toString();
+}
+
 function formatDecimal(value: number, maxFractionDigits = 2) {
   return new Intl.NumberFormat("en-US", { maximumFractionDigits: maxFractionDigits }).format(value);
 }
@@ -30,7 +34,7 @@ function getMetrics(deal: Deal) {
     },
     {
       label: "Year Built",
-      value: formatWholeNumber(deal.metrics.yearBuilt ?? deal.yearBuilt),
+      value: formatPlainWholeNumber(deal.metrics.yearBuilt ?? deal.yearBuilt),
       sub: "Original construction year",
     },
     {
@@ -40,7 +44,7 @@ function getMetrics(deal: Deal) {
     },
     {
       label: "Revenue / Unit",
-      value: `$${deal.metrics.revenuePerUnit.toLocaleString()}`,
+      value: `$${formatWholeNumber(deal.metrics.revenuePerUnit)}`,
       sub: "Monthly avg",
     },
     {
