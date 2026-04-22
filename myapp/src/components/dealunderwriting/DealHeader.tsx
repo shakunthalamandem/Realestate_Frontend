@@ -17,6 +17,13 @@ export function DealHeader({
   isInCompare: boolean;
   onAddCompare: (id: string) => void;
 }) {
+  const noiLabel = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    notation: "compact",
+    maximumFractionDigits: 1,
+  }).format(deal.metrics.noi);
+
   return (
     <section className="mb-8 flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
       <div>
@@ -41,7 +48,8 @@ export function DealHeader({
             Built {deal.yearBuilt}
           </span>
           <span className="flex items-center gap-1">
-            <DollarSign className="h-4 w-4" />${(deal.askingPrice / 1000000).toFixed(1)}M
+            {/* <DollarSign className="h-4 w-4" /> */}
+            {noiLabel} NOI
           </span>
         </div>
       </div>
