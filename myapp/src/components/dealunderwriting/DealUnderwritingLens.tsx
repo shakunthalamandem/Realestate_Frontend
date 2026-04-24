@@ -10,9 +10,9 @@ import { getBarColor } from "./DealScorecard";
 import { KeyMetrics } from "./KeyMetrics";
 import { RisksOpportunities } from "./RisksOpportunities";
 import { WhatMovesTheDeal } from "./WhatMovesTheDeal";
-import { getDealById, useDealUnderwritingData } from "./data";
+import { deleteUserDealUnderwriting, getDealById, useDealUnderwritingData } from "./data";
 import PfDealUnderwritingUpload from "./pf_dealunderwriting_upload";
-import { Search } from "lucide-react";
+import { Search, Trash2 } from "lucide-react";
 import { isDemoMode } from "@/lib/demo-mode";
 
 interface DealUnderwritingLensProps {
@@ -27,6 +27,8 @@ export default function DealUnderwritingLens({ onScreenChange }: DealUnderwritin
   const [screen, setScreen] = useState<"library" | "upload" | "detail">("library");
   const [search, setSearch] = useState("");
   const [pendingPropertyName, setPendingPropertyName] = useState("");
+  const [dealToDelete, setDealToDelete] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const { deals, loading, error, refresh } = useDealUnderwritingData();
 
@@ -69,6 +71,26 @@ export default function DealUnderwritingLens({ onScreenChange }: DealUnderwritin
       return [...current, id];
     });
   }, []);
+
+  const handleDealDelete = useCallback(async () => {
+    const selectedName = dealToDelete.trim();
+    if (!selectedName || isDeleting) return;
+
+    try {
+      setIsDeleting(true);
+      await deleteUserDealUnderwriting(selectedName);
+      if (activeDeal?.name?.trim().toLowerCase() === selectedName.toLowerCase()) {
+        setActiveDealId("");
+        setScreen("library");
+      }
+      setDealToDelete("");
+      await refresh();
+    } catch {
+      alert("Unable to delete deal underwriting property.");
+    } finally {
+      setIsDeleting(false);
+    }
+  }, [dealToDelete, isDeleting, activeDeal, refresh]);
 
   const compareDeals = compareIds
     .map((id) => getDealById(deals, id))
@@ -147,13 +169,43 @@ export default function DealUnderwritingLens({ onScreenChange }: DealUnderwritin
             </p>
           </div>
           {!demoMode ? (
-            <button
-              type="button"
-              onClick={() => setScreen("upload")}
-              className="rounded-full bg-[linear-gradient(90deg,#a54cf5,#5d6df9)] px-7 py-4 text-lg font-semibold text-white shadow-[0_18px_45px_rgba(118,90,255,0.35)] transition hover:scale-[1.02]"
-            >
-              + Add Property
-            </button>
+            <div className="flex items-center gap-3">
+              <select
+                value={dealToDelete}
+                onChange={(e) => setDealToDelete(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    void handleDealDelete();
+                  }
+                }}
+                className="h-12 min-w-[260px] rounded-full border border-[#d8e2f1] bg-white px-4 text-[15px] text-[#102149] outline-none focus:border-[#6677d7]"
+              >
+                <option value="">Select property to delete</option>
+                {deals.map((deal) => (
+                  <option key={deal.id} value={deal.name}>
+                    {deal.name}
+                  </option>
+                ))}
+              </select>
+
+              <button
+                type="button"
+                onClick={handleDealDelete}
+                disabled={!dealToDelete || isDeleting}
+                className="inline-flex h-12 items-center gap-2 rounded-full border border-[#f0c7c7] bg-[#fff4f4] px-5 text-sm font-semibold text-[#b42318] transition hover:bg-[#ffe9e9] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <Trash2 className="h-4 w-4" />
+                {isDeleting ? "Deleting..." : "Delete"}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setScreen("upload")}
+                className="rounded-full bg-[linear-gradient(90deg,#a54cf5,#5d6df9)] px-7 py-4 text-lg font-semibold text-white shadow-[0_18px_45px_rgba(118,90,255,0.35)] transition hover:scale-[1.02]"
+              >
+                + Add Property
+              </button>
+            </div>
           ) : null}
         </div>
 

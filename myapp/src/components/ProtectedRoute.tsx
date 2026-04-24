@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router";
 import AccessBlockedModal from "./AccessBlockedModal";
 import { isUserLoggedIn } from "@/lib/auth";
 import { isDemoMode } from "@/lib/demo-mode";

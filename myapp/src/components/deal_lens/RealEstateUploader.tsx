@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import RealEstateResponses from "./RealEstateResponses";
 import { useTheme } from "./ThemeContext";
 import { Block } from "./Realestate_components/Utils/RComponentsUtils";

@@ -1,6 +1,6 @@
 
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
 import AILayer from "../components/AILayer";
 import CTASection from "../components/CTASection";
 import Footer from "../components/Footer";

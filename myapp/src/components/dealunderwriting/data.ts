@@ -888,6 +888,12 @@ async function loadUserDealUnderwriting(propertyNames?: string[]) {
   return response.data?.data ?? [];
 }
 
+export async function deleteUserDealUnderwriting(propertyName: string) {
+  return authClient.post("/api/user_properties/deal_delete/", {
+    property_name: propertyName,
+  });
+}
+
 async function loadDemoDealUnderwriting(): Promise<Deal[]> {
   const response = await authClient.get<
     DealUnderwritingMixedResponse[] | { data?: DealUnderwritingMixedResponse[] }

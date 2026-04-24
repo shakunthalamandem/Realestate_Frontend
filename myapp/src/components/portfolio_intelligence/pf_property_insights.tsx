@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router";
 import { Bar, Line } from "react-chartjs-2";
 import { authClient } from "@/lib/auth-api";
 import PfDemoAiRentIntelligence from "./pf_demo_ai_rent_intelligence";
@@ -865,7 +865,7 @@ const PfPropertyInsights: React.FC<PfPropertyInsightsProps> = ({ propertyContext
               <p className="mt-1 text-xl font-semibold text-slate-900">{expiringUnits !== undefined ? `${expiringUnits}` : "-"}</p>
             </div>
             <div className="rounded-2xl border border-white bg-white px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-rose-600">Revenue At Risk</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-rose-600">Revenue At Risk(90 Days)</p>
               <p className="mt-1 text-xl font-semibold text-slate-900">{formatCurrency(riskAlert?.revenueAtRisk)}</p>
             </div>
             <div className="rounded-2xl border border-white bg-white px-4 py-3">
