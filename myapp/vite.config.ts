@@ -8,6 +8,9 @@ export default defineConfig({
     port: 4000,   // your desired port
     strictPort: true,
   },
+  ssr: {
+    noExternal: ["react-router", "react-router-dom"],
+  },
   plugins: [
     react(),
   ],

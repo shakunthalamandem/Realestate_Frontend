@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router";
 import { Block } from "../Realestate_components/Utils/RComponentsUtils";
 import RealEstateResponses from "./ShowPropertyResponse";
 

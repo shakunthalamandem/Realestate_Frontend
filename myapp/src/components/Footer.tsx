@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import BrandLogo from "./BrandLogo";
 import asset72FooterLogo from "@/assets/asset72-footer-logo.svg";
 import { Linkedin, Mail } from "lucide-react";

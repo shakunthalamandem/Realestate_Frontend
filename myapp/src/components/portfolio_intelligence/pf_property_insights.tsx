@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router";
 import { Bar, Line } from "react-chartjs-2";
 import { authClient } from "@/lib/auth-api";
 import PfDemoAiRentIntelligence from "./pf_demo_ai_rent_intelligence";

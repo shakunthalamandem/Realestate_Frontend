@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router";
 import { PULSE_STYLES } from "../constants";
 import { MarketRadarViewData } from "../types";
 import { normalizeApiPayload, buildViewData } from "../utils";

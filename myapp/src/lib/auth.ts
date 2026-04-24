@@ -2,6 +2,8 @@ const ACCESS_TOKEN_KEY = "auth_access_token";
 const SESSION_ID_KEY = "auth_session_id";
 const USER_KEY = "auth_user";
 const API_BASE = "http://localhost:7000";
+
+const isBrowser = typeof window !== "undefined";
 export type AuthUser = {
   id?: string | number;
   email?: string;
@@ -11,12 +13,13 @@ export type AuthUser = {
 };
 
 export const getAccessToken = (): string | null =>
-  window.localStorage.getItem(ACCESS_TOKEN_KEY);
+  isBrowser ? window.localStorage.getItem(ACCESS_TOKEN_KEY) : null;
 
 export const getSessionId = (): string | null =>
-  window.localStorage.getItem(SESSION_ID_KEY);
+  isBrowser ? window.localStorage.getItem(SESSION_ID_KEY) : null;
 
 export const getAuthUser = (): AuthUser | null => {
+  if (!isBrowser) return null;
   const raw = window.localStorage.getItem(USER_KEY);
   if (!raw) return null;
   try {
@@ -33,6 +36,7 @@ export const setAuthSession = (params: {
   sessionId?: string | null;
   user?: AuthUser | null;
 }) => {
+  if (!isBrowser) return;
   window.localStorage.setItem(ACCESS_TOKEN_KEY, params.accessToken);
 
   if (params.sessionId) {
@@ -49,6 +53,7 @@ export const setAuthSession = (params: {
 };
 
 export const setAuthUser = (user: AuthUser | null) => {
+  if (!isBrowser) return;
   if (user) {
     window.localStorage.setItem(USER_KEY, JSON.stringify(user));
     return;
@@ -57,6 +62,7 @@ export const setAuthUser = (user: AuthUser | null) => {
 };
 
 export const clearUserLogin = (): void => {
+  if (!isBrowser) return;
   window.localStorage.removeItem(ACCESS_TOKEN_KEY);
   window.localStorage.removeItem(SESSION_ID_KEY);
   window.localStorage.removeItem(USER_KEY);
@@ -93,6 +99,7 @@ export async function login(email: string, password: string) {
   return user;
 }
 export async function autoLogin() {
+  if (!isBrowser) return null;
 
   const sessionId = getSessionId();
   let accessToken = getAccessToken();
@@ -127,7 +134,7 @@ export async function autoLogin() {
 
       if (!newAccess) return null;
 
-      localStorage.setItem("auth_access_token", newAccess);
+      window.localStorage.setItem("auth_access_token", newAccess);
 
       res = await fetch(`${API_BASE}/api/auth/me/`, {
         credentials: "include",

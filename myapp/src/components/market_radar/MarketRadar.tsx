@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import "leaflet/dist/leaflet.css";
 import axios from "axios";
 import type { LatLngBoundsExpression, LatLngExpression } from "leaflet";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { MarketRadarItem } from "./types";
 import { normalizeItems, normalizePulseKey } from "./utils";
 import MarketRadarHeader from "./MarketRadarHeader";
