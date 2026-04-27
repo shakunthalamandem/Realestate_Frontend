@@ -36,7 +36,7 @@ export function DealHeader({
           <h2 className="break-words text-2xl font-semibold text-[#102149] md:text-3xl xl:text-4xl">{deal.name}</h2>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3 text-base text-[#62708d] md:text-lg">
+        <div className="pl-4 flex flex-wrap items-center gap-3 text-base text-[#62708d] md:text-lg">
           <span className="flex items-center gap-1">
             <MapPin className="h-4 w-4" />
             {deal.address}
