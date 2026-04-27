@@ -41,7 +41,7 @@ export default function AboutPlatform() {
           <h2 className="text-4xl md:text-5xl font-medium tracking-tight text-foreground mb-6">
             Built by Golden Hills
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto text-lg leading-relaxed mt-9">
+          <p className="text-muted-foreground max-w-2xl mx-auto text-lg leading-relaxed mt-9" data-nosnippet>
             Asset72 is developed by Golden Hills, an analytics and research
             firm focused on building data-driven decision intelligence platforms.
           </p>
