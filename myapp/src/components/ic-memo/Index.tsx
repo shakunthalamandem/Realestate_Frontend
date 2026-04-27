@@ -9,7 +9,8 @@ import AiInsights from "@/components/ic-memo/AiInsights";
 import ExecutionPriorities from "@/components/ic-memo/ExecutionPriorities";
 import ForwardOutlook from "@/components/ic-memo/ForwardOutlook";
 import { IcMemoTemplateData } from "@/components/ic-memo/types";
-import { ArrowLeft } from "lucide-react";
+import { exportElementToPdf } from "@/lib/pdf-export";
+import { ArrowLeft, Download } from "lucide-react";
 
 const IcMemoIndex = ({
   data,
@@ -20,9 +21,9 @@ const IcMemoIndex = ({
 }) => {
   return (
     <div className="min-h-screen bg-[#f5f7fc]">
-      <div className="mx-auto max-w-[1400px] space-y-5 px-2 py-2 sm:px-3 md:space-y-7 md:py-2 lg:px-4">
-        {onBack ? (
-          <div className="mb-0.5">
+      <div className="mx-auto max-w-[1400px] px-2 py-2 sm:px-3 md:py-2 lg:px-4">
+        <div data-html2canvas-ignore="true" className="mb-3 flex items-center justify-between gap-3">
+          {onBack ? (
             <button
               type="button"
               onClick={onBack}
@@ -31,18 +32,63 @@ const IcMemoIndex = ({
               <ArrowLeft className="h-4 w-4" />
               <span>Back</span>
             </button>
+          ) : (
+            <div />
+          )}
+          <button
+            type="button"
+            onClick={() =>
+              exportElementToPdf({
+                elementId: "ic-memo-pdf-export",
+                fileName: "icmemo",
+                orientation: "l",
+                format: "a3",
+                pageMarginMm: 8,
+                paginateByChildren: true,
+                exportWidthPx: 1587,  // was 1240 — matches A3 landscape content width
+                imageScale: 2,         // add this — prevents canvas OOM at larger widths
+              })
+            }
+            className="inline-flex items-center gap-2 rounded-full bg-[#0A1B54] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#12286A]"
+          >
+            <Download className="h-4 w-4" />
+            <span>Export PDF</span>
+          </button>
+        </div>
+
+        <div id="ic-memo-pdf-export" className="space-y-5 md:space-y-7">
+          <div className="pdf-flow-block bg-[#f5f7fc] p-2">
+            <HeroSection data={data?.hero} />
           </div>
-        ) : null}
-        <HeroSection data={data?.hero} />
-        <KpiStrip items={data?.kpis} />
-        <PerformanceSnapshot data={data?.performanceSnapshot} />
-        <LeasingEngine data={data?.leasingEngine} />
-        <ExpenseIntelligence data={data?.expenseIntelligence} />
-        <RiskRadar data={data?.riskRadar} />
-        <PropertyIntelligence data={data?.propertyIntelligence} />
-        <AiInsights data={data?.aiInsights} />
-        <ExecutionPriorities data={data?.executionPriorities} />
-        <ForwardOutlook data={data?.forwardOutlook} />
+
+          <div className="pdf-flow-block bg-[#f5f7fc] p-2">
+            <KpiStrip items={data?.kpis} />
+          </div>
+
+          <div className="pdf-flow-block bg-[#f5f7fc] p-2">
+            <PerformanceSnapshot data={data?.performanceSnapshot} />
+          </div>
+
+          <div className="pdf-flow-block bg-[#f5f7fc] p-2">
+            <LeasingEngine data={data?.leasingEngine} />
+          </div>
+
+          <div className="pdf-flow-block bg-[#f5f7fc] p-2">
+            <ExpenseIntelligence data={data?.expenseIntelligence} />
+          </div>
+
+          <div className="pdf-flow-block bg-[#f5f7fc] p-2">
+            <RiskRadar data={data?.riskRadar} />
+          </div>
+
+          <PropertyIntelligence data={data?.propertyIntelligence} />
+          <AiInsights data={data?.aiInsights} />
+          <ExecutionPriorities data={data?.executionPriorities} />
+
+          <div className="pdf-flow-block bg-[#f5f7fc] p-2">
+            <ForwardOutlook data={data?.forwardOutlook} />
+          </div>
+        </div>
       </div>
     </div>
   );

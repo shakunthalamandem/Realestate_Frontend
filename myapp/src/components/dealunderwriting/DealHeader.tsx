@@ -1,4 +1,4 @@
-import { Building2, Calendar, DollarSign, MapPin } from "lucide-react";
+import { Building2, Calendar, Download, MapPin } from "lucide-react";
 import type { Deal } from "./data";
 
 const strategyColors: Record<string, string> = {
@@ -12,10 +12,12 @@ export function DealHeader({
   deal,
   isInCompare,
   onAddCompare,
+  onExportPdf,
 }: {
   deal: Deal;
   isInCompare: boolean;
   onAddCompare: (id: string) => void;
+  onExportPdf?: () => void;
 }) {
   const noiLabel = new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -54,17 +56,30 @@ export function DealHeader({
         </div>
       </div>
 
-      <button
-        type="button"
-        onClick={() => onAddCompare(deal.id)}
-        className={`self-start rounded-xl px-5 py-3 text-base font-semibold transition md:text-lg ${
-          isInCompare
-            ? "bg-[#284f88] text-white"
-            : "border-2 border-[#284f88] bg-white text-[#284f88] hover:bg-[#284f88] hover:text-white"
-        }`}
+      <div
+        data-html2canvas-ignore="true"
+        className="flex flex-wrap items-center gap-3 self-start"
       >
-        {isInCompare ? "In Compare" : "+ Add to Compare"}
-      </button>
+        <button
+          type="button"
+          onClick={onExportPdf}
+          className="inline-flex items-center gap-2 rounded-xl border-2 border-[#284f88] bg-white px-5 py-3 text-base font-semibold text-[#284f88] transition hover:bg-[#284f88] hover:text-white md:text-lg"
+        >
+          <Download className="h-4 w-4" />
+          Export PDF
+        </button>
+        <button
+          type="button"
+          onClick={() => onAddCompare(deal.id)}
+          className={`rounded-xl px-5 py-3 text-base font-semibold transition md:text-lg ${
+            isInCompare
+              ? "bg-[#284f88] text-white"
+              : "border-2 border-[#284f88] bg-white text-[#284f88] hover:bg-[#284f88] hover:text-white"
+          }`}
+        >
+          {isInCompare ? "In Compare" : "+ Add to Compare"}
+        </button>
+      </div>
     </section>
   );
 }

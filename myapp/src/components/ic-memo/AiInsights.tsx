@@ -48,10 +48,12 @@ const renderInsightBody = (body?: string | null) => {
 };
 
 const AiInsightCard = ({ title, body, signal = "yellow" }: IcAiInsightItem) => (
-  <div className={`relative overflow-hidden rounded-[18px] px-6 py-5 ${toneStyles[signal].card}`}>
-    <span className={`absolute inset-y-0 left-0 w-1 ${toneStyles[signal].accent}`} />
+  <div
+    className={`relative overflow-hidden rounded-[18px] px-6 py-5 ${toneStyles[signal ?? "yellow"].card}`}
+  >
+    <span className={`absolute inset-y-0 left-0 w-1 ${toneStyles[signal ?? "yellow"].accent}`} />
     <span
-      className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-[0.16em] ${toneStyles[signal].badge}`}
+      className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-[0.16em] ${toneStyles[signal ?? "yellow"].badge}`}
       style={{ fontFamily: "var(--font-display)" }}
     >
       {title ?? ""}
@@ -64,16 +66,16 @@ const AiInsights = ({ data }: { data?: IcAiInsightsData | null }) => {
   const items = data?.items ?? [];
 
   return (
-    <section>
-      <SectionHeader number="08" title="AI-Driven Insights" />
-      <div className="overflow-hidden rounded-[22px] border border-[#D7E2EE] bg-white shadow-[0_10px_30px_rgba(15,23,42,0.05)]">
-        <div className="space-y-4 px-6 py-6 md:px-7">
-          {items.map((item, index) => (
-            <AiInsightCard key={index} {...item} />
-          ))}
-        </div>
-      </div>
-    </section>
+    <>
+      <section className="pdf-flow-block">
+        <SectionHeader number="08" title="AI-Driven Insights" />
+      </section>
+      {items.map((item, index) => (
+        <section key={index} className="pdf-flow-block">
+          <AiInsightCard {...item} />
+        </section>
+      ))}
+    </>
   );
 };
 

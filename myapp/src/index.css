@@ -20,12 +20,29 @@
     font-family: var(--font-body);
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-display);
   }
 }
 
 @layer components {
+  .pdf-page-shell {
+    width: min(100%, 1240px);
+    margin-inline: auto;
+    padding: 16px;
+    overflow: visible;
+  }
+
+  .pdf-flow-block {
+    width: min(100%, 1240px);
+    margin-inline: auto;
+  }
+
   .section-padding {
     @apply px-6 py-20 md:px-8 lg:py-28;
   }
@@ -96,6 +113,7 @@
     opacity: 0;
     transform: translateY(24px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -103,18 +121,24 @@
 }
 
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0px);
   }
+
   50% {
     transform: translateY(-10px);
   }
 }
 
 @keyframes pulse-glow {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 0.4;
   }
+
   50% {
     opacity: 0.8;
   }

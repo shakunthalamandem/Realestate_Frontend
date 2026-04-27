@@ -14,6 +14,7 @@ import { deleteUserDealUnderwriting, getDealById, useDealUnderwritingData } from
 import PfDealUnderwritingUpload from "./pf_dealunderwriting_upload";
 import { Search, Trash2 } from "lucide-react";
 import { isDemoMode } from "@/lib/demo-mode";
+import { exportElementToPdf } from "@/lib/pdf-export";
 
 interface DealUnderwritingLensProps {
   onScreenChange?: (screen: "library" | "upload" | "detail") => void;
@@ -297,15 +298,35 @@ export default function DealUnderwritingLens({ onScreenChange }: DealUnderwritin
       <main className="min-w-0 flex-1 overflow-y-auto bg-[#f8fbff]">
         <div className="mx-auto max-w-[1480px] px-8 py-10 pb-28 2xl:px-10">
           {activeView === "deal" ? (
-            <>
+            <div id="deal-underwriting-pdf-export" className="space-y-6">
               <DealHeader
                 deal={activeDeal}
                 isInCompare={compareIds.includes(activeDeal.id)}
                 onAddCompare={toggleCompare}
+                onExportPdf={() =>
+                  exportElementToPdf({
+                    elementId: "deal-underwriting-pdf-export",
+                    fileName: `dealunderwriting_${activeDeal.name}`,
+                    orientation: "l",
+                    format: "a3",
+                    pageMarginMm: 8,
+                    paginateByChildren: true,
+                    exportWidthPx: 1587,  // was 1240
+                    imageScale: 2,
+                  })
+                }
               />
-              <AISnapshot deal={activeDeal} />
-              <KeyMetrics deal={activeDeal} />
-              <div className="mb-6 grid gap-4 xl:grid-cols-3">
+              <div className="pdf-flow-block space-y-6 bg-[#f8fbff]">
+                <div>
+                  <AISnapshot deal={activeDeal} />
+                </div>
+              </div>
+
+              <div className="pdf-flow-block bg-[#f8fbff]">
+                <KeyMetrics deal={activeDeal} />
+              </div>
+
+              <div className="pdf-flow-block grid gap-4 bg-[#f8fbff] xl:grid-cols-3">
                 <div className="xl:col-span-1">
                   <DealScorecard deal={activeDeal} />
                 </div>
@@ -313,19 +334,25 @@ export default function DealUnderwritingLens({ onScreenChange }: DealUnderwritin
                   <WhatMovesTheDeal deal={activeDeal} />
                 </div>
               </div>
+
               <DealCharts deal={activeDeal} />
-              <RisksOpportunities deal={activeDeal} />
-            </>
+
+              <div className="pdf-flow-block space-y-6 bg-[#f8fbff]">
+                <RisksOpportunities deal={activeDeal} />
+              </div>
+            </div>
           ) : (
             <ComparisonView deals={compareDeals} />
           )}
-          <ComparisonBar
+          <div>
+            <ComparisonBar
             compareIds={compareIds}
             deals={deals}
             onAdd={toggleCompare}
             onRemove={(id) => setCompareIds((current) => current.filter((item) => item !== id))}
             onCompare={() => setActiveView("compare")}
           />
+          </div>
         </div>
       </main>
     </div>

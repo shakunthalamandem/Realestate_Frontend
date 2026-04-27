@@ -160,14 +160,16 @@ const PropertyIntelligence = ({ data }: { data?: IcPropertyIntelligenceData | nu
   const properties = data?.properties ?? [];
 
   return (
-    <section>
-      <SectionHeader number="07" title="Property-Level Intelligence" />
-      <div className="space-y-6">
-        {properties.map((property, index) => (
-          <PropertyCard key={index} property={property} />
-        ))}
-      </div>
-    </section>
+    <>
+      <section className="pdf-flow-block">
+        <SectionHeader number="07" title="Property-Level Intelligence" />
+      </section>
+      {properties.map((property, index) => (
+        <section key={index} className="pdf-flow-block">
+          <PropertyCard property={property} />
+        </section>
+      ))}
+    </>
   );
 };
 
