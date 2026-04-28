@@ -53,7 +53,7 @@ const AiInsightCard = ({ title, body, signal = "yellow" }: IcAiInsightItem) => (
   >
     <span className={`absolute inset-y-0 left-0 w-1 ${toneStyles[signal ?? "yellow"].accent}`} />
     <span
-      className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-[0.16em] ${toneStyles[signal ?? "yellow"].badge}`}
+      className={`inline-flex items-center justify-center whitespace-nowrap rounded-full px-3 py-1 text-[11px] font-bold uppercase leading-none tracking-[0.16em] ${toneStyles[signal ?? "yellow"].badge}`}
       style={{ fontFamily: "var(--font-display)" }}
     >
       {title ?? ""}

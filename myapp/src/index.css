@@ -147,6 +147,21 @@
     line-height: 1.55rem;
   }
 
+  .pdf-page-shell .pdf-report-month-text {
+    position: relative;
+    top: -7px;
+  }
+
+  .pdf-page-shell .pdf-pill-text {
+    position: relative;
+    top: -5px;
+  }
+
+  .pdf-page-shell .pdf-perf-card-text {
+    position: relative;
+    top: -9px;
+  }
+
   .section-padding {
     @apply px-6 py-20 md:px-8 lg:py-28;
   }

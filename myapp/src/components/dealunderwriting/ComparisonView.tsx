@@ -119,11 +119,11 @@ export function ComparisonView({ deals }: { deals: Deal[] }) {
             <div className="flex-1">
               <div className="flex flex-wrap items-center gap-2">
                 <p className="text-3xl font-semibold text-[#102149]">{deal.name}</p>
-                <span className="rounded-full bg-[#eef2f8] px-2 py-1 text-xs font-semibold text-[#607091]">
+                <span className="inline-flex h-6 items-center justify-center whitespace-nowrap rounded-full bg-[#eef2f8] px-2 text-xs font-semibold leading-none text-[#607091]">
                   {deal.strategy}
                 </span>
                 {index === 0 ? (
-                  <span className="rounded-full bg-[#daf8ef] px-2 py-1 text-xs font-semibold text-[#059669]">
+                  <span className="inline-flex h-6 items-center justify-center whitespace-nowrap rounded-full bg-[#daf8ef] px-2 text-xs font-semibold leading-none text-[#059669]">
                     Best Deal
                   </span>
                 ) : null}
@@ -204,7 +204,7 @@ export function ComparisonView({ deals }: { deals: Deal[] }) {
                 const label = deal.scores.riskLevel < 30 ? "Low" : deal.scores.riskLevel < 50 ? "Medium" : "High";
                 return (
                   <td key={deal.id} className="px-4 py-4 text-center">
-                    <span className={`rounded-full px-3 py-1 text-sm font-semibold ${riskClass}`}>{label}</span>
+                    <span className={`inline-flex h-7 items-center justify-center whitespace-nowrap rounded-full px-3 text-sm font-semibold leading-none ${riskClass}`}>{label}</span>
                   </td>
                 );
               })}

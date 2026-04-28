@@ -59,8 +59,8 @@ const PropertyCard = ({ property }: { property?: IcPropertyCardData | null }) =>
             <p className="min-h-[16px] text-sm font-medium text-slate-600">{property?.location ?? ""}</p>
           </div>
         </div>
-        <span className={`rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-[0.2em] ${style.pill}`}>
-          {property?.performance ?? ""}
+        <span className={`inline-flex h-8 items-center justify-center whitespace-nowrap rounded-full px-4 text-xs font-bold uppercase leading-none tracking-[0.2em] ${style.pill}`}>
+          <span className="pdf-pill-text">{property?.performance ?? ""}</span>
         </span>
       </div>
 
@@ -73,11 +73,15 @@ const PropertyCard = ({ property }: { property?: IcPropertyCardData | null }) =>
             const dotClass = metric?.signal ? metricDot[metric.signal] : "bg-slate-300";
             return (
               <div key={index} className="rounded-xl border border-[#0D1B4F] bg-white px-3 py-4 text-center">
-                <div className="mb-1 flex items-center justify-center gap-1.5">
-                  <span className={`h-2 w-2 rounded-full ${dotClass}`} />
-                  <span className="text-[1.65rem] font-bold leading-none text-[#1E293B]">{metric?.value ?? ""}</span>
+                <div className="mb-1 flex h-8 items-center justify-center gap-2">
+                  <span className={`block h-2 w-2 flex-shrink-0 rounded-full ${dotClass}`} />
+                  <span className="pdf-perf-card-text block whitespace-nowrap text-[1.65rem] font-bold leading-none text-[#1E293B]">
+                    {metric?.value ?? ""}
+                  </span>
                 </div>
-                <p className="text-[10px] font-medium uppercase tracking-[0.16em] text-slate-600">{metric?.label ?? ""}</p>
+                <p className="pdf-perf-card-text text-[10px] font-medium uppercase tracking-[0.16em] text-slate-600">
+                  {metric?.label ?? ""}
+                </p>
               </div>
             );
           })}

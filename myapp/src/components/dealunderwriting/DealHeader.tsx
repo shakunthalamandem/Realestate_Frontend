@@ -30,9 +30,10 @@ export function DealHeader({
     <section className="mb-8 flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
       <div>
         <div className="mb-2 flex flex-wrap items-center gap-3">
-          <span className={`rounded-full border px-3 py-1 text-sm font-semibold ${strategyColors[deal.strategy]}`}>
+          <span className={`pdf-pill-text inline-flex h-8 items-center justify-center whitespace-nowrap rounded-full border px-3 text-sm font-semibold leading-none ${strategyColors[deal.strategy]}`}>
             {deal.strategy}
           </span>
+
           <h2 className="break-words text-2xl font-semibold text-[#102149] md:text-3xl xl:text-4xl">{deal.name}</h2>
         </div>
 
@@ -71,11 +72,10 @@ export function DealHeader({
         <button
           type="button"
           onClick={() => onAddCompare(deal.id)}
-          className={`rounded-xl px-5 py-3 text-base font-semibold transition md:text-lg ${
-            isInCompare
+          className={`rounded-xl px-5 py-3 text-base font-semibold transition md:text-lg ${isInCompare
               ? "bg-[#284f88] text-white"
               : "border-2 border-[#284f88] bg-white text-[#284f88] hover:bg-[#284f88] hover:text-white"
-          }`}
+            }`}
         >
           {isInCompare ? "In Compare" : "+ Add to Compare"}
         </button>

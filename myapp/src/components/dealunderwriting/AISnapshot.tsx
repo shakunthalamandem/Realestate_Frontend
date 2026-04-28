@@ -22,7 +22,7 @@ export function AISnapshot({ deal }: { deal: Deal }) {
           <div>
             <p className="text-md text-[#d7e5ff]">Recommendation</p>
             <span
-              className={`mt-2 inline-flex rounded-full border px-3 py-1 text-md font-semibold ${
+              className={`mt-2 inline-flex h-8 items-center justify-center whitespace-nowrap rounded-full border px-4 text-sm font-semibold leading-none ${
                 signalStyles[deal.signal]
               }`}
             >
