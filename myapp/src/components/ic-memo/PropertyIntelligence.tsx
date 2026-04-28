@@ -72,7 +72,7 @@ const PropertyCard = ({ property }: { property?: IcPropertyCardData | null }) =>
           {metrics.map((metric, index) => {
             const dotClass = metric?.signal ? metricDot[metric.signal] : "bg-slate-300";
             return (
-              <div key={index} className="rounded-xl border border-[#E2E8F0] bg-white px-3 py-4 text-center">
+              <div key={index} className="rounded-xl border border-[#0D1B4F] bg-white px-3 py-4 text-center">
                 <div className="mb-1 flex items-center justify-center gap-1.5">
                   <span className={`h-2 w-2 rounded-full ${dotClass}`} />
                   <span className="text-[1.65rem] font-bold leading-none text-[#1E293B]">{metric?.value ?? ""}</span>
