@@ -11,17 +11,17 @@ const ExecutionPriorities = ({ data }: { data?: IcExecutionPrioritiesData | null
   const items = data?.items ?? [];
 
   return (
-    <>
-      <section className="pdf-flow-block">
+    <section className="pdf-flow-block">
+      <div className="space-y-1">
         <SectionHeader number="09" title="Execution Priorities" />
-      </section>
-      {Array.from({ length: Math.max(items.length, 5) }).map((_, index) => {
-        const item = items[index];
-        const priority = item?.priority ?? "MONITOR";
-        const style = priorityStyles[priority];
+      </div>
+      <div className="space-y-1">
+        {Array.from({ length: Math.max(items.length, 5) }).map((_, index) => {
+          const item = items[index];
+          const priority = item?.priority ?? "MONITOR";
+          const style = priorityStyles[priority];
 
-        return (
-          <section key={index} className="pdf-flow-block">
+          return (
             <div className="rounded-xl border border-[#E2E8F0] bg-white px-5 py-5 transition-shadow hover:shadow-sm">
               <div className="flex items-start gap-4">
                 <div className={`flex h-9 min-w-[84px] flex-shrink-0 items-center justify-center rounded-lg px-3 ${style.bg}`}>
@@ -39,10 +39,10 @@ const ExecutionPriorities = ({ data }: { data?: IcExecutionPrioritiesData | null
                 </div>
               </div>
             </div>
-          </section>
-        );
-      })}
-    </>
+          );
+        })}
+      </div>
+    </section>
   );
 };
 
