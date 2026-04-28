@@ -1,4 +1,49 @@
 import { IcMemoTemplateData } from "./types";
+import { ExpenseCategory } from "../portfolio_intelligence/portfolio_analytics_types";
+
+const fmtMoney = (value?: number | null) =>
+  value === undefined || value === null
+    ? "-"
+    : `$${Math.round(value).toLocaleString()}`;
+
+const fmtPercentFromDecimal = (value?: number | null) =>
+  value === undefined || value === null
+    ? "0.0%"
+    : `${value >= 0 ? "+" : ""}${(value * 100).toFixed(1)}%`;
+
+const demoExpenseCategories: ExpenseCategory[] = [
+  { name: "Renting", current: 131483.94, yoyGrowthPercent: 0.93, perUnit: 400 },
+  { name: "Administrative", current: 173974, yoyGrowthPercent: 0.28, perUnit: 530 },
+  { name: "Payroll", current: 1007669, yoyGrowthPercent: -0.12, perUnit: 3072 },
+  { name: "Operating Expenses", current: 133460, yoyGrowthPercent: -0.23, perUnit: 406.89 },
+  { name: "Utilities", current: 698171, yoyGrowthPercent: -0.234, perUnit: 2128 },
+  { name: "Maintenance", current: 409640, yoyGrowthPercent: 0.1, perUnit: 1248 },
+  { name: "Grounds", current: 126261, yoyGrowthPercent: 0.578, perUnit: 384 },
+  { name: "Management Fees", current: 346642, yoyGrowthPercent: -0.006, perUnit: 1056 },
+  { name: "Professional Fees", current: 15000, yoyGrowthPercent: 0.5, perUnit: 45 },
+  { name: "Taxes", current: 924497.25, yoyGrowthPercent: -0.54, perUnit: 2818 },
+  { name: "Insurance", current: 181527, yoyGrowthPercent: -0.106, perUnit: 553 },
+];
+
+const demoExpenseIncreases = demoExpenseCategories
+  .filter((category) => (category.yoyGrowthPercent ?? 0) > 0)
+  .sort((a, b) => (b.yoyGrowthPercent ?? 0) - (a.yoyGrowthPercent ?? 0))
+  .map((category) => ({
+    label: category.name ?? "",
+    change: fmtPercentFromDecimal(category.yoyGrowthPercent),
+    amount: fmtMoney(category.current),
+    reason: `Per unit ${fmtMoney(category.perUnit)}`,
+  }));
+
+const demoExpenseDecreases = demoExpenseCategories
+  .filter((category) => (category.yoyGrowthPercent ?? 0) < 0)
+  .sort((a, b) => (a.yoyGrowthPercent ?? 0) - (b.yoyGrowthPercent ?? 0))
+  .map((category) => ({
+    label: category.name ?? "",
+    change: fmtPercentFromDecimal(category.yoyGrowthPercent),
+    amount: fmtMoney(category.current),
+    reason: `Per unit ${fmtMoney(category.perUnit)}`,
+  }));
 
 export const icMemoMockData: IcMemoTemplateData = {
   hero: {
@@ -148,46 +193,8 @@ export const icMemoMockData: IcMemoTemplateData = {
     ],
   },
   expenseIntelligence: {
-    increases: [
-      {
-        label: "Payroll & Benefits",
-        change: "+8.2%",
-        amount: "+$31K/mo",
-        reason: "Wage adjustments",
-      },
-      {
-        label: "Utilities",
-        change: "+4.1%",
-        amount: "+$14K/mo",
-        reason: "Seasonal",
-      },
-      {
-        label: "Contract Services",
-        change: "+2.8%",
-        amount: "+$9K/mo",
-        reason: "New contracts",
-      },
-    ],
-    decreases: [
-      {
-        label: "Property Taxes",
-        change: "-12.4%",
-        amount: "-$62K/mo",
-        reason: "Reassessment wins",
-      },
-      {
-        label: "Insurance",
-        change: "-6.1%",
-        amount: "-$18K/mo",
-        reason: "Policy renegotiation",
-      },
-      {
-        label: "R&M",
-        change: "-9.3%",
-        amount: "-$24K/mo",
-        reason: "Timing deferral",
-      },
-    ],
+    increases: demoExpenseIncreases,
+    decreases: demoExpenseDecreases,
     efficiency: {
       statusTitle: "Improving",
       statusSubtitle:
