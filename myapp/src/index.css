@@ -44,6 +44,109 @@
     margin-inline: auto;
   }
 
+  .pdf-page-shell .deal-underwriting-first-page {
+    row-gap: 16px;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page > section,
+  .pdf-page-shell .deal-underwriting-first-page > div > section {
+    margin-bottom: 0;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page > section:first-child {
+    margin-bottom: 0;
+    gap: 16px;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page .mb-8 {
+    margin-bottom: 1rem;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page .mb-6 {
+    margin-bottom: 1rem;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page .rounded-2xl {
+    border-radius: 18px;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page .p-6 {
+    padding: 1.1rem;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page .px-4 {
+    padding-left: 0.9rem;
+    padding-right: 0.9rem;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page .py-4 {
+    padding-top: 0.9rem;
+    padding-bottom: 0.9rem;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page .mt-3 {
+    margin-top: 0.55rem;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page .mt-2 {
+    margin-top: 0.4rem;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page .grid.gap-6 {
+    gap: 1rem;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page .grid.gap-4 {
+    gap: 0.85rem;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page .space-y-5 > :not([hidden]) ~ :not([hidden]) {
+    margin-top: 0.85rem;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page .space-y-6 > :not([hidden]) ~ :not([hidden]) {
+    margin-top: 0.9rem;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page h2.text-2xl,
+  .pdf-page-shell .deal-underwriting-first-page h2.md\:text-3xl,
+  .pdf-page-shell .deal-underwriting-first-page h2.xl\:text-4xl {
+    font-size: 2rem;
+    line-height: 1.1;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page .text-\[2rem\] {
+    font-size: 1.75rem;
+    line-height: 1.1;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page .text-4xl {
+    font-size: 2.25rem;
+    line-height: 1.05;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page .text-xl {
+    font-size: 1.05rem;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page .text-lg {
+    font-size: 0.95rem;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page .text-base,
+  .pdf-page-shell .deal-underwriting-first-page .md\:text-lg {
+    font-size: 0.92rem;
+    line-height: 1.45;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page .text-sm {
+    font-size: 0.8rem;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page .leading-7 {
+    line-height: 1.55rem;
+  }
+
   .section-padding {
     @apply px-6 py-20 md:px-8 lg:py-28;
   }

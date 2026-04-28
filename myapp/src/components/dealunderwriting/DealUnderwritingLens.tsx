@@ -299,39 +299,37 @@ export default function DealUnderwritingLens({ onScreenChange }: DealUnderwritin
         <div className="mx-auto max-w-[1480px] px-8 py-10 pb-28 2xl:px-10">
           {activeView === "deal" ? (
             <div id="deal-underwriting-pdf-export" className="space-y-6">
-              <DealHeader
-                deal={activeDeal}
-                isInCompare={compareIds.includes(activeDeal.id)}
-                onAddCompare={toggleCompare}
-                onExportPdf={() =>
-                  exportElementToPdf({
-                    elementId: "deal-underwriting-pdf-export",
-                    fileName: `dealunderwriting_${activeDeal.name}`,
-                    orientation: "l",
-                    format: "a3",
-                    pageMarginMm: 8,
-                    paginateByChildren: true,
-                    exportWidthPx: 1587,  // was 1240
-                    imageScale: 2,
-                  })
-                }
-              />
-              <div className="pdf-flow-block space-y-6 bg-[#f8fbff]">
+              <div className="pdf-flow-block deal-underwriting-first-page space-y-5 ">
+                <DealHeader
+                  deal={activeDeal}
+                  isInCompare={compareIds.includes(activeDeal.id)}
+                  onAddCompare={toggleCompare}
+                  onExportPdf={() =>
+                    exportElementToPdf({
+                      elementId: "deal-underwriting-pdf-export",
+                      fileName: `dealunderwriting_${activeDeal.name}`,
+                      orientation: "l",
+                      format: "a3",
+                      pageMarginMm: 8,
+                      paginateByChildren: true,
+                      exportWidthPx: 1587,  // was 1240
+                      imageScale: 2,
+                    })
+                  }
+                />
                 <div>
                   <AISnapshot deal={activeDeal} />
                 </div>
-              </div>
-
-              <div className="pdf-flow-block bg-[#f8fbff]">
-                <KeyMetrics deal={activeDeal} />
-              </div>
-
-              <div className="pdf-flow-block grid gap-4 bg-[#f8fbff] xl:grid-cols-3">
-                <div className="xl:col-span-1">
-                  <DealScorecard deal={activeDeal} />
+                <div>
+                  <KeyMetrics deal={activeDeal} />
                 </div>
-                <div className="xl:col-span-2">
-                  <WhatMovesTheDeal deal={activeDeal} />
+                <div className="grid gap-4 xl:grid-cols-3">
+                  <div className="xl:col-span-1">
+                    <DealScorecard deal={activeDeal} />
+                  </div>
+                  <div className="xl:col-span-2">
+                    <WhatMovesTheDeal deal={activeDeal} />
+                  </div>
                 </div>
               </div>
 
