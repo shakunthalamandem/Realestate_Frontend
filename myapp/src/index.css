@@ -34,8 +34,9 @@
   .pdf-page-shell {
     width: min(100%, 1240px);
     margin-inline: auto;
-    padding: 16px;
+    padding: 18px;
     overflow: visible;
+    background: #eef3f8;
   }
 
   .pdf-flow-block {

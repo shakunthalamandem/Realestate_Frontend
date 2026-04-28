@@ -57,35 +57,42 @@ const IcMemoIndex = ({
         </div>
 
         <div id="ic-memo-pdf-export" className="space-y-5 md:space-y-7">
-          <div className="pdf-flow-block bg-[#f5f7fc] p-2">
-            <HeroSection data={data?.hero} />
+          <div className="pdf-flow-block">
+            <div className="space-y-4">
+              <HeroSection data={data?.hero} />
+              <div>
+                <KpiStrip items={data?.kpis} />
+              </div>
+            </div>
           </div>
 
-          <div className="pdf-flow-block bg-[#f5f7fc] p-2">
-            <KpiStrip items={data?.kpis} />
+          <div className="pdf-flow-block">
+            <div className="space-y-4">
+              <div>
+                <PerformanceSnapshot data={data?.performanceSnapshot} />
+              </div>
+              <div>
+                <LeasingEngine data={data?.leasingEngine} />
+              </div>
+            </div>
           </div>
 
-          <div className="pdf-flow-block bg-[#f5f7fc] p-2">
-            <PerformanceSnapshot data={data?.performanceSnapshot} />
-          </div>
-
-          <div className="pdf-flow-block bg-[#f5f7fc] p-2">
-            <LeasingEngine data={data?.leasingEngine} />
-          </div>
-
-          <div className="pdf-flow-block bg-[#f5f7fc] p-2">
-            <ExpenseIntelligence data={data?.expenseIntelligence} />
-          </div>
-
-          <div className="pdf-flow-block bg-[#f5f7fc] p-2">
-            <RiskRadar data={data?.riskRadar} />
+          <div className="pdf-flow-block">
+            <div className="space-y-4">
+              <div>
+                <ExpenseIntelligence data={data?.expenseIntelligence} />
+              </div>
+              <div>
+                <RiskRadar data={data?.riskRadar} />
+              </div>
+            </div>
           </div>
 
           <PropertyIntelligence data={data?.propertyIntelligence} />
           <AiInsights data={data?.aiInsights} />
           <ExecutionPriorities data={data?.executionPriorities} />
 
-          <div className="pdf-flow-block bg-[#f5f7fc] p-2">
+          <div className="pdf-flow-block">
             <ForwardOutlook data={data?.forwardOutlook} />
           </div>
         </div>

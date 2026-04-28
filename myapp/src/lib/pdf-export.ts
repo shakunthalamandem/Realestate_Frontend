@@ -129,11 +129,11 @@ function buildPaginatedTargets(
     const page = document.createElement("div");
     page.className = "pdf-page-shell";
     page.style.width = `${exportWidthPx}px`;
-    page.style.minHeight = "0";         // override CSS min-height
+    page.style.minHeight = `${pageHeightPx}px`;
     page.style.overflow = "visible";    // override CSS overflow:hidden
-    page.style.background = "#ffffff";
+    page.style.background = "#eef3f8";
     page.style.boxSizing = "border-box";
-    page.style.padding = "16px";
+    page.style.padding = "18px";
     page.setAttribute("data-pdf-generated-page", "true");
     host.appendChild(page);
     pages.push(page);
@@ -253,7 +253,7 @@ export async function exportElementToPdf({
         scale: imageScale,
         useCORS: true,
         allowTaint: true,
-        backgroundColor: "#ffffff",
+        backgroundColor: "#eef3f8",
         logging: false,
         scrollX: 0,
         scrollY: -window.scrollY,
@@ -269,6 +269,9 @@ export async function exportElementToPdf({
       if (index > 0) {
         pdf.addPage(format, orientation);
       }
+
+      pdf.setFillColor(238, 243, 248);
+      pdf.rect(0, 0, pageWidthMm, pageHeightMm, "F");
 
       pdf.addImage(
         imageData,
