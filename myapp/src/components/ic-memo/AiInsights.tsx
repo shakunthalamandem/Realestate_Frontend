@@ -56,7 +56,7 @@ const AiInsightCard = ({ title, body, signal = "yellow" }: IcAiInsightItem) => (
       className={`inline-flex items-center justify-center whitespace-nowrap rounded-full px-3 py-1 text-[11px] font-bold uppercase leading-none tracking-[0.16em] ${toneStyles[signal ?? "yellow"].badge}`}
       style={{ fontFamily: "var(--font-display)" }}
     >
-      {title ?? ""}
+      <span className="pdf-pill-text">{title ?? ""}</span>
     </span>
     <p className="mt-4 pr-2 text-[15px] leading-9 text-[#23395B]">{renderInsightBody(body)}</p>
   </div>

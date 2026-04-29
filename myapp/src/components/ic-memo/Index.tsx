@@ -45,8 +45,20 @@ const IcMemoIndex = ({
                 format: "a3",
                 pageMarginMm: 8,
                 paginateByChildren: true,
-                exportWidthPx: 1587,  // was 1240 — matches A3 landscape content width
-                imageScale: 2,         // add this — prevents canvas OOM at larger widths
+                exportWidthPx: 1587,
+                imageScale: 2,
+                backgroundColor: "#dbe3ff",
+                pageBackgroundColors: [
+                  "#dbe3ff",
+                  "#ece1f5",
+                  "#def0e8",
+                  "#e6e0eb",
+                  "#dbe3ff",
+                  "#ece1f5",
+                  "#def0e8",
+                  "#e6e0eb",
+                  "#dbe3ff",
+                ],
               })
             }
             className="inline-flex items-center gap-2 rounded-full bg-[#0A1B54] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#12286A]"

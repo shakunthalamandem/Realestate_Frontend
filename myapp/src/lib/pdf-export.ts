@@ -11,7 +11,28 @@ type ExportPdfOptions = {
   imageScale?: number;
   paginateByChildren?: boolean;
   exportWidthPx?: number;
+  backgroundColor?: string;
+  pageBackgroundColors?: string[];
+  generatedPagePaddingPx?: number;
 };
+
+function normalizeHexColor(color: string) {
+  const hex = color.replace("#", "");
+  return hex.length === 3
+    ? hex
+        .split("")
+        .map((char) => `${char}${char}`)
+        .join("")
+    : hex.padEnd(6, "0").slice(0, 6);
+}
+
+function getPageBackgroundColor(
+  index: number,
+  backgroundColor: string,
+  pageBackgroundColors?: string[]
+) {
+  return pageBackgroundColors?.[index] ?? backgroundColor;
+}
 
 function sanitizeFileName(value: string) {
   const normalized = value
@@ -105,7 +126,10 @@ function buildPaginatedTargets(
   container: HTMLElement,
   pageAspectRatio: number,
   exportWidthPx: number,
-  canvasSnapshots: Map<number, string>
+  canvasSnapshots: Map<number, string>,
+  backgroundColor: string,
+  pageBackgroundColors?: string[],
+  generatedPagePaddingPx = 18
 ) {
   const host = document.createElement("div");
   host.style.position = "fixed";
@@ -126,15 +150,24 @@ function buildPaginatedTargets(
   const pages: HTMLElement[] = [];
 
   const createPage = () => {
+    const pageIndex = pages.length;
+    const pageBackgroundColor = getPageBackgroundColor(
+      pageIndex,
+      backgroundColor,
+      pageBackgroundColors
+    );
     const page = document.createElement("div");
     page.className = "pdf-page-shell";
     page.style.width = `${exportWidthPx}px`;
     page.style.minHeight = `${pageHeightPx}px`;
     page.style.overflow = "visible";    // override CSS overflow:hidden
-    page.style.background = "#eef3f8";
+    page.style.setProperty("background", pageBackgroundColor, "important");
+    page.style.setProperty("background-color", pageBackgroundColor, "important");
     page.style.boxSizing = "border-box";
-    page.style.padding = "18px";
+    page.style.padding = `${generatedPagePaddingPx}px`;
+    page.style.setProperty("--pdf-page-bg", pageBackgroundColor);
     page.setAttribute("data-pdf-generated-page", "true");
+    page.dataset.pdfPageBg = pageBackgroundColor;
     host.appendChild(page);
     pages.push(page);
     return page;
@@ -148,6 +181,9 @@ function buildPaginatedTargets(
 
     // Inject canvas snapshots into this cloned block
     injectCanvasSnapshots(clone, canvasSnapshots, container);
+    // Make clone transparent so the page-shell bg shows through uniformly
+    clone.style.background = "transparent";
+    clone.style.backgroundColor = "transparent";
 
     currentPage.appendChild(clone);
 
@@ -202,6 +238,9 @@ export async function exportElementToPdf({
   imageScale = 3,
   paginateByChildren = false,
   exportWidthPx = 1240,
+  backgroundColor = "#eef3f8",
+  pageBackgroundColors,
+  generatedPagePaddingPx = 18,
 }: ExportPdfOptions) {
   const pdf = new jsPDF({
     orientation,
@@ -236,7 +275,10 @@ export async function exportElementToPdf({
             ids[0],
             pageAspectRatio,
             exportWidthPx,
-            canvasSnapshots
+            canvasSnapshots,
+            backgroundColor,
+            pageBackgroundColors,
+            generatedPagePaddingPx
           );
           cleanupGeneratedPages = cleanup;
           return pages;
@@ -246,6 +288,9 @@ export async function exportElementToPdf({
   try {
     for (let index = 0; index < targets.length; index += 1) {
       const target = targets[index];
+      const pageBackgroundColor =
+        target.dataset.pdfPageBg ??
+        getPageBackgroundColor(index, backgroundColor, pageBackgroundColors);
 
       await waitForImages(target);
 
@@ -253,7 +298,7 @@ export async function exportElementToPdf({
         scale: imageScale,
         useCORS: true,
         allowTaint: true,
-        backgroundColor: "#eef3f8",
+        backgroundColor: pageBackgroundColor,
         logging: false,
         scrollX: 0,
         scrollY: -window.scrollY,
@@ -270,7 +315,12 @@ export async function exportElementToPdf({
         pdf.addPage(format, orientation);
       }
 
-      pdf.setFillColor(238, 243, 248);
+      const normalizedHex = normalizeHexColor(pageBackgroundColor);
+      const red = Number.parseInt(normalizedHex.slice(0, 2), 16);
+      const green = Number.parseInt(normalizedHex.slice(2, 4), 16);
+      const blue = Number.parseInt(normalizedHex.slice(4, 6), 16);
+
+      pdf.setFillColor(red, green, blue);
       pdf.rect(0, 0, pageWidthMm, pageHeightMm, "F");
 
       pdf.addImage(

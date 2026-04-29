@@ -314,6 +314,14 @@ export default function DealUnderwritingLens({ onScreenChange }: DealUnderwritin
                       paginateByChildren: true,
                       exportWidthPx: 1587,  // was 1240
                       imageScale: 2,
+                      backgroundColor: "#dce4ef",
+                      pageBackgroundColors: [
+                        "#dce4ef",
+                        "#e9e3eb",
+                        "#e1ebe3",
+                        "#f2ebe4",
+                      ],
+                      generatedPagePaddingPx: 0,
                     })
                   }
                 />
@@ -335,7 +343,7 @@ export default function DealUnderwritingLens({ onScreenChange }: DealUnderwritin
 
               <DealCharts deal={activeDeal} />
 
-              <div className="pdf-flow-block space-y-6 bg-[#f8fbff]">
+              <div className="pdf-flow-block space-y-6">
                 <RisksOpportunities deal={activeDeal} />
               </div>
             </div>
