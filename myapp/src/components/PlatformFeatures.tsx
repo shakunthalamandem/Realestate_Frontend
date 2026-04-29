@@ -107,7 +107,7 @@ const PlatformFeatures = () => {
                   key={tab.label}
                   type="button"
                   onClick={() => tab.route && guardNavigation(tab.route)}
-                  className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-blue-200 border border-border text-sm font-medium text-foreground transition hover:border-foreground/40"
+                  className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-white border border-border text-sm font-medium text-foreground transition hover:border-foreground/40"
                 >
                   {tab.label}
                 </button>

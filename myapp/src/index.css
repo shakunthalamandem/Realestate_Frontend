@@ -29,8 +29,11 @@ body:has(.home-theme-dark) {
 .home-theme-dark .bg-card,
 .home-theme-dark .bg-card\/90,
 .home-theme-dark .bg-white,
+.home-theme-dark .bg-white\/60,
+.home-theme-dark .bg-white\/40,
+.home-theme-dark .bg-white\/80,
 .home-theme-dark .bg-muted {
-  background-color: #0f172a !important;
+  background-color: #0b1220 !important;
 }
 .home-theme-dark .bg-background {
   background-color: #0a0f1f !important;
@@ -38,6 +41,7 @@ body:has(.home-theme-dark) {
 /* Text colors */
 .home-theme-dark,
 .home-theme-dark .text-foreground,
+.home-theme-dark .text-black,
 .home-theme-dark .text-\[\#2b0f66\],
 .home-theme-dark .text-primary {
   color: #e6edf7 !important;
