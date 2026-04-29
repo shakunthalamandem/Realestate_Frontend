@@ -1,5 +1,5 @@
 import { ScrollReveal } from "./ScrollReveal";
-import { Brain, Radar, Search } from "lucide-react";
+import { Brain,LineChart, Radar, Search } from "lucide-react";
 import portfolioDashboard from "../assets/portfoli_intelligence.png";
 import marketRadar from "../assets/market_signal_radar.png";
 import dealLens from "../assets/deal_lens.png";
@@ -10,8 +10,8 @@ import { productRoutes } from "@/lib/product-routes";
 
 const features = [
   {
-    icon: Brain,
-    emoji: "🧠",
+    icon: LineChart,
+    emoji: "📈",
     title: "Portfolio Intelligence",
     subheading: "We don’t react to risk.We detect it early and act before it impacts NOI.",
     subtitle: "Protect NOI before it erodes — not after.",
