@@ -47,6 +47,7 @@ const asset72Colors = {
 
 export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  darkMode: ['class', '.home-theme-dark'],
   theme: {
     extend: {
       colors: {

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { Button } from "../components/ui/button";
-import { LogOut, Menu, X } from "lucide-react";
+import { LogOut, Menu, Moon, Sun, X } from "lucide-react";
 import AccessBlockedModal from "./AccessBlockedModal";
 import BrandLogo from "./BrandLogo";
 import { useLoginGuard } from "@/hooks/use-login-guard";
@@ -58,7 +58,12 @@ const getAvatarTheme = (value: string) => {
   return profileAvatarThemes[Math.abs(hash) % profileAvatarThemes.length];
 };
 
-const Navbar = () => {
+type NavbarProps = {
+  theme?: "light" | "dark";
+  onToggleTheme?: () => void;
+};
+
+const Navbar = ({ theme, onToggleTheme }: NavbarProps = {}) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
@@ -183,6 +188,20 @@ const Navbar = () => {
           >
             Sample
           </Button>
+          {onToggleTheme && (
+            <button
+              type="button"
+              onClick={onToggleTheme}
+              aria-label="Toggle theme"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:bg-muted"
+            >
+              {theme === "dark" ? (
+                <Sun className="h-5 w-5" />
+              ) : (
+                <Moon className="h-5 w-5" />
+              )}
+            </button>
+          )}
           {loggedIn ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

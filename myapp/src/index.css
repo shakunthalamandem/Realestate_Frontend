@@ -10,6 +10,63 @@
   --font-auth: 'Poppins', sans-serif;
 }
 
+/* Home page dark theme — scoped to .home-theme-dark wrapper only */
+body:has(.home-theme-dark) {
+  background-color: #0a0f1f;
+}
+.home-theme-dark {
+  background-color: #0a0f1f;
+  color: #e6edf7;
+}
+/* Section gradients (use background shorthand to beat linear-gradient) */
+.home-theme-dark .section-soft {
+  background: linear-gradient(180deg, #0a0f1f 0%, #0f172a 100%) !important;
+}
+.home-theme-dark .section-soft-alt {
+  background: linear-gradient(180deg, #0f172a 0%, #0a0f1f 100%) !important;
+}
+/* Solid background utilities */
+.home-theme-dark .bg-card,
+.home-theme-dark .bg-card\/90,
+.home-theme-dark .bg-white,
+.home-theme-dark .bg-muted {
+  background-color: #0f172a !important;
+}
+.home-theme-dark .bg-background {
+  background-color: #0a0f1f !important;
+}
+/* Text colors */
+.home-theme-dark,
+.home-theme-dark .text-foreground,
+.home-theme-dark .text-\[\#2b0f66\],
+.home-theme-dark .text-primary {
+  color: #e6edf7 !important;
+}
+.home-theme-dark .text-muted-foreground {
+  color: #94a3c4 !important;
+}
+/* Borders */
+.home-theme-dark .border-border,
+.home-theme-dark .border-t,
+.home-theme-dark .border-b {
+  border-color: #1e293b !important;
+}
+/* Brand gradient text — switch to lighter colors for dark bg */
+.home-theme-dark .gradient-text {
+  background: linear-gradient(135deg, #86e0cf 0%, #5de0c4 55%, #1ebc9a 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+.home-theme-dark .hero-image-shadow {
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6) !important;
+}
+/* Card-glass */
+.home-theme-dark .card-glass {
+  background-color: #0f172a !important;
+  border-color: #1e293b !important;
+}
+
 @layer base {
   * {
     @apply border-border;
