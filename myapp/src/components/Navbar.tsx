@@ -186,7 +186,7 @@ const Navbar = ({ theme, onToggleTheme }: NavbarProps = {}) => {
               navigate(productRoutes.portfolioIntelligence);
             }}
           >
-            Sample
+            Demo
           </Button>
           {onToggleTheme && (
             <button
