@@ -10,6 +10,67 @@
   --font-auth: 'Poppins', sans-serif;
 }
 
+/* Home page dark theme — scoped to .home-theme-dark wrapper only */
+body:has(.home-theme-dark) {
+  background-color: #0a0f1f;
+}
+.home-theme-dark {
+  background-color: #0a0f1f;
+  color: #e6edf7;
+}
+/* Section gradients (use background shorthand to beat linear-gradient) */
+.home-theme-dark .section-soft {
+  background: linear-gradient(180deg, #0a0f1f 0%, #0f172a 100%) !important;
+}
+.home-theme-dark .section-soft-alt {
+  background: linear-gradient(180deg, #0f172a 0%, #0a0f1f 100%) !important;
+}
+/* Solid background utilities */
+.home-theme-dark .bg-card,
+.home-theme-dark .bg-card\/90,
+.home-theme-dark .bg-white,
+.home-theme-dark .bg-white\/60,
+.home-theme-dark .bg-white\/40,
+.home-theme-dark .bg-white\/80,
+.home-theme-dark .bg-muted {
+  background-color: #0b1220 !important;
+}
+.home-theme-dark .bg-background {
+  background-color: #0a0f1f !important;
+}
+/* Text colors */
+.home-theme-dark,
+.home-theme-dark .text-foreground,
+.home-theme-dark .text-black,
+.home-theme-dark .text-\[\#2b0f66\],
+.home-theme-dark .text-primary {
+  color: #e6edf7 !important;
+}
+.home-theme-dark .text-muted-foreground {
+  color: #94a3c4 !important;
+}
+/* Borders */
+.home-theme-dark .border-border,
+.home-theme-dark .border-t,
+.home-theme-dark .border-b {
+  border-color: #1e293b !important;
+}
+/* Brand gradient text — switch to lighter colors for dark bg */
+.home-theme-dark .gradient-text {
+  background: linear-gradient(135deg, #86e0cf 0%, #5de0c4 55%, #1ebc9a 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+.home-theme-dark .hero-image-shadow {
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6) !important;
+}
+/* Card-glass */
+.home-theme-dark .card-glass {
+  background-color: #0f172a !important;
+  border-color: #1e293b !important;
+}
+
 @layer base {
   * {
     @apply border-border;
@@ -20,12 +81,148 @@
     font-family: var(--font-body);
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-display);
   }
 }
 
 @layer components {
+  .pdf-page-shell {
+    width: min(100%, 1240px);
+    margin-inline: auto;
+    padding: 18px;
+    overflow: visible;
+    background: #eef3f8;
+  }
+
+  .pdf-flow-block {
+    width: min(100%, 1240px);
+    margin-inline: auto;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page {
+    row-gap: 16px;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page > section,
+  .pdf-page-shell .deal-underwriting-first-page > div > section {
+    margin-bottom: 0;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page > section:first-child {
+    margin-bottom: 0;
+    gap: 16px;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page .mb-8 {
+    margin-bottom: 1rem;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page .mb-6 {
+    margin-bottom: 1rem;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page .rounded-2xl {
+    border-radius: 18px;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page .p-6 {
+    padding: 1.1rem;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page .px-4 {
+    padding-left: 0.9rem;
+    padding-right: 0.9rem;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page .py-4 {
+    padding-top: 0.9rem;
+    padding-bottom: 0.9rem;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page .mt-3 {
+    margin-top: 0.55rem;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page .mt-2 {
+    margin-top: 0.4rem;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page .grid.gap-6 {
+    gap: 1rem;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page .grid.gap-4 {
+    gap: 0.85rem;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page .space-y-5 > :not([hidden]) ~ :not([hidden]) {
+    margin-top: 0.85rem;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page .space-y-6 > :not([hidden]) ~ :not([hidden]) {
+    margin-top: 0.9rem;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page h2.text-2xl,
+  .pdf-page-shell .deal-underwriting-first-page h2.md\:text-3xl,
+  .pdf-page-shell .deal-underwriting-first-page h2.xl\:text-4xl {
+    font-size: 2rem;
+    line-height: 1.1;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page .text-\[2rem\] {
+    font-size: 1.75rem;
+    line-height: 1.1;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page .text-4xl {
+    font-size: 2.25rem;
+    line-height: 1.05;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page .text-xl {
+    font-size: 1.05rem;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page .text-lg {
+    font-size: 0.95rem;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page .text-base,
+  .pdf-page-shell .deal-underwriting-first-page .md\:text-lg {
+    font-size: 0.92rem;
+    line-height: 1.45;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page .text-sm {
+    font-size: 0.8rem;
+  }
+
+  .pdf-page-shell .deal-underwriting-first-page .leading-7 {
+    line-height: 1.55rem;
+  }
+
+  .pdf-page-shell .pdf-report-month-text {
+    position: relative;
+    top: -7px;
+  }
+
+  .pdf-page-shell .pdf-pill-text {
+    position: relative;
+    top: -5px;
+  }
+
+  .pdf-page-shell .pdf-perf-card-text {
+    position: relative;
+    top: -9px;
+  }
+
   .section-padding {
     @apply px-6 py-20 md:px-8 lg:py-28;
   }
@@ -96,6 +293,7 @@
     opacity: 0;
     transform: translateY(24px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -103,18 +301,24 @@
 }
 
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0px);
   }
+
   50% {
     transform: translateY(-10px);
   }
 }
 
 @keyframes pulse-glow {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 0.4;
   }
+
   50% {
     opacity: 0.8;
   }

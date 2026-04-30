@@ -1,5 +1,5 @@
 import { ScrollReveal } from "./ScrollReveal";
-import { Brain, Radar, Search } from "lucide-react";
+import { Brain,LineChart, Radar, Search } from "lucide-react";
 import portfolioDashboard from "../assets/portfoli_intelligence.png";
 import marketRadar from "../assets/market_signal_radar.png";
 import dealLens from "../assets/deal_lens.png";
@@ -10,8 +10,8 @@ import { productRoutes } from "@/lib/product-routes";
 
 const features = [
   {
-    icon: Brain,
-    emoji: "🧠",
+    icon: LineChart,
+    emoji: "📈",
     title: "Portfolio Intelligence",
     subheading: "We don’t react to risk.We detect it early and act before it impacts NOI.",
     subtitle: "Protect NOI before it erodes — not after.",
@@ -107,7 +107,7 @@ const PlatformFeatures = () => {
                   key={tab.label}
                   type="button"
                   onClick={() => tab.route && guardNavigation(tab.route)}
-                  className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-blue-200 border border-border text-sm font-medium text-foreground transition hover:border-foreground/40"
+                  className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-white border border-border text-sm font-medium text-foreground transition hover:border-foreground/40"
                 >
                   {tab.label}
                 </button>

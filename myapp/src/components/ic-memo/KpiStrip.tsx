@@ -1,7 +1,7 @@
 import { IcKpiItem, IcSignal } from "./types";
 
 export const SectionHeader = ({ number, title }: { number: string; title: string }) => (
-  <div className="mb-5 flex items-center gap-3">
+  <div className="pdf-section-header mb-5 flex items-center gap-3">
     <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-[#0d1b4f] text-xs font-bold text-white">
       {number}
     </span>

@@ -180,9 +180,11 @@ export function DealCharts({ deal }: { deal: Deal }) {
   };
 
   return (
-    <section className="mb-6 space-y-4">
-      <h3 className="text-xl font-semibold uppercase tracking-[0.12em] text-[#102149]">Performance Analytics</h3>
-      <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
+    <>
+      <section className="pdf-flow-block mb-2">
+        <h3 className="text-xl font-semibold uppercase tracking-[0.12em] text-[#102149]">Performance Analytics</h3>
+      </section>
+      <section className="pdf-flow-block mb-4 grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
         <ChartCard title="Tenant Mix" insight={ci.tenantMix}>
           <Pie
             data={{
@@ -206,23 +208,6 @@ export function DealCharts({ deal }: { deal: Deal }) {
           />
         </ChartCard>
 
-        {/* <ChartCard title="NOI Growth Projection" insight={ci.noiProjection}>
-          <Line
-            data={{
-              labels: deal.noiProjection.map((item) => item.year),
-              datasets: [{
-                label: "NOI",
-                data: deal.noiProjection.map((item) => item.noi),
-                borderColor: "#274b87",
-                backgroundColor: "rgba(39,75,135,0.12)",
-                fill: true,
-                tension: 0.35,
-              }],
-            }}
-            options={lineOptions}
-          />
-        </ChartCard> */}
-
         <ChartCard title="Revenue vs Expenses" insight={ci.revenueVsExpenses}>
           <Line
             data={{
@@ -235,17 +220,8 @@ export function DealCharts({ deal }: { deal: Deal }) {
             options={lineOptions}
           />
         </ChartCard>
-
-        {/* <ChartCard title="Expense Breakdown" insight={ci.expenseBreakdown}>
-          <Bar
-            data={{
-              labels: deal.expenseBreakdown.map((item) => item.category),
-              datasets: [{ label: "Amount", data: deal.expenseBreakdown.map((item) => item.amount), backgroundColor: "#3b65ad" }],
-            }}
-            options={{ ...barOptions, indexAxis: "y" as const }}
-          />
-        </ChartCard> */}
-
+      </section>
+      <section className="pdf-flow-block mb-4 grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
         <ChartCard title="Expense Distribution" insight={ci.expenseDistribution}>
           <Pie
             data={{
@@ -278,18 +254,17 @@ export function DealCharts({ deal }: { deal: Deal }) {
             options={barOptions}
           />
         </ChartCard>
-
-        {deal.leaseExpirationFloorplan?.xlabels?.length && deal.leaseExpirationFloorplan?.ylabels?.length ? (
-          <div className="lg:col-span-2 xl:col-span-2">
-            <FloorplanHeatmap
-              title={deal.leaseExpirationFloorplan.title}
-              xlabels={deal.leaseExpirationFloorplan.xlabels}
-              ylabels={deal.leaseExpirationFloorplan.ylabels}
-              data={deal.leaseExpirationFloorplan.data}
-            />
-          </div>
-        ) : null}
-      </div>
-    </section>
+      </section>
+      {deal.leaseExpirationFloorplan?.xlabels?.length && deal.leaseExpirationFloorplan?.ylabels?.length ? (
+        <section className="pdf-flow-block mb-4">
+          <FloorplanHeatmap
+            title={deal.leaseExpirationFloorplan.title}
+            xlabels={deal.leaseExpirationFloorplan.xlabels}
+            ylabels={deal.leaseExpirationFloorplan.ylabels}
+            data={deal.leaseExpirationFloorplan.data}
+          />
+        </section>
+      ) : null}
+    </>
   );
 }

@@ -1,4 +1,4 @@
-import { Building2, Calendar, DollarSign, MapPin } from "lucide-react";
+import { Building2, Calendar, Download, MapPin } from "lucide-react";
 import type { Deal } from "./data";
 
 const strategyColors: Record<string, string> = {
@@ -12,10 +12,12 @@ export function DealHeader({
   deal,
   isInCompare,
   onAddCompare,
+  onExportPdf,
 }: {
   deal: Deal;
   isInCompare: boolean;
   onAddCompare: (id: string) => void;
+  onExportPdf?: () => void;
 }) {
   const noiLabel = new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -28,13 +30,14 @@ export function DealHeader({
     <section className="mb-8 flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
       <div>
         <div className="mb-2 flex flex-wrap items-center gap-3">
-          <span className={`rounded-full border px-3 py-1 text-sm font-semibold ${strategyColors[deal.strategy]}`}>
+          <span className={`pdf-pill-text inline-flex h-8 items-center justify-center whitespace-nowrap rounded-full border px-3 text-sm font-semibold leading-none ${strategyColors[deal.strategy]}`}>
             {deal.strategy}
           </span>
+
           <h2 className="break-words text-2xl font-semibold text-[#102149] md:text-3xl xl:text-4xl">{deal.name}</h2>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3 text-base text-[#62708d] md:text-lg">
+        <div className="pl-4 flex flex-wrap items-center gap-3 text-base text-[#62708d] md:text-lg">
           <span className="flex items-center gap-1">
             <MapPin className="h-4 w-4" />
             {deal.address}
@@ -54,17 +57,29 @@ export function DealHeader({
         </div>
       </div>
 
-      <button
-        type="button"
-        onClick={() => onAddCompare(deal.id)}
-        className={`self-start rounded-xl px-5 py-3 text-base font-semibold transition md:text-lg ${
-          isInCompare
-            ? "bg-[#284f88] text-white"
-            : "border-2 border-[#284f88] bg-white text-[#284f88] hover:bg-[#284f88] hover:text-white"
-        }`}
+      <div
+        data-html2canvas-ignore="true"
+        className="flex flex-wrap items-center gap-3 self-start"
       >
-        {isInCompare ? "In Compare" : "+ Add to Compare"}
-      </button>
+        <button
+          type="button"
+          onClick={onExportPdf}
+          className="inline-flex items-center gap-2 rounded-xl border-2 border-[#284f88] bg-white px-5 py-3 text-base font-semibold text-[#284f88] transition hover:bg-[#284f88] hover:text-white md:text-lg"
+        >
+          <Download className="h-4 w-4" />
+          Export PDF
+        </button>
+        <button
+          type="button"
+          onClick={() => onAddCompare(deal.id)}
+          className={`rounded-xl px-5 py-3 text-base font-semibold transition md:text-lg ${isInCompare
+              ? "bg-[#284f88] text-white"
+              : "border-2 border-[#284f88] bg-white text-[#284f88] hover:bg-[#284f88] hover:text-white"
+            }`}
+        >
+          {isInCompare ? "In Compare" : "+ Add to Compare"}
+        </button>
+      </div>
     </section>
   );
 }

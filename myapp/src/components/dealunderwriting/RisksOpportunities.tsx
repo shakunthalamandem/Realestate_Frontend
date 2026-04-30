@@ -20,7 +20,7 @@ export function RisksOpportunities({ deal }: { deal: Deal }) {
             <div key={index} className="rounded-xl bg-[#f7f9fd] p-4">
               <div className="mb-1 flex items-center justify-between gap-2">
                 <span className="text-2xl font-medium text-[#102149]">{risk.title}</span>
-                <span className={`rounded-full px-3 py-1 text-sm font-semibold ${severityBadge[risk.severity]}`}>
+                <span className={`inline-flex h-7 items-center justify-center whitespace-nowrap rounded-full px-3 text-sm font-semibold leading-none ${severityBadge[risk.severity]}`}>
                   {risk.severity}
                 </span>
               </div>
@@ -41,7 +41,7 @@ export function RisksOpportunities({ deal }: { deal: Deal }) {
             <div key={index} className="rounded-xl bg-[#f7f9fd] p-4">
               <div className="mb-1 flex items-center justify-between gap-2">
                 <span className="text-2xl font-medium text-[#102149]">{opportunity.title}</span>
-                <span className={`rounded-full px-3 py-1 text-sm font-semibold ${severityBadge[opportunity.severity]}`}>
+                <span className={`inline-flex h-7 items-center justify-center whitespace-nowrap rounded-full px-3 text-sm font-semibold leading-none ${severityBadge[opportunity.severity]}`}>
                   {opportunity.severity}
                 </span>
               </div>

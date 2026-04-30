@@ -34,9 +34,9 @@ const HeroSection = ({ data }: { data?: IcHeroData | null }) => {
             <p className="text-lg font-light text-white/65">{data?.reportTitle ?? ""}</p>
           </div>
           <div className="text-right">
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 backdrop-blur-sm">
-              <span className="h-2 w-2 rounded-full bg-emerald-400" />
-              <span className="text-sm font-medium">{data?.reportMonth ?? ""}</span>
+            <div className="pdf-report-month inline-flex h-10 items-center justify-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 backdrop-blur-sm">
+              <span className="block h-2 w-2 flex-shrink-0 rounded-full bg-emerald-400" />
+              <span className="pdf-report-month-text block whitespace-nowrap text-sm font-medium leading-none">{data?.reportMonth ?? ""}</span>
             </div>
           </div>
         </div>

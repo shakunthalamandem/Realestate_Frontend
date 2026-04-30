@@ -1,5 +1,5 @@
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router";
 import AILayer from "../components/AILayer";
 import CTASection from "../components/CTASection";
@@ -27,6 +27,19 @@ const scrollToSection = (sectionId: string) => {
 const Index = () => {
   const location = useLocation();
   const isLoggedIn = isUserLoggedIn();
+  const [theme, setTheme] = useState<"light" | "dark">(() => {
+    if (typeof window === "undefined") return "light";
+    return (localStorage.getItem("home-theme") as "light" | "dark") || "light";
+  });
+  const toggleTheme = () => {
+    setTheme((prev) => {
+      const next = prev === "light" ? "dark" : "light";
+      try {
+        localStorage.setItem("home-theme", next);
+      } catch {}
+      return next;
+    });
+  };
   useEffect(() => {
   const isLoggedIn = isUserLoggedIn();
 
@@ -67,8 +80,8 @@ const Index = () => {
 }, [location]);
 
   return (
-    <div className="min-h-screen">
-      <Navbar />
+    <div className={`min-h-screen ${theme === "dark" ? "home-theme-dark" : ""}`}>
+      <Navbar theme={theme} onToggleTheme={toggleTheme} />
 
       <div>
         <HeroSection />

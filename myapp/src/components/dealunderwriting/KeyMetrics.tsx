@@ -93,11 +93,11 @@ function getMetrics(deal: Deal) {
 
 export function KeyMetrics({ deal }: { deal: Deal }) {
   return (
-    <section className="mb-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-5">
+    <section className="mb-8 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
       {getMetrics(deal).map((metric) => (
         <div key={metric.label} className="min-w-0 rounded-2xl border border-[#294e86] bg-white px-4 py-4">
           <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#57719c]">{metric.label}</p>
-          <p className="mt-3 truncate text-[2rem] font-bold leading-none text-[#102149] xl:text-[1.85rem]">{metric.value}</p>
+          <p className="mt-3 text-[2rem] font-bold leading-[1.15] text-[#102149] xl:text-[1.85rem]">{metric.value}</p>
           <p className="mt-2 text-sm text-[#62708d]">{metric.sub}</p>
         </div>
       ))}

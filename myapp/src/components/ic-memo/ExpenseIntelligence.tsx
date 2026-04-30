@@ -38,7 +38,7 @@ const ExpenseList = ({
       {safeRows.length === 0 ? (
         <p className="text-sm text-slate-400">No data available</p>
       ) : (
-        <div className="space-y-3 max-h-[420px] overflow-y-auto pr-1">
+        <div className="space-y-3 pr-1">
           {safeRows.map((item, index) => (
             <div
               key={index}

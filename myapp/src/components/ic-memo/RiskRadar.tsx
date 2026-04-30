@@ -55,8 +55,8 @@ const RiskAssetCard = ({ asset, fallbackTone }: { asset?: IcRiskAsset | null; fa
     <div className={`rounded-xl p-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(15,23,42,0.10)] ${tone.wrap}`}>
       <div className="mb-2 flex items-center justify-between gap-3">
         <h4 className="min-h-[20px] text-base font-bold text-slate-950">{asset?.name ?? ""}</h4>
-        <span className={`rounded-full px-3 py-1 text-xs font-bold ${tone.badge}`}>
-          {asset?.badge ?? ""}
+        <span className={`inline-flex h-7 items-center justify-center whitespace-nowrap rounded-full px-3 text-xs font-bold leading-none ${tone.badge}`}>
+          <span className="pdf-pill-text">{asset?.badge ?? ""}</span>
         </span>
       </div>
       <div className="mb-3 space-y-2 text-sm leading-7 text-slate-700">
