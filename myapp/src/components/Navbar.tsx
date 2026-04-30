@@ -154,7 +154,7 @@ const Navbar = ({ theme, onToggleTheme }: NavbarProps = {}) => {
           }}
           className="flex items-center"
         >
-         <BrandLogo className="translate-x-6" />
+         <BrandLogo className="translate-x-6" inverted={theme === "dark"} />
         </button>
 
         {/* Desktop Nav */}
